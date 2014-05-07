@@ -3,11 +3,17 @@
 
 #define	CLOCKTIME	0.001 // Tempo de tick em segundos
 #define PRESCALAR	8
-#define LED			5
+#define LEDA		5
+#define LEDB		4
+
+void initA(void);
+void initB(void);
+void funcA(void); /*__attribute__((naked));*/
+void funcB(void); /*__attribute__((naked));*/
 
 int main(void)
 {
-	DDRB = (1<<LED);  // Define LED do arduino como saida (PORTB5)
+	DDRB = (1<<LEDA) | (1<<LEDB);  // Define LED do arduino como saida (PORTB5)
     OCR1A = (unsigned int) ((F_CPU/PRESCALAR)*CLOCKTIME);
 
     TCCR1B |= (1 << WGM12);  // Mode 4, CTC on OCR1A
@@ -39,14 +45,40 @@ int main(void)
     }
 }
 
-ISR (TIMER1_COMPA_vect)
+ISR (TIMER1_COMPA_vect) 
 {
-	static int i=0;
+	static int i=4,k=0;
 	i++;
-	if(i==1000)
+	if(i==5)
 	{
+		funcA();
+		if (k)
+		{
+			funcB();
+		}
+		k=!k;
 		i=0;
-		PORTB ^= (1<<LED);
 	}
 }
 
+void funcA(void)
+{
+	static int i=0;
+	i++;
+	if (i==100)
+	{
+		PORTB ^= (1<<LEDA);
+		i=0;
+	}
+}
+
+void funcB(void)
+{
+	static int i=99;
+	i++;
+	if (i==100)
+	{
+		PORTB ^= (1<<LEDB);
+		i=0;
+	}
+}
