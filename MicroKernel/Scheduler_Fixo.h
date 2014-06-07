@@ -18,7 +18,7 @@
 /*                         DEFINICOES                         */
 /**************************************************************/
 // Maximo tamanho da stack
-#define MAX_STACK_SIZE	2048
+//#define MAX_STACK_SIZE	2048
 
 // Numero maximo de prioridades
 #define MAX_N_PRIORIDADES 20
@@ -34,7 +34,7 @@ typedef struct
 {
 	ListaTarefas_t *prioridades;	// Vector de apontadores para vectores dinamicos de tarefas com a respectiva prioridade
 
-	int stackLivre;					// Tamanho da stack livre
+	//int stackLivre;					// Tamanho da stack livre
 } Scheduler_t;
 
 

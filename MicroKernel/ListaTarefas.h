@@ -26,13 +26,14 @@
 // Estrutura de uma tarefa
 typedef struct
 {
-	int prioridade;
-	int periodo;
+	uint8_t prioridade;
+	//int periodo;
 	
-	int stackSize;
+	uint16_t stackSize;
 	
 	void* (*funcao)(void *);
-	int nActivacoes;
+	uint8_t nActivacoes;
+	char * stackpointer;
 	
 } Tarefa_t;
 

@@ -34,7 +34,7 @@ int Sched_inicia()
 	if (scheduler->prioridades == NULL)
 		return -1;
 	
-	scheduler->stackLivre = MAX_STACK_SIZE;
+	//scheduler->stackLivre = MAX_STACK_SIZE;
 	
 
 	return 0;

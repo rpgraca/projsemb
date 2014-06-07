@@ -1,5 +1,5 @@
 #include <avr/io.h>
-#include <avr/interrupt.h>
+#include "ListaTarefas.h"
 
 #define	CLOCKTIME	0.001 // Tempo de tick em segundos
 #define PRESCALAR	8
@@ -11,8 +11,13 @@ void initB(void);
 void funcA(void); /*__attribute__((naked));*/
 void funcB(void); /*__attribute__((naked));*/
 
+Tarefa_t tarefas[4];
+
+
 int main(void)
 {
+	/*
+	
 	DDRB = (1<<LEDA) | (1<<LEDB);  // Define LED do arduino como saida (PORTB5)
     OCR1A = (unsigned int) ((F_CPU/PRESCALAR)*CLOCKTIME);
 
@@ -34,10 +39,15 @@ int main(void)
 		case 1024:	TCCR1B |= (1 << CS12) | (1 << CS10);
 					break;
 	}
-
+	*/
+	tarefas[0]=Tarefa_cria(1,200,funcA); return;
+	tarefas[1]=Tarefa_cria(2,400,funcB); return;
+	tarefas[2]=Tarefa_cria(3,100,funcA); return;
+	tarefas[3]=Tarefa_cria(4,100,funcB); return;
+	
 
     sei();    // enable interrupts
-
+	
 
     while (1);
     {
@@ -47,18 +57,7 @@ int main(void)
 
 ISR (TIMER1_COMPA_vect) 
 {
-	static int i=4,k=0;
-	i++;
-	if(i==5)
-	{
-		funcA();
-		if (k)
-		{
-			funcB();
-		}
-		k=!k;
-		i=0;
-	}
+
 }
 
 void funcA(void)

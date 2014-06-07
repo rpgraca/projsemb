@@ -27,24 +27,25 @@
  * @param prioridade: 0 < prioridade < MAX_PRIORIDADE
  * @returns: Apontador para a tarefa criada ou NULL em caso de erro.
  */
-Tarefa_t* Tarefa_cria(int prioridade, int periodo, int stackSize, void* (*funcao)(void *))
+Tarefa_t* Tarefa_cria(int prioridade, int stackSize, void* (*funcao)(void *))
 {
 	Tarefa_t *tarefa;
 
 
 	// Cria a tarefa
-	tarefa = (Tarefa_t*) malloc(sizeof(Tarefa_t));
+	tarefa = (Tarefa_t*) malloc(sizeof(Tarefa_t)+stackSize);
 	
 	if (tarefa == NULL)
 		return NULL;
 
 
 	tarefa->prioridade = prioridade;
-	tarefa->periodo = periodo;
+	//tarefa->periodo = periodo;
 	tarefa->stackSize = stackSize;
 	tarefa->funcao = funcao;
 	tarefa->nActivacoes = 0;
-
+	tarefa->stackpointer = &(tarefa->stackpointer)+stackSize;
+	
 	return tarefa;
 }
 
