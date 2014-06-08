@@ -35,7 +35,7 @@
 *
 * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
 */
-int Disp_inicia();
+uint8_t Disp_inicia();
 
 
 /*
@@ -43,7 +43,7 @@ int Disp_inicia();
 *
 * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
 */
-int Disp_apaga();
+uint8_t Disp_apaga();
 
 
 /*

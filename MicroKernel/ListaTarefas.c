@@ -19,12 +19,12 @@
 /**************************************************************/
 /*                 FUNCOES AUXLIARES - PROTOTIPOS             */
 /**************************************************************/
-Tarefa_t* Tarefa_cria(int prioridade, int stackSize, void* (*funcao)(void *));
-int Tarefa_apaga(Tarefa_t *tarefa);
+Tarefa_t* Tarefa_cria(uint8_t prioridade, uint16_t stackSize, void* (*funcao)(void *));
+uint8_t Tarefa_apaga(Tarefa_t *tarefa);
 TarefasPrioridade_t* TarefasPrioridade_cria();
-int TarefasPrioridade_apaga(TarefasPrioridade_t* tarefasPrioridade);
-int TarefasPrioridade_adicionaTarefa(TarefasPrioridade_t* tarefasPrioridade, int prioridade, int stackSize, void* (*funcao)(void *));
-int TarefasPrioridade_removeTarefa(TarefasPrioridade_t* tarefasPrioridade, Tarefa_t *tarefa);
+uint8_t TarefasPrioridade_apaga(TarefasPrioridade_t* tarefasPrioridade);
+uint8_t TarefasPrioridade_adicionaTarefa(TarefasPrioridade_t* tarefasPrioridade, uint8_t prioridade, uint16_t stackSize, void* (*funcao)(void *));
+uint8_t TarefasPrioridade_removeTarefa(TarefasPrioridade_t* tarefasPrioridade, Tarefa_t *tarefa);
 
 
 /**************************************************************/
@@ -37,9 +37,8 @@ int TarefasPrioridade_removeTarefa(TarefasPrioridade_t* tarefasPrioridade, Taref
  * @param prioridade: 0 < prioridade < MAX_PRIORIDADE
  * @return: Apontador para a tarefa criada ou NULL em caso de erro.
  */
-Tarefa_t* Tarefa_cria(int prioridade, int stackSize, void* (*funcao)(void *))
+Tarefa_t* Tarefa_cria(uint8_t prioridade, uint16_t stackSize, void* (*funcao)(void *))
 {
-	int i;
 	Tarefa_t *tarefa;
 
 
@@ -56,9 +55,6 @@ Tarefa_t* Tarefa_cria(int prioridade, int stackSize, void* (*funcao)(void *))
 	tarefa->nActivacoes = 0;
 	tarefa->stackPtr = ((char*)&tarefa) + stackSize;
 	
-	for (i = 0; i < N_REGISTOS_CPU; i++)
-		tarefa->contexto.registos[i] = 0;
-
 	
 	return tarefa;
 }
@@ -119,7 +115,7 @@ TarefasPrioridade_t* TarefasPrioridade_cria()
  */
 int TarefasPrioridade_apaga(TarefasPrioridade_t* tarefasPrioridade)
 {
-	int i, resultado;
+	uint8_t i, resultado;
 
 
 	// Verificacao dos parametros passados a funcao
@@ -150,7 +146,7 @@ int TarefasPrioridade_apaga(TarefasPrioridade_t* tarefasPrioridade)
  *
  * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
  */
-int TarefasPrioridade_adicionaTarefa(TarefasPrioridade_t* tarefasPrioridade, int prioridade, int stackSize, void* (*funcao)(void *))
+int TarefasPrioridade_adicionaTarefa(TarefasPrioridade_t* tarefasPrioridade, uint8_t prioridade, uint16_t stackSize, void* (*funcao)(void *))
 {
 	Tarefa_t *tarefa;
 
@@ -189,7 +185,7 @@ int TarefasPrioridade_adicionaTarefa(TarefasPrioridade_t* tarefasPrioridade, int
  */
 int TarefasPrioridade_removeTarefa(TarefasPrioridade_t* tarefasPrioridade, Tarefa_t *tarefa)
 {
-	int i, j, resultado;
+	uint8_t i, j, resultado;
 
 
 	// Verificacao dos parametros passados a funcao
@@ -240,9 +236,9 @@ int TarefasPrioridade_removeTarefa(TarefasPrioridade_t* tarefasPrioridade, Taref
 /*                           FUNCOES                          */
 /**************************************************************/
 
-ListaTarefas_t* ListaTarefas_cria(int nPrioridades)
+ListaTarefas_t* ListaTarefas_cria(uint8_t nPrioridades)
 {
-	int i;
+	uint8_t i;
 	ListaTarefas_t *listaTarefas;
 	
 	
@@ -290,7 +286,7 @@ ListaTarefas_t* ListaTarefas_cria(int nPrioridades)
 
 int ListaTarefas_apaga(ListaTarefas_t *listaTarefas)
 {
-	int i, resultado;
+	uint8_t i, resultado;
 
 
 	// Verificacao dos parametros passados a funcao
@@ -322,7 +318,7 @@ int ListaTarefas_apaga(ListaTarefas_t *listaTarefas)
 
 int ListaTarefas_adicionaTarefa(ListaTarefas_t *listaTarefas, int prioridade, int stackSize, void* (*funcao)(void *))
 {
-	int resultado;
+	uint8_t resultado;
 
 
 	// Verificacao dos parametros passados a funcao
@@ -340,7 +336,7 @@ int ListaTarefas_adicionaTarefa(ListaTarefas_t *listaTarefas, int prioridade, in
 
 int ListaTarefas_removeTarefa(ListaTarefas_t *listaTarefas, Tarefa_t *tarefa)
 {
-	int resultado;
+	uint8_t resultado;
 	
 	
 	// Verificacao dos parametros passados a funcao

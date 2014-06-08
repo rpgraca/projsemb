@@ -26,34 +26,16 @@
 /*                          ESTRUTURA                         */
 /**************************************************************/
 
-// Contexto de uma tarefa
-typedef struct
-{
-	//uint8_t registos[N_REGISTOS_CPU];
-	int registos[N_REGISTOS_CPU];
-
-
-	/////////////////////
-	/////////////////////
-	// ACRESCENTAR INFORMACOES RELEVANTES NA MUDANCA DE CONTEXTO (SE NECESSARIO)
-	/////////////////////
-	/////////////////////
-
-} Contexto_t;
-
-
 // Estrutura de uma tarefa
 typedef struct
 {
-	int prioridade;
-	int stackSize;
+	uint8_t prioridade;
+	uint16_t stackSize;
 	
-	int nActivacoes;
+	uint8_t nActivacoes;
 	
 	void* (*funcao)(void *);
 	char *stackPtr;				// Apontador para a sua stack
-	
-	Contexto_t contexto;		// Armazenamento do contexto da tarefa
 } Tarefa_t;
 
 
@@ -61,7 +43,7 @@ typedef struct
 typedef struct
 {
 	Tarefa_t **tarefas;			// Vector de apontadores para tarefas
-	int nTarefas;
+	uint8_t nTarefas;
 } TarefasPrioridade_t;
 
 
@@ -69,7 +51,7 @@ typedef struct
 typedef struct
 {
 	TarefasPrioridade_t **prioridades;
-	int nPrioridades;
+	uint8_t nPrioridades;
 } ListaTarefas_t;
 
 
@@ -83,7 +65,7 @@ typedef struct
  * 
  * @return: Apontador para a lista de tarefas criada ou NULL em caso de erro.
  */
-ListaTarefas_t* ListaTarefas_cria(int nPrioridades);
+ListaTarefas_t* ListaTarefas_cria(uint8_t nPrioridades);
 
 
 /*
@@ -99,7 +81,7 @@ int ListaTarefas_apaga(ListaTarefas_t *listaTarefas);
  * 
  * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
  */
-int ListaTarefas_adicionaTarefa(ListaTarefas_t *listaTarefas, int prioridade, int stackSize, void* (*funcao)(void *));
+int ListaTarefas_adicionaTarefa(ListaTarefas_t *listaTarefas, uint8_t prioridade, uint16_t stackSize, void* (*funcao)(void *));
 
 
 /*

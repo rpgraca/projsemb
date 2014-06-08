@@ -20,8 +20,6 @@
 /**************************************************************/
 /*                         DEFINICOES                         */
 /**************************************************************/
-// Maximo tamanho da stack
-//#define MAX_STACK_SIZE	2048
 
 // Numero maximo de prioridades
 #define MAX_N_PRIORIDADES 20
@@ -64,14 +62,14 @@ Scheduler_t *scheduler;		// Apontador para o scheduler
  *
  * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
  */
-int Sched_inicia();
+uint8_t Sched_inicia();
 
 /*
  * Apaga o escalonador, libertando toda a memoria alocada.
  * 
  * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
  */
-int Sched_apaga();
+uint8_t Sched_apaga();
 
 
 /*
@@ -79,7 +77,7 @@ int Sched_apaga();
  *
  * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
  */
-int Sched_adicionaTarefa(int prioridade, int stackSize, void* (*funcao)(void *));
+uint8_t Sched_adicionaTarefa(uint8_t prioridade, uint16_t stackSize, void* (*funcao)(void *));
 
 
 /*
@@ -87,7 +85,7 @@ int Sched_adicionaTarefa(int prioridade, int stackSize, void* (*funcao)(void *))
  * 
  * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
  */
-int Sched_eliminaTarefa(Tarefa_t *tarefa);
+uint8_t Sched_eliminaTarefa(Tarefa_t *tarefa);
 
 
 

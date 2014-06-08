@@ -21,7 +21,7 @@
 /*                           FUNCOES                          */
 /**************************************************************/
 
-int Sched_inicia()
+uint8_t Sched_inicia()
 {
 	// Inicializa o escalonador
 	scheduler = (Scheduler_t*) malloc(sizeof(Scheduler_t));
@@ -40,9 +40,9 @@ int Sched_inicia()
 
 
 
-int Sched_apaga()
+uint8_t Sched_apaga()
 {
-	int resultado;
+	uint8_t resultado;
 	
 	
 	// Apaga a lista de tarefas
@@ -55,9 +55,9 @@ int Sched_apaga()
 
 
 
-int Sched_adicionaTarefa(int prioridade, int stackSize, void* (*funcao)(void *))
+uint8_t Sched_adicionaTarefa(uint8_t prioridade, uint16_t stackSize, void* (*funcao)(void *))
 {
-	int resultado;
+	uint8_t resultado;
 	
 	resultado = ListaTarefas_adicionaTarefa(scheduler->tarefas, prioridade, stackSize, funcao);
 	
@@ -66,9 +66,9 @@ int Sched_adicionaTarefa(int prioridade, int stackSize, void* (*funcao)(void *))
 
 
 
-int Sched_eliminaTarefa(Tarefa_t *tarefa)
+uint8_t Sched_eliminaTarefa(Tarefa_t *tarefa)
 {
-	int resultado;
+	uint8_t resultado;
 	
 	resultado = ListaTarefas_removeTarefa(scheduler->tarefas, tarefa);
 	

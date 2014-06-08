@@ -20,7 +20,7 @@
 /*                           FUNCOES                          */
 /**************************************************************/
 
-int Disp_inicia()
+uint8_t Disp_inicia()
 {
 	// (...)
 
@@ -30,7 +30,7 @@ int Disp_inicia()
 
 
 
-int Disp_apaga()
+uint8_t Disp_apaga()
 {
 	// (...)
 

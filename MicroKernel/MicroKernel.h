@@ -42,7 +42,7 @@
  * 
  * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
  */
-int UK_inicializa();
+uint8_t UK_inicializa();
 
 
 /*
@@ -50,7 +50,7 @@ int UK_inicializa();
  * 
  * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
  */
-int UK_termina();
+uint8_t UK_termina();
 
 
 #endif

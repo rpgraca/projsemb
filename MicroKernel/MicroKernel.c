@@ -15,9 +15,9 @@
 
 
 
-int UK_inicializa()
+uint8_t UK_inicializa()
 {
-	int resultado = 0;
+	uint8_t resultado = 0;
 	
 	
 	resultado += Sched_inicia();
@@ -37,9 +37,9 @@ int UK_inicializa()
 }
 
 
-int UK_termina()
+uint8_t UK_termina()
 {
-	int resultado = 0;
+	uint8_t resultado = 0;
 	
 	
 	resultado += Sched_apaga();
