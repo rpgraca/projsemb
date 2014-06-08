@@ -11,6 +11,9 @@
 
 
 
+#ifndef _LISTATAREFAS_H_
+#define _LISTATAREFAS_H_
+
 
 /**************************************************************/
 /*                         DEFINICOES                         */
@@ -105,3 +108,6 @@ int ListaTarefas_adicionaTarefa(ListaTarefas_t *listaTarefas, int prioridade, in
  * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
  */
 int ListaTarefas_removeTarefa(ListaTarefas_t *listaTarefas, Tarefa_t *tarefa);
+
+
+#endif

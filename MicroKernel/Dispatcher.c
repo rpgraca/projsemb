@@ -6,14 +6,13 @@
 /* Rui Pedro Zenhas Graca					201004124                                    */
 /* Tiago dos Santos Maia Costa				200601289                                    */
 /*****************************************************************************************/
-/*                            Escalonador (prioridades fixas)                            */
+/*                                      Dispatcher                                       */
 /*****************************************************************************************/
 
 
-#include "Scheduler_Fixo.h"
+#include "Dispatcher.h"
 
 #include <stdio.h>
-#include <stdlib.h>
 
 
 
@@ -21,63 +20,31 @@
 /*                           FUNCOES                          */
 /**************************************************************/
 
-int Sched_inicia()
+int Disp_inicia()
 {
-	// Inicializa o escalonador
-	scheduler = (Scheduler_t*) malloc(sizeof(Scheduler_t));
-	if (scheduler == NULL)
-		return -1;
-	
-	
-	// Cria a lista de tarefas
-	scheduler->tarefas = ListaTarefas_cria(MAX_N_PRIORIDADES);
-	if (scheduler->tarefas == NULL)
-		return -1;
-	
+
+
 
 	return 0;
 }
 
 
 
-int Sched_apaga()
+int Disp_apaga()
 {
-	int resultado;
-	
-	
-	// Apaga a lista de tarefas
-	resultado = ListaTarefas_apaga(scheduler->tarefas);
-	
-	free(scheduler);
-	
-	return resultado;
+
+
+
+	return 0;
 }
 
 
 
-int Sched_adicionaTarefa(int prioridade, int stackSize, void* (*funcao)(void *))
+void Disp_Dispatch()
 {
-	int resultado;
-	
-	resultado = ListaTarefas_adicionaTarefa(scheduler->tarefas, prioridade, stackSize, funcao);
-	
-	return resultado;
-}
-
-
-
-int Sched_eliminaTarefa(Tarefa_t *tarefa)
-{
-	int resultado;
-	
-	resultado = ListaTarefas_removeTarefa(scheduler->tarefas, tarefa);
-	
-	return resultado;
-}
-
-
-
-void Sched_Schedule()
-{
-	// (...)
+	/*
+	* Verifica se existe alguma tarefa de maior prioridade com activacoes
+	* pendentes e, caso haja, activa-a (aloca os recursos do sistema para a
+	* tarefa).
+	*/
 }

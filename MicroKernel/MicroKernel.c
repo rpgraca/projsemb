@@ -21,7 +21,7 @@ int UK_inicializa()
 	
 	
 	resultado += Sched_inicia();
-	
+	resultado += Disp_inicia();
 	
 	//////////////////////////
 	//////////////////////////
@@ -43,6 +43,7 @@ int UK_termina()
 	
 	
 	resultado += Sched_apaga();
+	resultado += Disp_apaga();
 	
 	//////////////////////////
 	//////////////////////////

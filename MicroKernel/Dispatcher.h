@@ -6,30 +6,23 @@
 /* Rui Pedro Zenhas Graca					201004124                                    */
 /* Tiago dos Santos Maia Costa				200601289                                    */
 /*****************************************************************************************/
-/*                                       Micro-Kernel                                    */
+/*                                      Dispatcher                                       */
 /*****************************************************************************************/
 
 
 
-#ifndef _MICROKERNEL_H_
-#define _MICROKERNEL_H_
+#ifndef _DISPATCHER_H_
+#define _DISPATCHER_H_
 
 
 
 #include "Scheduler_Fixo.h"
-#include "Dispatcher.h"
+#include "Context.h"
 
 
-//////////////////////////
-//////////////////////////
-//////////////////////////
-//
-// ACRESCENTAR OS INCLUDES DOS RESTANTES COMPONENTES
-//
-//////////////////////////
-//////////////////////////
-//////////////////////////
-
+/**************************************************************/
+/*                         DEFINICOES                         */
+/**************************************************************/
 
 
 
@@ -38,19 +31,26 @@
 /**************************************************************/
 
 /*
- * Inicializa o micro-kernel.
- * 
- * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
- */
-int UK_inicializa();
+* Incializa o dispatcher.
+*
+* @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
+*/
+int Disp_inicia();
 
 
 /*
- * Termina o micro-kernel.
- * 
- * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
- */
-int UK_termina();
+* Apaga o dispatcher, libertando toda a memoria alocada.
+*
+* @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
+*/
+int Disp_apaga();
 
+
+/*
+ * Verifica se existe alguma tarefa de maior prioridade com activacoes
+ * pendentes e, caso haja, activa-a (aloca os recursos do sistema para a
+ * tarefa).
+ */
+void Disp_Dispatch();
 
 #endif
