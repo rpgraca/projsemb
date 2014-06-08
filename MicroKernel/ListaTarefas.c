@@ -214,7 +214,7 @@ int TarefasPrioridade_removeTarefa(TarefasPrioridade_t* tarefasPrioridade, Taref
 			
 			// Realocacao de memoria do vector
 			tarefasPrioridade->tarefas = (Tarefa_t**)realloc(tarefasPrioridade->tarefas, (tarefasPrioridade->nTarefas - 1) * sizeof(Tarefa_t*));
-			if (tarefasPrioridade->tarefas == NULL)
+			if ( (tarefasPrioridade->tarefas == NULL) && (tarefasPrioridade->nTarefas != 1) )	// Se nTarefas = 1, entao o vector vai ficar NULL
 				return -2;
 
 
@@ -301,6 +301,9 @@ int ListaTarefas_apaga(ListaTarefas_t *listaTarefas)
 	// Apaga o vector de prioridades
 	for (i = 0; i < listaTarefas->nPrioridades; i++)
 	{
+		if (listaTarefas->prioridades[i] == NULL)
+			continue;
+
 		resultado = TarefasPrioridade_apaga(listaTarefas->prioridades[i]);
 		
 		if (resultado < 0)
