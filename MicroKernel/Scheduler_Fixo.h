@@ -32,9 +32,15 @@
 // Estrutura do escalonador
 typedef struct
 {
-	ListaTarefas_t *prioridades;	// Vector de apontadores para vectores dinamicos de tarefas com a respectiva prioridade
+	ListaTarefas_t *tarefas;
 
-	//int stackLivre;					// Tamanho da stack livre
+
+	/////////////////////
+	/////////////////////
+	// ACRESCENTAR INFORMACOES RELEVANTES PARA O SCHEDULER (SE NECESSARIO)
+	/////////////////////
+	/////////////////////
+
 } Scheduler_t;
 
 
@@ -70,7 +76,7 @@ int Sched_apaga();
  *
  * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
  */
-int Sched_adicionaTarefa(int prioridade, int periodo, int stackSize, void* (*funcao)(void *));
+int Sched_adicionaTarefa(int prioridade, int stackSize, void* (*funcao)(void *));
 
 
 /*
@@ -79,3 +85,17 @@ int Sched_adicionaTarefa(int prioridade, int periodo, int stackSize, void* (*fun
  * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
  */
 int Sched_eliminaTarefa(Tarefa_t *tarefa);
+
+
+
+
+
+////////////////////////////////////////////////
+////////////////////////////////////////////////
+////////////////////////////////////////////////
+//
+// FALTA OS ALGORITMOS DE ESCALONAMENTO (AINDA ESTOU A FAZER)
+//
+////////////////////////////////////////////////
+////////////////////////////////////////////////
+////////////////////////////////////////////////

@@ -16,35 +16,49 @@
 #include <stdlib.h>
 
 
+/**************************************************************/
+/*                 FUNCOES AUXLIARES - PROTOTIPOS             */
+/**************************************************************/
+Tarefa_t* Tarefa_cria(int prioridade, int stackSize, void* (*funcao)(void *));
+int Tarefa_apaga(Tarefa_t *tarefa);
+TarefasPrioridade_t* TarefasPrioridade_cria();
+int TarefasPrioridade_apaga(TarefasPrioridade_t* tarefasPrioridade);
+int TarefasPrioridade_adicionaTarefa(TarefasPrioridade_t* tarefasPrioridade, int prioridade, int stackSize, void* (*funcao)(void *));
+int TarefasPrioridade_removeTarefa(TarefasPrioridade_t* tarefasPrioridade, Tarefa_t *tarefa);
+
 
 /**************************************************************/
-/*                       FUNCOES AUXLIARES                    */
+/*                  FUNCOES AUXLIARES - Tarefa_t              */
 /**************************************************************/
 
 /*
  * Cria uma nova tarefa.
  * 
  * @param prioridade: 0 < prioridade < MAX_PRIORIDADE
- * @returns: Apontador para a tarefa criada ou NULL em caso de erro.
+ * @return: Apontador para a tarefa criada ou NULL em caso de erro.
  */
 Tarefa_t* Tarefa_cria(int prioridade, int stackSize, void* (*funcao)(void *))
 {
+	int i;
 	Tarefa_t *tarefa;
 
 
 	// Cria a tarefa
-	tarefa = (Tarefa_t*) malloc(sizeof(Tarefa_t)+stackSize);
-	
+	tarefa = (Tarefa_t*) malloc(sizeof(Tarefa_t) + stackSize);
+
 	if (tarefa == NULL)
 		return NULL;
 
 
 	tarefa->prioridade = prioridade;
-	//tarefa->periodo = periodo;
 	tarefa->stackSize = stackSize;
 	tarefa->funcao = funcao;
 	tarefa->nActivacoes = 0;
-	tarefa->stackpointer = &(tarefa->stackpointer)+stackSize;
+	tarefa->stackPtr = ((char*)&tarefa) + stackSize;
+	
+	for (i = 0; i < N_REGISTOS_CPU; i++)
+		tarefa->contexto.registos[i] = 0;
+
 	
 	return tarefa;
 }
@@ -70,134 +84,150 @@ int Tarefa_apaga(Tarefa_t *tarefa)
 
 
 /**************************************************************/
-/*                           FUNCOES                          */
+/*             FUNCOES AUXLIARES - TarefasPrioridade_t        */
 /**************************************************************/
 
-ListaTarefas_t* ListaTarefas_cria(int nTarefas)
+/*
+ * Cria um novo TarefasPrioridade_t
+ *
+ * @return: Apontador para a estrutura TarefasPrioridade_t criada ou NULL em caso de erro.
+ */
+TarefasPrioridade_t* TarefasPrioridade_cria()
 {
-	int i;
-	ListaTarefas_t *listaTarefas;
-	
-	
-	// Verificacao dos parametros passados a funcao
-	if (nTarefas < 0)
+	TarefasPrioridade_t *tarefasPrioridade;
+
+
+	// Cria a estrutura
+	tarefasPrioridade = (TarefasPrioridade_t*)malloc(sizeof(TarefasPrioridade_t));
+	if (tarefasPrioridade == NULL)
 		return NULL;
-		
+
+
 	
-	// Cria o vector
-	listaTarefas = (ListaTarefas_t*) malloc(nTarefas * sizeof(ListaTarefas_t));
-	if (listaTarefas == NULL)
-		return NULL;
-	
-	
-	// Inicializa cada lista de tarefas
-	for (i=0; i < nTarefas; i++)
-	{
-		listaTarefas[i].tarefas = NULL;
-		listaTarefas[i].nTarefas = 0;
-	}
-	
-	
-	
-	return listaTarefas;
+	tarefasPrioridade->tarefas = NULL;
+	tarefasPrioridade->nTarefas = 0;
+
+
+	return tarefasPrioridade;
 }
 
 
-int ListaTarefas_apaga(ListaTarefas_t *listaTarefas)
+/*
+ * Apaga um TarefasPrioridade_t, libertando toda a memoria alocada.
+ *
+ * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
+ */
+int TarefasPrioridade_apaga(TarefasPrioridade_t* tarefasPrioridade)
 {
+	int i, resultado;
+
+
 	// Verificacao dos parametros passados a funcao
-	if (listaTarefas == NULL)
+	if (tarefasPrioridade == NULL)
 		return -1;
+
 	
-	
-	// (...)
-	
-	
+	// Remove todas as tarefas presentes no vector
+	for (i = 0; i < tarefasPrioridade->nTarefas; i++)
+	{
+		resultado = TarefasPrioridade_removeTarefa(tarefasPrioridade, tarefasPrioridade->tarefas[i]);
+
+		if (resultado < 0)
+			return -2;
+	}
+
+
+	// Apaga a estrutura
+	free(tarefasPrioridade);
+
 	return 0;
 }
 
 
-int ListaTarefas_adicionaTarefa(ListaTarefas_t *listaTarefas, int prioridade, int periodo, int stackSize, void* (*funcao)(void *))
+
+/*
+ * Adiciona uma tarefa ao TarefasPrioridade_t.
+ *
+ * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
+ */
+int TarefasPrioridade_adicionaTarefa(TarefasPrioridade_t* tarefasPrioridade, int prioridade, int stackSize, void* (*funcao)(void *))
 {
+	Tarefa_t *tarefa;
+
+
 	// Verificacao dos parametros passados a funcao
-	if (listaTarefas == NULL)
+	if (tarefasPrioridade == NULL)
 		return -1;
-	
-	
-	////////////////////////////////////
-	////////////////////////////////////
-	////////////////////////////////////
-	//
-	// REVER !!!
-	//
-	////////////////////////////////////
-	////////////////////////////////////
-	////////////////////////////////////
-	
-	/*
+
+
+	// Cria a tarefa
+	tarefa = Tarefa_cria(prioridade, stackSize, funcao);
+	if (tarefa == NULL)
+		return -1;
+
+
 	// Realocacao de memoria do vector
-	listaTarefas->tarefas = (Tarefa_t**) realloc(listaTarefas->tarefas, (listaTarefas->nTarefas + 1) * sizeof(Tarefa_t*));
-	if (listaTarefas->tarefas == NULL)
-		return -2;
-	
-	
+	tarefasPrioridade->tarefas = (Tarefa_t**)realloc(tarefasPrioridade->tarefas, (tarefasPrioridade->nTarefas + 1) * sizeof(Tarefa_t*));
+	if (tarefasPrioridade->tarefas == NULL)
+		return -1;
+
+
 	// Adiciona a tarefa no vector
-	listaTarefas->tarefas[listaTarefas->nTarefas + 1] = tarefa;
-	listaTarefas->nTarefas++;
-	*/
-	
-	
+	tarefasPrioridade->tarefas[tarefasPrioridade->nTarefas] = tarefa;
+	tarefasPrioridade->nTarefas++;
+
+
 	return 0;
 }
 
 
 
-
-
-int ListaTarefas_removeTarefa(ListaTarefas_t *listaTarefas, Tarefa_t *tarefa)
+/*
+ * Remove uma tarefa do TarefasPrioridade_t.
+ *
+ * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
+ */
+int TarefasPrioridade_removeTarefa(TarefasPrioridade_t* tarefasPrioridade, Tarefa_t *tarefa)
 {
-	int i;
-	int prioridade, nTarefas;
-	
-	
+	int i, j, resultado;
+
+
 	// Verificacao dos parametros passados a funcao
-	if (listaTarefas == NULL)
+	if (tarefasPrioridade == NULL)
 		return -1;
-	
-	
-	
-	////////////////////////////////////
-	////////////////////////////////////
-	////////////////////////////////////
-	//
-	// REVER !!!
-	//
-	////////////////////////////////////
-	////////////////////////////////////
-	////////////////////////////////////
-	
-	
-	
-	/*
+
+
 	// Procura a tarefa
-	prioridade = tarefa->prioridade;
-	nTarefas = listaTarefas->nTarefas;
-	
-	
-	for (i=0; i < nTarefas; i++)
+	for (i=0; i < tarefasPrioridade->nTarefas; i++)
 	{
-		// Elimina a tarefa
-		if (listaTarefas->tarefas[i] == tarefa)
+		if (tarefasPrioridade->tarefas[i] == tarefa)
 		{
+			// Elimina a tarefa
+			resultado = Tarefa_apaga(tarefa);
+			if (resultado < 0)
+				return -2;
 			
-			// (...)
+			// Copia as tarefas para o início do vector para deixar o espaco vazio no fim do vector
+			for (j = i; j < tarefasPrioridade->nTarefas - 1; j++)
+				tarefasPrioridade->tarefas[j] = tarefasPrioridade->tarefas[j + 1];
+
 			
-			return 0;
+			// Realocacao de memoria do vector
+			tarefasPrioridade->tarefas = (Tarefa_t**)realloc(tarefasPrioridade->tarefas, (tarefasPrioridade->nTarefas - 1) * sizeof(Tarefa_t*));
+			if (tarefasPrioridade->tarefas == NULL)
+				return -2;
+
+
+			tarefasPrioridade->nTarefas--;
+
+
+			return resultado;
 		}
-		
+
 	}
-	*/
-	
+
+
+
 	// A tarefa nao existe
 	return -3;
 }
@@ -205,3 +235,116 @@ int ListaTarefas_removeTarefa(ListaTarefas_t *listaTarefas, Tarefa_t *tarefa)
 
 
 
+
+/**************************************************************/
+/*                           FUNCOES                          */
+/**************************************************************/
+
+ListaTarefas_t* ListaTarefas_cria(int nPrioridades)
+{
+	int i;
+	ListaTarefas_t *listaTarefas;
+	
+	
+	// Verificacao dos parametros passados a funcao
+	if (nPrioridades < 0)
+		return NULL;
+	
+
+	// Cria a estrutura
+	listaTarefas = (ListaTarefas_t*)malloc(sizeof(ListaTarefas_t));
+	if (listaTarefas == NULL)
+		return NULL;
+
+
+	// Cria o vector de TarefasPrioridade_t
+	listaTarefas->prioridades = (TarefasPrioridade_t**)calloc(nPrioridades, sizeof(TarefasPrioridade_t*));
+	if (listaTarefas->prioridades == NULL)
+	{
+		free(listaTarefas);
+		return NULL;
+	}
+
+
+	// Cria os vectores de prioridades
+	for (i = 0; i < nPrioridades; i++)
+	{
+		listaTarefas->prioridades[i] = TarefasPrioridade_cria();
+		
+		if (listaTarefas->prioridades == NULL)
+		{
+			free(listaTarefas->prioridades);
+			free(listaTarefas);
+
+			return NULL;
+		}
+	}
+
+	listaTarefas->nPrioridades = nPrioridades;
+
+
+	return listaTarefas;
+}
+
+
+
+int ListaTarefas_apaga(ListaTarefas_t *listaTarefas)
+{
+	int i, resultado;
+
+
+	// Verificacao dos parametros passados a funcao
+	if (listaTarefas == NULL)
+		return -1;
+	
+	
+	// Apaga o vector de prioridades
+	for (i = 0; i < listaTarefas->nPrioridades; i++)
+	{
+		resultado = TarefasPrioridade_apaga(listaTarefas->prioridades[i]);
+		
+		if (resultado < 0)
+			return -2;
+	}
+
+
+	free(listaTarefas->prioridades);
+	free(listaTarefas);
+	
+	
+	return 0;
+}
+
+
+
+int ListaTarefas_adicionaTarefa(ListaTarefas_t *listaTarefas, int prioridade, int stackSize, void* (*funcao)(void *))
+{
+	int resultado;
+
+
+	// Verificacao dos parametros passados a funcao
+	if ((listaTarefas == NULL) || (prioridade < 0 || prioridade >= listaTarefas->nPrioridades) )
+		return -1;
+
+
+	resultado = TarefasPrioridade_adicionaTarefa(listaTarefas->prioridades[prioridade], prioridade, stackSize, funcao);
+	
+	
+	return resultado;
+}
+
+
+
+int ListaTarefas_removeTarefa(ListaTarefas_t *listaTarefas, Tarefa_t *tarefa)
+{
+	int resultado;
+	
+	
+	// Verificacao dos parametros passados a funcao
+	if ( (listaTarefas == NULL) || (tarefa == NULL) )
+		return -1;
+	
+	resultado = TarefasPrioridade_removeTarefa(listaTarefas->prioridades[tarefa->prioridade], tarefa);
+
+	return resultado;
+}

@@ -30,11 +30,9 @@ int Sched_inicia()
 	
 	
 	// Cria a lista de tarefas
-	scheduler->prioridades = ListaTarefas_cria(MAX_N_PRIORIDADES);
-	if (scheduler->prioridades == NULL)
+	scheduler->tarefas = ListaTarefas_cria(MAX_N_PRIORIDADES);
+	if (scheduler->tarefas == NULL)
 		return -1;
-	
-	//scheduler->stackLivre = MAX_STACK_SIZE;
 	
 
 	return 0;
@@ -44,11 +42,11 @@ int Sched_inicia()
 
 int Sched_apaga()
 {
-	int resultado = 0;
+	int resultado;
 	
 	
 	// Apaga a lista de tarefas
-	resultado += ListaTarefas_apaga(scheduler->prioridades);
+	resultado = ListaTarefas_apaga(scheduler->tarefas);
 	
 	free(scheduler);
 	
@@ -57,57 +55,22 @@ int Sched_apaga()
 
 
 
-int Sched_adicionaTarefa(int prioridade, int periodo, int stackSize, void* (*funcao)(void *))
+int Sched_adicionaTarefa(int prioridade, int stackSize, void* (*funcao)(void *))
 {
 	int resultado;
 	
+	resultado = ListaTarefas_adicionaTarefa(scheduler->tarefas, prioridade, stackSize, funcao);
 	
-	// Verificacao dos parametros passados a funcao
-	if ( (prioridade < 0 || prioridade >= MAX_N_PRIORIDADES) ||
-		(periodo < 0) ||
-		(stackSize < 0 || stackSize >= MAX_STACK_SIZE) ||
-		(funcao == NULL) )
-		return -1;
-
-
-	// Cria a tarefa
-	if (stackSize > scheduler->stackLivre)		// Verifica se existe espaco na stack para a tarefa
-		return -2;
-	
-	resultado = ListaTarefas_adicionaTarefa(scheduler->prioridades, prioridade, periodo, stackSize, funcao);
-	
-	if (resultado < 0)
-		return -3;
-	
-	
-	scheduler->stackLivre -= stackSize;
-	
-	return 0;
+	return resultado;
 }
 
 
 
 int Sched_eliminaTarefa(Tarefa_t *tarefa)
 {
-	int stackSize;
-	
 	int resultado;
 	
+	resultado = ListaTarefas_removeTarefa(scheduler->tarefas, tarefa);
 	
-	// Verificacao dos parametros passados a funcao
-	if (tarefa == NULL)
-		return -1;
-	
-	
-	// Elimina a tarefa
-	stackSize = tarefa->stackSize;
-	
-	resultado = ListaTarefas_removeTarefa(scheduler->prioridades, tarefa);
-	
-	if (resultado < 0)
-		return -2;
-	
-	
-	scheduler->stackLivre += stackSize;
-	return 0;
+	return resultado;
 }

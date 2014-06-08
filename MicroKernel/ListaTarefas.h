@@ -15,7 +15,7 @@
 /**************************************************************/
 /*                         DEFINICOES                         */
 /**************************************************************/
-
+#define N_REGISTOS_CPU	32			// Numero de registos do CPU
 
 
 
@@ -23,26 +23,50 @@
 /*                          ESTRUTURA                         */
 /**************************************************************/
 
+// Contexto de uma tarefa
+typedef struct
+{
+	//uint8_t registos[N_REGISTOS_CPU];
+	int registos[N_REGISTOS_CPU];
+
+
+	/////////////////////
+	/////////////////////
+	// ACRESCENTAR INFORMACOES RELEVANTES NA MUDANCA DE CONTEXTO (SE NECESSARIO)
+	/////////////////////
+	/////////////////////
+
+} Contexto_t;
+
+
 // Estrutura de uma tarefa
 typedef struct
 {
-	uint8_t prioridade;
-	//int periodo;
+	int prioridade;
+	int stackSize;
 	
-	uint16_t stackSize;
+	int nActivacoes;
 	
 	void* (*funcao)(void *);
-	uint8_t nActivacoes;
-	char * stackpointer;
+	char *stackPtr;				// Apontador para a sua stack
 	
+	Contexto_t contexto;		// Armazenamento do contexto da tarefa
 } Tarefa_t;
 
 
-// Estrutura de uma lista de tarefas
+// Vector com as tarefas da mesma prioridade
 typedef struct
 {
-	Tarefa_t **tarefas;
+	Tarefa_t **tarefas;			// Vector de apontadores para tarefas
 	int nTarefas;
+} TarefasPrioridade_t;
+
+
+// Conjunto de todas as tarefas
+typedef struct
+{
+	TarefasPrioridade_t **prioridades;
+	int nPrioridades;
 } ListaTarefas_t;
 
 
@@ -56,7 +80,7 @@ typedef struct
  * 
  * @return: Apontador para a lista de tarefas criada ou NULL em caso de erro.
  */
-ListaTarefas_t* ListaTarefas_cria();
+ListaTarefas_t* ListaTarefas_cria(int nPrioridades);
 
 
 /*
@@ -70,10 +94,9 @@ int ListaTarefas_apaga(ListaTarefas_t *listaTarefas);
 /*
  * Adiciona uma tarefa a lista de tarefas.
  * 
- * @param prioridade: 0 < prioridade < MAX_PRIORIDADE
- * @returns: Apontador para a tarefa criada ou NULL em caso de erro.
+ * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
  */
-int ListaTarefas_adicionaTarefa(ListaTarefas_t *listaTarefas, int prioridade, int periodo, int stackSize, void* (*funcao)(void *));
+int ListaTarefas_adicionaTarefa(ListaTarefas_t *listaTarefas, int prioridade, int stackSize, void* (*funcao)(void *));
 
 
 /*
