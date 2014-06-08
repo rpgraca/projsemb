@@ -22,7 +22,7 @@
 
 int Disp_inicia()
 {
-
+	// (...)
 
 
 	return 0;
@@ -32,7 +32,7 @@ int Disp_inicia()
 
 int Disp_apaga()
 {
-
+	// (...)
 
 
 	return 0;
@@ -47,4 +47,7 @@ void Disp_Dispatch()
 	* pendentes e, caso haja, activa-a (aloca os recursos do sistema para a
 	* tarefa).
 	*/
+
+
+	// (...)
 }
