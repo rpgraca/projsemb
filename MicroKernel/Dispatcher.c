@@ -11,10 +11,13 @@
 
 
 #include "Dispatcher.h"
-
+#include "Context.h"
+#include "ListaTarefas.h"
+#include <avr/io.h>
 #include <stdio.h>
 
-
+char * stackptrAtual=NULL;
+extern ListaTarefas_t * listatarefas;
 
 /**************************************************************/
 /*                           FUNCOES                          */
@@ -40,14 +43,42 @@ uint8_t Disp_apaga()
 
 
 
-void Disp_Dispatch()
+void Disp_Dispatch()//  __attribute__((signal,naked))
 {
 	/*
 	* Verifica se existe alguma tarefa de maior prioridade com activacoes
 	* pendentes e, caso haja, activa-a (aloca os recursos do sistema para a
 	* tarefa).
 	*/
+	GUARDARCONTEXTO();
 
-
-	// (...)
+	uint8_t i,j;
+	static int16_t prioridadeAtual;
+	static Tarefa_t * tarefaAtual=NULL;
+	if(tarefaAtual==NULL)
+	{
+		prioridadeAtual=-1;
+	}
+	else
+	{
+		prioridadeAtual = tarefaAtual->prioridade;
+		tarefaAtual->stackPtr=stackptrAtual;
+	}
+	//for(i=listatarefas->nPrioridades-1;i>prioridadeAtual;i--)
+	for(i=listatarefas->nPrioridades-1;i>=0;i--)
+	{
+		for(j=0; j < listatarefas->prioridades[i]->nTarefas ; j++ )
+		{
+			if(listatarefas->prioridades[i]->tarefas[j]->nActivacoes > 0)
+			{
+				tarefaAtual = listatarefas->prioridades[i]->tarefas[j];
+				stackptrAtual = tarefaAtual->stackPtr;
+				prioridadeAtual=i;
+				RECUPERARCONTEXTO();
+				asm volatile("reti");
+			}
+		}
+	}
+	RECUPERARCONTEXTO();
+	asm volatile("reti");
 }

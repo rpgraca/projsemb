@@ -1,4 +1,6 @@
-#define SAVECONTEXT() {	asm volatile(	"push r0		\n\t "\
+extern char * stackptrAtual;
+extern void * (*funcAtual)(void *);
+#define GUARDARCONTEXTO() {	asm volatile(	"push r0		\n\t "\
 					"in r0, __SREG__	\n\t "\
 					"cli			\n\t "\
 					"push r0		\n\t "\
@@ -36,11 +38,11 @@
 					"push r31		\n\t "\
 					"in r28, __SP_L__	\n\t "\
 					"in r29, __SP_H__	\n\t "\
-					"sds r28, stackptr	\n\t "\
-					"sds r29, stackptr+1	\n\t "\
+					"sts stackptrAtual,r28	\n\t "\
+					"sts stackptrAtual+1,r29 	\n\t ");}
 
-#define RESTORECONTEXT() { asm volatile("lds R28,stackptr	\n\t	" \
-					"lds R29,stackptr+1	\n\t	" \
+#define RECUPERARCONTEXTO() { asm volatile("lds R28,stackptrAtual	\n\t	" \
+					"lds R29,stackptrAtual+1	\n\t	"\
 					"out __SP_L__,R28	\n\t	" \
 					"out __SP_H__,R29	\n\t	" \
 					"pop R31		\n\t	" \
@@ -76,5 +78,25 @@
 					"pop R1			\n\t	" \
 					"pop R0			\n\t	" \
 					"out __SREG__,r0	\n\t	" \
-					"pop R0			\n\t	"); 
+					"pop R0			\n\t	");}
+					
 
+#define CRIARCONTEXTO() { asm volatile("lds R28,stackptrAtual	\n\t	" \
+					"lds R29,stackptrAtual+1	\n\t	"\
+					"out __SP_L__,R28	\n\t	" \
+					"out __SP_H__,R29	\n\t	" \
+					"lds R0,funcAtual	\n\t" \
+					"push R0		\n\t	" \
+					"lds R0,funcAtual+1	\n\t	" \
+					"push R0		\n\t	" \
+					"clr R0		\n\t	" );}
+					
+#define GUARDARSTACKPTR() {	asm volatile("in r28, __SP_L__	\n\t "\
+					"in r29, __SP_H__	\n\t "\
+					"sts stackptrAtual,r28	\n\t "\
+					"sts stackptrAtual+1,r29 	\n\t ");}
+
+#define RECUPERARSTACKPTR() { asm volatile("lds R28,stackptrAtual	\n\t	" \
+					"lds R29,stackptrAtual+1	\n\t	"\
+					"out __SP_L__,R28	\n\t	" \
+					"out __SP_H__,R29	\n\t	");}

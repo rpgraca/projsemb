@@ -13,7 +13,8 @@
 
 #ifndef _LISTATAREFAS_H_
 #define _LISTATAREFAS_H_
-
+#include <avr/io.h>
+#include "Context.h"
 
 /**************************************************************/
 /*                         DEFINICOES                         */
@@ -91,5 +92,9 @@ int ListaTarefas_adicionaTarefa(ListaTarefas_t *listaTarefas, uint8_t prioridade
  */
 int ListaTarefas_removeTarefa(ListaTarefas_t *listaTarefas, Tarefa_t *tarefa);
 
+/*
+ * Inicializa tarefa 
+ */
+void funcInit(Tarefa_t tarefa);
 
 #endif
