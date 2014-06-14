@@ -21,7 +21,7 @@
 /*                           FUNCOES                          */
 /**************************************************************/
 
-uint8_t Sched_inicia()
+int8_t Sched_inicia()
 {
 	// Inicializa o escalonador
 	scheduler = (Scheduler_t*) malloc(sizeof(Scheduler_t));
@@ -40,7 +40,7 @@ uint8_t Sched_inicia()
 
 
 
-uint8_t Sched_apaga()
+int8_t Sched_apaga()
 {
 	uint8_t resultado;
 	
@@ -55,7 +55,7 @@ uint8_t Sched_apaga()
 
 
 
-uint8_t Sched_adicionaTarefa(uint8_t prioridade, uint16_t stackSize, void* (*funcao)(void *))
+int8_t Sched_adicionaTarefa(uint8_t prioridade, uint16_t stackSize, void* (*funcao)(void *))
 {
 	uint8_t resultado;
 	
@@ -66,7 +66,7 @@ uint8_t Sched_adicionaTarefa(uint8_t prioridade, uint16_t stackSize, void* (*fun
 
 
 
-uint8_t Sched_eliminaTarefa(Tarefa_t *tarefa)
+int8_t Sched_eliminaTarefa(Tarefa_t *tarefa)
 {
 	uint8_t resultado;
 	

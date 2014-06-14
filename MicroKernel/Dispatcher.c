@@ -64,8 +64,8 @@ void Disp_Dispatch()//  __attribute__((signal,naked))
 		prioridadeAtual = tarefaAtual->prioridade;
 		tarefaAtual->stackPtr=stackptrAtual;
 	}
-	//for(i=listatarefas->nPrioridades-1;i>prioridadeAtual;i--)
-	for(i=listatarefas->nPrioridades-1;i>=0;i--)
+	// IMPORTANTE: Falta fazer clear à prioridade atual quando uma tarefa termina
+	for(i=listatarefas->nPrioridades-1; i > System_Ceiling() && i > prioridadeAtual ; i--)
 	{
 		for(j=0; j < listatarefas->prioridades[i]->nTarefas ; j++ )
 		{

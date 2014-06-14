@@ -20,11 +20,11 @@
 /*                 FUNCOES AUXLIARES - PROTOTIPOS             */
 /**************************************************************/
 Tarefa_t* Tarefa_cria(uint8_t prioridade, uint16_t stackSize, void* (*funcao)(void *));
-uint8_t Tarefa_apaga(Tarefa_t *tarefa);
+int8_t Tarefa_apaga(Tarefa_t *tarefa);
 TarefasPrioridade_t* TarefasPrioridade_cria();
-uint8_t TarefasPrioridade_apaga(TarefasPrioridade_t* tarefasPrioridade);
-uint8_t TarefasPrioridade_adicionaTarefa(TarefasPrioridade_t* tarefasPrioridade, uint8_t prioridade, uint16_t stackSize, void* (*funcao)(void *));
-uint8_t TarefasPrioridade_removeTarefa(TarefasPrioridade_t* tarefasPrioridade, Tarefa_t *tarefa);
+int8_t TarefasPrioridade_apaga(TarefasPrioridade_t* tarefasPrioridade);
+int8_t TarefasPrioridade_adicionaTarefa(TarefasPrioridade_t* tarefasPrioridade, uint8_t prioridade, uint16_t stackSize, void* (*funcao)(void *));
+int8_t TarefasPrioridade_removeTarefa(TarefasPrioridade_t* tarefasPrioridade, Tarefa_t *tarefa);
 
 
 void * (*funcAtual)(void*);
@@ -133,7 +133,7 @@ TarefasPrioridade_t* TarefasPrioridade_cria()
  *
  * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
  */
-uint8_t TarefasPrioridade_apaga(TarefasPrioridade_t* tarefasPrioridade)
+int8_t TarefasPrioridade_apaga(TarefasPrioridade_t* tarefasPrioridade)
 {
 	uint8_t i, resultado;
 
@@ -166,7 +166,7 @@ uint8_t TarefasPrioridade_apaga(TarefasPrioridade_t* tarefasPrioridade)
  *
  * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
  */
-uint8_t TarefasPrioridade_adicionaTarefa(TarefasPrioridade_t* tarefasPrioridade, uint8_t prioridade, uint16_t stackSize, void* (*funcao)(void *))
+int8_t TarefasPrioridade_adicionaTarefa(TarefasPrioridade_t* tarefasPrioridade, uint8_t prioridade, uint16_t stackSize, void* (*funcao)(void *))
 {
 	Tarefa_t *tarefa;
 
@@ -203,7 +203,7 @@ uint8_t TarefasPrioridade_adicionaTarefa(TarefasPrioridade_t* tarefasPrioridade,
  *
  * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
  */
-uint8_t TarefasPrioridade_removeTarefa(TarefasPrioridade_t* tarefasPrioridade, Tarefa_t *tarefa)
+int8_t TarefasPrioridade_removeTarefa(TarefasPrioridade_t* tarefasPrioridade, Tarefa_t *tarefa)
 {
 	uint8_t i, j, resultado;
 
@@ -304,7 +304,7 @@ ListaTarefas_t* ListaTarefas_cria(uint8_t nPrioridades)
 
 
 
-int ListaTarefas_apaga(ListaTarefas_t *listaTarefas)
+int8_t ListaTarefas_apaga(ListaTarefas_t *listaTarefas)
 {
 	uint8_t i, resultado;
 
@@ -336,7 +336,7 @@ int ListaTarefas_apaga(ListaTarefas_t *listaTarefas)
 
 
 
-int ListaTarefas_adicionaTarefa(ListaTarefas_t *listaTarefas, uint8_t prioridade, uint16_t stackSize, void* (*funcao)(void *))
+int8_t ListaTarefas_adicionaTarefa(ListaTarefas_t *listaTarefas, uint8_t prioridade, uint16_t stackSize, void* (*funcao)(void *))
 {
 	uint8_t resultado;
 
@@ -353,7 +353,7 @@ int ListaTarefas_adicionaTarefa(ListaTarefas_t *listaTarefas, uint8_t prioridade
 
 
 
-int ListaTarefas_removeTarefa(ListaTarefas_t *listaTarefas, Tarefa_t *tarefa)
+int8_t ListaTarefas_removeTarefa(ListaTarefas_t *listaTarefas, Tarefa_t *tarefa)
 {
 	uint8_t resultado;
 	

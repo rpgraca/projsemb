@@ -6,55 +6,32 @@
 /* Rui Pedro Zenhas Graca					201004124                                    */
 /* Tiago dos Santos Maia Costa				200601289                                    */
 /*****************************************************************************************/
-/*                                     Lista de Tarefas                                  */
+/*                            Semáforos (Stack Resource Protocol)                        */
 /*****************************************************************************************/
 
 
+#ifndef _SEMAFORO_H_
+#define _SEMAFORO_H_
 
-#ifndef _LISTATAREFAS_H_
-#define _LISTATAREFAS_H_
-#include <avr/io.h>
-#include "Context.h"
+
+
 
 /**************************************************************/
 /*                         DEFINICOES                         */
 /**************************************************************/
-#define N_REGISTOS_CPU	32			// Numero de registos do CPU
-
+#define LOCKED		1
+#define UNLOCKED	0
 
 
 /**************************************************************/
 /*                          ESTRUTURA                         */
 /**************************************************************/
 
-// Estrutura de uma tarefa
 typedef struct
 {
-	uint8_t prioridade;
-	uint16_t stackSize;
-	
-	uint8_t nActivacoes;
-	
-	void* (*funcao)(void *);
-	char *stackPtr;				// Apontador para a sua stack
-} Tarefa_t;
-
-
-// Vector com as tarefas da mesma prioridade
-typedef struct
-{
-	Tarefa_t **tarefas;			// Vector de apontadores para tarefas
-	uint8_t nTarefas;
-} TarefasPrioridade_t;
-
-
-// Conjunto de todas as tarefas
-typedef struct
-{
-	TarefasPrioridade_t **prioridades;
-	uint8_t nPrioridades;
-} ListaTarefas_t;
-
+	uint8_t ceiling;
+	uint8_t estado;
+} Semaforo_t;
 
 
 /**************************************************************/
@@ -62,39 +39,31 @@ typedef struct
 /**************************************************************/
 
 /*
- * Cria uma lista de tarefas.
- * 
- * @return: Apontador para a lista de tarefas criada ou NULL em caso de erro.
- */
-ListaTarefas_t* ListaTarefas_cria(uint8_t nPrioridades);
-
-
-/*
- * Apaga toda a lista de tarefas, libertando toda a memoria alocada.
- * 
+ * Incializa um semáforo.
+ *
  * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
  */
-int8_t ListaTarefas_apaga(ListaTarefas_t *listaTarefas);
-
+uint_8 Semaforo_init(Semaforo_t semaforo, uint8_t ceiling);
 
 /*
- * Adiciona uma tarefa a lista de tarefas.
- * 
+ * Tranca um semáforo.
+ *
+ */
+void Semaforo_lock(Semaforo_t* semaforo);
+
+/*
+ * Liberta um semáforo.
+ *
  * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
  */
-int8_t ListaTarefas_adicionaTarefa(ListaTarefas_t *listaTarefas, uint8_t prioridade, uint16_t stackSize, void* (*funcao)(void *));
-
-
-/*
- * Remove uma tarefa da lista de tarefas.
- * 
- * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
- */
-int8_t ListaTarefas_removeTarefa(ListaTarefas_t *listaTarefas, Tarefa_t *tarefa);
+void Semaforo_unlock(Semaforo_t* semaforo);
 
 /*
- * Inicializa tarefa 
+ * Lê valor no topo da stack (ceiling do sistema)
+ *
+ * @return: ceiling atual do sistema
  */
-void funcInit(Tarefa_t tarefa);
+uint8_t System_Ceiling();
+
 
 #endif

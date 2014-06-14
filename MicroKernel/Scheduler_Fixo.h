@@ -62,14 +62,14 @@ Scheduler_t *scheduler;		// Apontador para o scheduler
  *
  * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
  */
-uint8_t Sched_inicia();
+int8_t Sched_inicia();
 
 /*
  * Apaga o escalonador, libertando toda a memoria alocada.
  * 
  * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
  */
-uint8_t Sched_apaga();
+int8_t Sched_apaga();
 
 
 /*
@@ -77,7 +77,7 @@ uint8_t Sched_apaga();
  *
  * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
  */
-uint8_t Sched_adicionaTarefa(uint8_t prioridade, uint16_t stackSize, void* (*funcao)(void *));
+int8_t Sched_adicionaTarefa(uint8_t prioridade, uint16_t stackSize, void* (*funcao)(void *));
 
 
 /*
@@ -85,7 +85,7 @@ uint8_t Sched_adicionaTarefa(uint8_t prioridade, uint16_t stackSize, void* (*fun
  * 
  * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
  */
-uint8_t Sched_eliminaTarefa(Tarefa_t *tarefa);
+int8_t Sched_eliminaTarefa(Tarefa_t *tarefa);
 
 
 
