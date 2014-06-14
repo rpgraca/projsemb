@@ -123,6 +123,10 @@ void Semaforo_lock(Semaforo_t* semaforo)
 	{
 		Stack_Push(semaforo->ceiling);
 	}
+	else
+	{
+		Stack_Push(System_Ceiling());
+	}
 	sei();
 }
 /*
@@ -133,10 +137,7 @@ void Semaforo_unlock(Semaforo_t* semaforo)
 {
 	cli();
 	semaforo->estado = UNLOCKED;
-	if(semaforo->ceiling == System_Ceiling())
-	{
-		Stack_Pop();
-	}
+	Stack_Pop();
 	sei();
 }
 
