@@ -20,19 +20,9 @@ int8_t Stack_Pop();
 /**************************************************************/
 /*                      VARIAVEIS GLOBAIS                     */
 /**************************************************************/
-Stack_t* ceilingStack = NULL;
-
-
-/**************************************************************/
-/*						ESTRUTURA  (ceilingStack)			  */
-/**************************************************************/
-
-typedef struct
-{
-	uint8_t* stack;
-	uint8_t size;
-	uint8_t maxsize;
-} Stack_t;
+uint8_t* ceilingStack = NULL;
+uint8_t stackSize=0;
+uint8_t stackMaxsize=0;
 
 /**************************************************************/
 /*                           FUNCOES                          */
@@ -60,19 +50,8 @@ int8_t Semaforo_init(Semaforo_t* semaforo, uint8_t ceiling)
 		return -1;
 	}	
 
-	// ceilingStack tem sempre um tamanho máximo igual ao número de semáforos no sistema
-	if(ceilingStack == NULL)
-	{
-		ceilingStack = (Stack_t*) malloc(sizeof(Stack_t));
-		ceilingStack->size=0;
-		ceilingStack->maxsize=1;
-		ceilingStack->stack = (uint8_t*) malloc(sizeof(uint8_t));
-	}
-	else
-	{
-		ceilingStack->maxsize++;
-		ceilingStack->stack = (uint8_t*) malloc(ceilingStack->stack,  (ceilingStack->maxsize) * sizeof(uint8_t));
-	}
+	stackMaxsize++;
+	ceilingStack = (uint8_t*) realloc(ceilingStack,  stackMaxsize * sizeof(uint8_t));
 
 	if (ceilingStack == NULL)
 	{
@@ -114,7 +93,15 @@ int8_t Semaforo_apaga(Semaforo_t* semaforo)
 		return -1;
 	}
 
-	ceilingStack->maxsize--;	
+	stackMaxsize--;
+	if(stackMaxsize == 0)
+	{
+		free(ceilingStack);
+	}	
+	else
+	{
+		ceilingStack = (uint8_t*) realloc(ceilingStack,  stackMaxsize * sizeof(uint8_t));
+	}
 
 
 	// Apaga a estrutura
@@ -155,28 +142,24 @@ void Semaforo_unlock(Semaforo_t* semaforo)
 
 int8_t Stack_Push(uint8_t var)
 {
-	if(ceilingStack->size == ceilingStack->maxsize)
+	if(stackSize == stackMaxsize)
 	{
 		return -1;
 	}
 	
-	ceilingStack->stack[ceilingStack->size] = var;
-	ceilingStack->size++;
+	ceilingStack[stackSize] = var;
+	stackSize++;
 	return 0;
 }
 
-int8_t Stack_Pop(Stack_t stack)
+int8_t Stack_Pop()
 {
-	if(ceilingStack == NULL)
-	{
-		return -1;
-	}
-	if(ceilingStack->size == 0)
+	if(stackSize == 0)
 	{
 		return -2;
 	}
-	ceilingStack->size--;
-	return ceilingStack[ceilingStack->size];
+	stackSize--;
+	return ceilingStack[stackSize];
 }
 
 /*
@@ -186,14 +169,10 @@ int8_t Stack_Pop(Stack_t stack)
  */
 uint8_t System_Ceiling()
 {
-	if(ceilingStack == NULL)
+	if(stackSize == 0)
 	{
 		return -1;
 	}
-	if(ceilingStack->size == 0)
-	{
-		return -1;
-	}
-	return ceilingStack->stack[ceilingStack->size - 1];
+	return ceilingStack[stackSize - 1];
 }
 
