@@ -43,7 +43,7 @@
 *
 * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
 */
-//uint8_t Disp_apaga();
+//uint8_t Disp_termina();
 
 
 /*
@@ -51,7 +51,7 @@
  * pendentes e, caso haja, activa-a (aloca os recursos do sistema para a
  * tarefa).
  */
-void Disp_Dispatch() __attribute__((naked,signal));
+void Disp_dispatch() __attribute__((naked,signal));
 
 
 

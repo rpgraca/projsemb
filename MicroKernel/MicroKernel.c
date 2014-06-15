@@ -15,13 +15,40 @@
 
 
 
-uint8_t UK_inicializa()
+
+/**************************************************************/
+/*                  INTERRUPT HANDLER DO TIMER                */
+/**************************************************************/
+
+ISR(TIMER1_COMPA_vect)
 {
-	uint8_t resultado = 0;
+	// Actualiza os timers
+
+	// NAO ESQUECER QUE SE OS TIMERS CHEGAREM AO FIM TEM DE NOTIFICAR AS TAREFAS
+	// A ESPERA E FAZER UM RESET.
+
+
+
+	//Sched_Schedule();
+	//Disp_Dispatch();
+}
+
+
+
+
+
+/**************************************************************/
+/*                           FUNCOES                          */
+/**************************************************************/
+
+int8_t UK_inicializa()
+{
+	int8_t resultado = 0;
 	
 	
 	resultado += Sched_inicia();
-	resultado += Disp_inicia();
+	//resultado += Disp_inicia();
+	resultado += Timers_inicia();
 	
 	//////////////////////////
 	//////////////////////////
@@ -37,14 +64,15 @@ uint8_t UK_inicializa()
 }
 
 
-uint8_t UK_termina()
+int8_t UK_termina()
 {
-	uint8_t resultado = 0;
+	int8_t resultado = 0;
 	
 	
 	resultado += Sched_apaga();
-	resultado += Disp_apaga();
-	
+	//resultado += Disp_apaga();
+	resultado += Timers_apaga();
+
 	//////////////////////////
 	//////////////////////////
 	//////////////////////////

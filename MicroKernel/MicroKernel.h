@@ -18,6 +18,7 @@
 
 #include "Scheduler_Fixo.h"
 #include "Dispatcher.h"
+#include "Timers.h"
 
 
 //////////////////////////
@@ -32,6 +33,14 @@
 
 
 
+/**************************************************************/
+/*                      VARIAVEIS GLOBAIS                     */
+/**************************************************************/
+
+Scheduler_t *scheduler;		// Apontador para o scheduler
+VectorTimers_t vecTimers;	// Vector dos timers criados
+
+
 
 /**************************************************************/
 /*                           FUNCOES                          */
@@ -42,7 +51,7 @@
  * 
  * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
  */
-uint8_t UK_inicializa();
+int8_t UK_inicializa();
 
 
 /*
@@ -50,7 +59,9 @@ uint8_t UK_inicializa();
  * 
  * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
  */
-uint8_t UK_termina();
+int8_t UK_termina();
+
+
 
 
 #endif

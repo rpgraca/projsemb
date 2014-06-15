@@ -13,8 +13,11 @@
 
 #ifndef _LISTATAREFAS_H_
 #define _LISTATAREFAS_H_
+
 #include <avr/io.h>
 #include "Context.h"
+
+
 
 /**************************************************************/
 /*                         DEFINICOES                         */
@@ -33,7 +36,7 @@ typedef struct
 	uint8_t prioridade;
 	uint16_t stackSize;
 	
-	uint8_t nActivacoes;
+	uint8_t activada;			// Flag que indica que a tarefa esta activa
 	
 	void* (*funcao)(void *);
 	char *stackPtr;				// Apontador para a sua stack
@@ -60,6 +63,29 @@ typedef struct
 /**************************************************************/
 /*                           FUNCOES                          */
 /**************************************************************/
+
+
+// --- TAREFAS --- //
+
+/*
+ * Activa uma tarefa.
+ *
+ * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
+ */
+int8_t Tarefa_activaTarefa(Tarefa_t *tarefa);
+
+
+/*
+* Desactiva uma tarefa.
+*
+* @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
+*/
+int8_t Tarefa_desactivaTarefa(Tarefa_t *tarefa);
+
+
+
+// --- LISTA DE TAREFAS --- //
+
 
 /*
  * Cria uma lista de tarefas.
@@ -91,6 +117,7 @@ int8_t ListaTarefas_adicionaTarefa(ListaTarefas_t *listaTarefas, uint8_t priorid
  * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
  */
 int8_t ListaTarefas_removeTarefa(ListaTarefas_t *listaTarefas, Tarefa_t *tarefa);
+
 
 /*
  * Inicializa tarefa 

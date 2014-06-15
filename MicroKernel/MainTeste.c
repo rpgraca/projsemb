@@ -54,7 +54,7 @@ int main(void)
 	ListaTarefas_adicionaTarefa(listatarefas,1,100,funcA);
 	ListaTarefas_adicionaTarefa(listatarefas,2,100,funcB);
 	listatarefas->prioridades[1]->tarefas[0]->nActivacoes = 1;
-	Disp_Dispatch();
+	Disp_dispatch();
 	
     while(1)
     {

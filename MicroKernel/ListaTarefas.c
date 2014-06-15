@@ -11,7 +11,8 @@
 
 
 #include "ListaTarefas.h"
-#include<avr/io.h>
+
+#include <avr/io.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -30,6 +31,8 @@ int8_t TarefasPrioridade_removeTarefa(TarefasPrioridade_t* tarefasPrioridade, Ta
 void * (*funcAtual)(void*);
 extern char *stackptrAtual;
 char * stackptrBak;
+
+
 /**************************************************************/
 /*                  FUNCOES AUXLIARES - Tarefa_t              */
 /**************************************************************/
@@ -55,12 +58,13 @@ Tarefa_t* Tarefa_cria(uint8_t prioridade, uint16_t stackSize, void* (*funcao)(vo
 	tarefa->prioridade = prioridade;
 	tarefa->stackSize = stackSize;
 	tarefa->funcao = funcao;
-	tarefa->nActivacoes = 0;
+	tarefa->activada = 0;
 	tarefa->stackPtr = ((char*) tarefa) + stackSize;
 	
 	
+	// Cria o contexto da tarefa
 	GUARDARSTACKPTR();
-	stackptrBak=stackptrAtual;
+	stackptrBak = stackptrAtual;
 	stackptrAtual = tarefa->stackPtr;
 	funcAtual = tarefa->funcao;	
 	CRIARCONTEXTO();
@@ -68,6 +72,7 @@ Tarefa_t* Tarefa_cria(uint8_t prioridade, uint16_t stackSize, void* (*funcao)(vo
 	GUARDARCONTEXTO();
 	GUARDARSTACKPTR();
 	
+
 	// Troca Bak e Atual
 	stackptrBak = (char *) ((uint16_t) stackptrAtual ^ (uint16_t) stackptrBak);
 	stackptrAtual = (char *) ((uint16_t) stackptrAtual ^ (uint16_t) stackptrBak);
@@ -76,6 +81,7 @@ Tarefa_t* Tarefa_cria(uint8_t prioridade, uint16_t stackSize, void* (*funcao)(vo
 	RECUPERARSTACKPTR();
 	tarefa->stackPtr = stackptrBak;
 	
+
 	return tarefa;
 }
 
@@ -135,7 +141,7 @@ TarefasPrioridade_t* TarefasPrioridade_cria()
  */
 int8_t TarefasPrioridade_apaga(TarefasPrioridade_t* tarefasPrioridade)
 {
-	uint8_t i, resultado;
+	int8_t i, resultado;
 
 
 	// Verificacao dos parametros passados a funcao
@@ -205,7 +211,7 @@ int8_t TarefasPrioridade_adicionaTarefa(TarefasPrioridade_t* tarefasPrioridade, 
  */
 int8_t TarefasPrioridade_removeTarefa(TarefasPrioridade_t* tarefasPrioridade, Tarefa_t *tarefa)
 {
-	uint8_t i, j, resultado;
+	int8_t i, j, resultado;
 
 
 	// Verificacao dos parametros passados a funcao
@@ -223,7 +229,7 @@ int8_t TarefasPrioridade_removeTarefa(TarefasPrioridade_t* tarefasPrioridade, Ta
 			if (resultado < 0)
 				return -2;
 			
-			// Copia as tarefas para o início do vector para deixar o espaco vazio no fim do vector
+			// Copia as tarefas para o inicio do vector para deixar o espaco vazio no fim do vector
 			for (j = i; j < tarefasPrioridade->nTarefas - 1; j++)
 				tarefasPrioridade->tarefas[j] = tarefasPrioridade->tarefas[j + 1];
 
@@ -237,7 +243,7 @@ int8_t TarefasPrioridade_removeTarefa(TarefasPrioridade_t* tarefasPrioridade, Ta
 			tarefasPrioridade->nTarefas--;
 
 
-			return resultado;
+			return 0;
 		}
 
 	}
@@ -255,6 +261,36 @@ int8_t TarefasPrioridade_removeTarefa(TarefasPrioridade_t* tarefasPrioridade, Ta
 /**************************************************************/
 /*                           FUNCOES                          */
 /**************************************************************/
+
+int8_t Tarefa_activaTarefa(Tarefa_t *tarefa)
+{
+	// Verificacao dos parametros passados a funcao
+	if (tarefa == NULL)
+		return -1;
+
+	tarefa->activada = 1;
+
+	return 0;
+}
+
+
+
+int8_t Tarefa_desactivaTarefa(Tarefa_t *tarefa)
+{
+	// Verificacao dos parametros passados a funcao
+	if (tarefa == NULL)
+		return -1;
+
+	tarefa->activada = 0;
+
+	return 0;
+}
+
+
+
+
+
+
 
 ListaTarefas_t* ListaTarefas_cria(uint8_t nPrioridades)
 {
@@ -306,7 +342,7 @@ ListaTarefas_t* ListaTarefas_cria(uint8_t nPrioridades)
 
 int8_t ListaTarefas_apaga(ListaTarefas_t *listaTarefas)
 {
-	uint8_t i, resultado;
+	int8_t i, resultado;
 
 
 	// Verificacao dos parametros passados a funcao
@@ -327,7 +363,7 @@ int8_t ListaTarefas_apaga(ListaTarefas_t *listaTarefas)
 	}
 
 
-	free(listaTarefas->prioridades);
+	//free(listaTarefas->prioridades);		// Comentado, porque a funcao "TarefasPrioridade_apaga()" ja apaga a memoria
 	free(listaTarefas);
 	
 	
@@ -338,11 +374,11 @@ int8_t ListaTarefas_apaga(ListaTarefas_t *listaTarefas)
 
 int8_t ListaTarefas_adicionaTarefa(ListaTarefas_t *listaTarefas, uint8_t prioridade, uint16_t stackSize, void* (*funcao)(void *))
 {
-	uint8_t resultado;
+	int8_t resultado;
 
 
 	// Verificacao dos parametros passados a funcao
-	if ((listaTarefas == NULL) || (prioridade < 0 || prioridade >= listaTarefas->nPrioridades) )
+	if ((listaTarefas == NULL) || (prioridade < 0 || prioridade >= listaTarefas->nPrioridades) || (stackSize <= 0) || (funcao == NULL) )
 		return -1;
 
 	resultado = TarefasPrioridade_adicionaTarefa(listaTarefas->prioridades[prioridade], prioridade, stackSize, funcao);
@@ -355,7 +391,7 @@ int8_t ListaTarefas_adicionaTarefa(ListaTarefas_t *listaTarefas, uint8_t priorid
 
 int8_t ListaTarefas_removeTarefa(ListaTarefas_t *listaTarefas, Tarefa_t *tarefa)
 {
-	uint8_t resultado;
+	int8_t resultado;
 	
 	
 	// Verificacao dos parametros passados a funcao

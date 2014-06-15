@@ -13,17 +13,24 @@
 #include "Dispatcher.h"
 #include "Context.h"
 #include "ListaTarefas.h"
+
 #include <avr/io.h>
 #include <stdio.h>
 
+
+
+
 char * stackptrAtual=NULL;
 extern ListaTarefas_t * listatarefas;
+
+
 
 /**************************************************************/
 /*                           FUNCOES                          */
 /**************************************************************/
 
-uint8_t Disp_inicia()
+/*
+int8_t Disp_inicia()
 {
 	// (...)
 
@@ -33,23 +40,20 @@ uint8_t Disp_inicia()
 
 
 
-uint8_t Disp_apaga()
+int8_t Disp_termina()
 {
 	// (...)
 
 
 	return 0;
 }
+*/
 
 
 
-void Disp_Dispatch()//  __attribute__((signal,naked))
+
+void Disp_dispatch()//  __attribute__((signal,naked))
 {
-	/*
-	* Verifica se existe alguma tarefa de maior prioridade com activacoes
-	* pendentes e, caso haja, activa-a (aloca os recursos do sistema para a
-	* tarefa).
-	*/
 	GUARDARCONTEXTO();
 
 	uint8_t i,j;

@@ -15,6 +15,7 @@
 
 
 #include "ListaTarefas.h"
+//#include "Timers.h"
 
 
 /**************************************************************/
@@ -49,7 +50,7 @@ typedef struct
 /**************************************************************/
 /*                      VARIAVEIS GLOBAIS                     */
 /**************************************************************/
-Scheduler_t *scheduler;		// Apontador para o scheduler
+extern Scheduler_t *scheduler;		// Apontador para o scheduler
 
 
 
@@ -65,11 +66,11 @@ Scheduler_t *scheduler;		// Apontador para o scheduler
 int8_t Sched_inicia();
 
 /*
- * Apaga o escalonador, libertando toda a memoria alocada.
+ * Termina o escalonador, libertando toda a memoria alocada.
  * 
  * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
  */
-int8_t Sched_apaga();
+int8_t Sched_termina();
 
 
 /*
@@ -90,10 +91,11 @@ int8_t Sched_eliminaTarefa(Tarefa_t *tarefa);
 
 
 /*
- * 
- * 
+ * Verifica os temporizadores relativos a periodização das tarefas do scheduler
+ * e, caso algum temporizador tenha terminado, e incrementado o contador de activacoes
+ * da respectiva tarefa.
  */
-void Sched_Schedule();
+void Sched_schedule();
 
 
 

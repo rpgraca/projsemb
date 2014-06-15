@@ -40,7 +40,7 @@ int8_t Sched_inicia()
 
 
 
-int8_t Sched_apaga()
+int8_t Sched_termina()
 {
 	uint8_t resultado;
 	
