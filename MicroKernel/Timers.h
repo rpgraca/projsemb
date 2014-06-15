@@ -137,4 +137,13 @@ int8_t Timers_timerTerminado(Timer_t *timer);
 
 
 
+/*
+ * Suspende a tarefa por um periodo estabelecido.
+ *
+ * @param periodo: Periodo de suspensao da tarefa (em mili-segundos).
+ * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
+ */
+int8_t Timers_sleep(Tarefa_t *tarefa, uint16_t periodo);
+
+
 #endif

@@ -17,12 +17,16 @@
 int8_t Stack_Push(uint8_t var);
 int8_t Stack_Pop();
 
+
+
 /**************************************************************/
 /*                      VARIAVEIS GLOBAIS                     */
 /**************************************************************/
 uint8_t* ceilingStack = NULL;
 uint8_t stackSize=0;
 uint8_t stackMaxsize=0;
+
+
 
 /**************************************************************/
 /*                           FUNCOES                          */

@@ -256,3 +256,35 @@ int8_t Timers_timerTerminado(Timer_t *timer)
 
 	return (timer->tActual >= timer->periodo);
 }
+
+
+
+int8_t Timers_sleep(Tarefa_t *tarefa, uint16_t periodo)
+{
+	int8_t resultado;
+	Timer_t *timer;
+
+
+	// Cria o timer
+	tarefa = Timers_criaTimer(tarefa, periodo);
+
+	if (tarefa == NULL)
+		return -1;
+
+
+	// Suspende a tarefa
+	resultado = Timers_esperaActivacao(timer);
+	if (resultado < 0)
+	{
+		Timers_apagaTimer(timer);
+
+		return -2;
+	}
+
+
+	// Apaga o timer
+	resultado = Timers_apagaTimer(timer);
+
+
+	return 0;
+}
