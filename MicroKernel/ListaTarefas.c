@@ -288,7 +288,15 @@ int8_t Tarefa_desactivaTarefa(Tarefa_t *tarefa)
 
 
 
+char* Tarefa_apontadorTarefa(char *funcaoPtr)
+{
+	// Verificacao dos parametros passados a funcao
+	if (funcaoPtr == NULL)
+		return NULL;
 
+
+	return (funcaoPtr - sizeof(uint16_t) - 2 * sizeof(uint8_t));
+}
 
 
 

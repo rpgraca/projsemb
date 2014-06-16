@@ -34,9 +34,9 @@
 typedef struct
 {
 	uint8_t prioridade;
-	uint16_t stackSize;
-	
 	uint8_t activada;			// Flag que indica que a tarefa esta activa
+	
+	uint16_t stackSize;
 	
 	void* (*funcao)(void *);
 	char *stackPtr;				// Apontador para a sua stack
@@ -83,6 +83,14 @@ int8_t Tarefa_activaTarefa(Tarefa_t *tarefa);
 int8_t Tarefa_desactivaTarefa(Tarefa_t *tarefa);
 
 
+/*
+* Devolve o apontador da estrutura "Tarefa_t" que contem o membro "funcaoPtr".
+*
+* @return: Apontador da estrutura "Tarefa_t" ou NULL em caso de erro.
+*/
+char* Tarefa_apontadorTarefa(char *funcaoPtr);
+
+
 
 // --- LISTA DE TAREFAS --- //
 
@@ -119,9 +127,12 @@ int8_t ListaTarefas_adicionaTarefa(ListaTarefas_t *listaTarefas, uint8_t priorid
 int8_t ListaTarefas_removeTarefa(ListaTarefas_t *listaTarefas, Tarefa_t *tarefa);
 
 
+
 /*
  * Inicializa tarefa 
  */
 void funcInit(Tarefa_t tarefa);
+
+
 
 #endif
