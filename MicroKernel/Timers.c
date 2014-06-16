@@ -11,27 +11,6 @@
 
 
 
-
-///////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////
-//
-// FALTA VER COMO E QUE O APONTADOR DA TAREFA VAI SE PASSADO A FUNCAO
-//
-///////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-
-
-
-
-
-
-
-
 #include "Timers.h"
 
 #include <avr/io.h>
@@ -55,6 +34,8 @@ int8_t Timers_inicia()
 
 
 	/*
+	// Desactiva as interrupcoes
+	cli();
 
 	DDRB = (1<<LEDA) | (1<<LEDB);  // Define LED do arduino como saida (PORTB5)
 	OCR1A = (unsigned int) ((F_CPU/PRESCALAR)*CLOCKTIME);
@@ -79,7 +60,8 @@ int8_t Timers_inicia()
 	}
 	
 
-	sei();    // enable interrupts
+	// Activa as interrupcoes
+	sei();
 	*/
 
 	//////////////////////////////////////////////////////////////////////////////////////////
@@ -130,13 +112,13 @@ int8_t Timers_termina()
 
 
 
-Timer_t* Timers_criaTimer(Tarefa_t *tarefa, uint16_t periodo)
+Timer_t* Timers_criaTimer(uint16_t periodo)
 {
 	Timer_t *timer;
 
 
 	// Verificacao dos parametros passados a funcao
-	if ( (tarefa == NULL) || (periodo <= 0) )
+	if (periodo <= 0)
 		return NULL;
 
 
@@ -148,7 +130,7 @@ Timer_t* Timers_criaTimer(Tarefa_t *tarefa, uint16_t periodo)
 
 	timer->periodo = periodo;
 	timer->tActual = 0;
-	timer->tarefa = tarefa;
+	timer->tarefa = Tarefa_apontadorTarefa(funcAtual);
 
 
 	// Realocacao de memoria do vector
@@ -259,16 +241,16 @@ int8_t Timers_timerTerminado(Timer_t *timer)
 
 
 
-int8_t Timers_sleep(Tarefa_t *tarefa, uint16_t periodo)
+int8_t Timers_sleep(uint16_t periodo)
 {
 	int8_t resultado;
 	Timer_t *timer;
 
 
 	// Cria o timer
-	tarefa = Timers_criaTimer(tarefa, periodo);
+	timer = Timers_criaTimer(periodo);
 
-	if (tarefa == NULL)
+	if (timer == NULL)
 		return -1;
 
 
