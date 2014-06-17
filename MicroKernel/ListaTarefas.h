@@ -48,6 +48,7 @@ typedef struct
 {
 	Tarefa_t **tarefas;			// Vector de apontadores para tarefas
 	uint8_t nTarefas;
+	uint8_t ultimaTarefa;
 } TarefasPrioridade_t;
 
 

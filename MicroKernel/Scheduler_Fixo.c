@@ -106,25 +106,50 @@ void Sched_dispatch()//  __attribute__((signal,naked))
 
 	GUARDARCONTEXTO();
 
+	Tarefa_t * tarefaAtual = Tarefa_apontadorTarefa(funcAtual);
 	uint8_t i, j;
-	static int16_t prioridadeAtual;
-	static Tarefa_t * tarefaAtual = NULL;
+	int16_t prioridadeAtual;
+
 	if (tarefaAtual == NULL)
 	{
 		prioridadeAtual = -1;
 	}
+
 	else
 	{
-		prioridadeAtual = tarefaAtual->prioridade;
-		tarefaAtual->stackPtr = stackptrAtual;
+		if(tarefaAtual->nAtivacoes == 0)
+		{
+			prioridadeAtual = -1;
+			//COLOCAR STACKPOINTER NUM while(1) OU MANDAR CPU PARA POUPANCA DE ENERGIA CASO NAO HAJA ATIVACOES
+		}
+		else
+		{
+			prioridadeAtual = tarefaAtual->prioridade;
+			tarefaAtual->stackPtr = stackptrAtual;
+		}
 	}
-	// IMPORTANTE: Falta fazer clear a prioridade atual quando uma tarefa termina
+
 	for (i = listatarefas->nPrioridades - 1; i > System_Ceiling() && i > prioridadeAtual; i--)
 	{
-		for (j = 0; j < listatarefas->prioridades[i]->nTarefas; j++)
+		// Dois ciclos para verificar ativacoes de forma Round Robin
+		for (j = listatarefas->prioridades[i]->ultimaTarefa + 1; j < listatarefas->prioridades[i]->nTarefas; j++)
 		{
 			if (listatarefas->prioridades[i]->tarefas[j]->nActivacoes > 0)
 			{
+				listatarefas->prioridades[i]->ultimaTarefa=j;
+				tarefaAtual = listatarefas->prioridades[i]->tarefas[j];
+				stackptrAtual = tarefaAtual->stackPtr;
+				prioridadeAtual = i;
+				RECUPERARCONTEXTO();
+				asm volatile("reti");
+			}
+		}
+
+		for (j = 0; j <= listatarefas->prioridades[i]->ultimaTarefa; j++)
+		{
+			if (listatarefas->prioridades[i]->tarefas[j]->nActivacoes > 0)
+			{
+				listatarefas->prioridades[i]->ultimaTarefa=j;
 				tarefaAtual = listatarefas->prioridades[i]->tarefas[j];
 				stackptrAtual = tarefaAtual->stackPtr;
 				prioridadeAtual = i;

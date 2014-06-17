@@ -136,6 +136,7 @@ TarefasPrioridade_t* TarefasPrioridade_cria()
 	
 	tarefasPrioridade->tarefas = NULL;
 	tarefasPrioridade->nTarefas = 0;
+	tarefasPrioridade->ultimaTarefa = 0;
 
 
 	return tarefasPrioridade;
@@ -290,7 +291,7 @@ int8_t Tarefa_desactivaTarefa(Tarefa_t *tarefa)
 		return -1;
 
 	tarefa->activada = 0;
-
+	tarefaAtual=NULL;
 	return 0;
 }
 
