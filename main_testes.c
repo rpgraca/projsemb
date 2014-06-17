@@ -22,33 +22,54 @@
 
 void* funcA(void *arg)
 {
-	/*
-	static int i = 0;
+	Timer_t *timer = Timers_criaTimer(100);
 
-	i++;
-	
-	if (i == 100)
+	if (timer == NULL)
+		return NULL;
+
+
+	while (1)
 	{
-		PORTB ^= (1 << LEDA);
-		i = 0;
+		/////////////////////////
+		//
+		// FUNCAO DA TAREFA
+		// (...)
+		//
+		/////////////////////////
+
+
+
+		Timers_esperaActivacao(timer);
 	}
-	*/
 
 
 	return NULL;
 }
 
+
+
+
 void* funcB(void *arg)
 {
-	/*
-	static int i = 99;
-	i++;
-	if (i == 100)
+	Timer_t *timer = Timers_criaTimer(100);
+
+	if (timer == NULL)
+		return NULL;
+
+
+	while (1)
 	{
-		PORTB ^= (1 << LEDB);
-		i = 0;
+		/////////////////////////
+		//
+		// FUNCAO DA TAREFA
+		// (...)
+		//
+		/////////////////////////
+
+
+
+		Timers_esperaActivacao(timer);
 	}
-	*/
 
 	
 	return NULL;
@@ -73,21 +94,6 @@ void testes()
 	resultado = Sched_adicionaTarefa(1, 50, funcB);
 	if (resultado < 0)
 		return;
-
-
-
-
-
-	/*
-	resultado = Sched_removeTarefa();
-	if (resultado < 0)
-		return;
-
-
-	resultado = Sched_removeTarefa(1, 50, funcB);
-	if (resultado < 0)
-		return;
-	*/
 }
 
 
