@@ -124,7 +124,7 @@ Timer_t* Timers_criaTimer(uint16_t periodo)
 
 
 	// Cria o timer
-	timer = (Timer_t*)malloc(sizeof(Timer_t*));
+	timer = (Timer_t*)malloc(sizeof(Timer_t));
 	if (timer == NULL)
 		return NULL;
 
@@ -194,6 +194,52 @@ int8_t Timers_apagaTimer(Timer_t *timer)
 
 
 
+
+int8_t Timers_reiniciaTimer(Timer_t *timer)
+{
+
+
+
+	return 0;
+}
+
+
+
+
+void Timers_actualizaTimers()
+{
+	int8_t i, resultado;
+
+
+	for (i = 0; i < vecTimers.nTimers; i++)
+	{
+		// Incrementa o timer
+		vecTimers.timers[i]->tActual++;
+
+
+		// Verifica se o timer terminou.
+		// Caso tenha, activa a respectiva tarefa e reinicia o timer.
+		if (Timers_timerTerminado(vecTimers.timers[i]))
+		{
+			resultado = Timers_reiniciaTimer(vecTimers.timers[i]);
+
+			if (resultado < 0)
+				return -1;
+
+			resultado = Tarefa_activaTarefa(vecTimers.timers[i]->tarefa);
+
+			if (resultado < 0)
+				return -2;
+		}
+	}
+
+
+	return 0;
+}
+
+
+
+
 int8_t Timers_esperaActivacao(Timer_t *timer)
 {
 	int8_t resultado;
@@ -202,13 +248,6 @@ int8_t Timers_esperaActivacao(Timer_t *timer)
 	// Verificacao dos parametros passados a funcao
 	if (timer == NULL)
 		return -1;
-
-
-	// Limpa a flag de tarefa activa
-	resultado = Tarefa_desactivaTarefa(timer->tarefa);
-
-	if (resultado < 0)
-		return -2;
 
 
 
@@ -222,6 +261,17 @@ int8_t Timers_esperaActivacao(Timer_t *timer)
 		if (resultado < 0)
 			return -2;
 	}
+
+
+	// Limpa a flag de tarefa activa
+	resultado = Tarefa_desactivaTarefa(timer->tarefa);
+
+	if (resultado < 0)
+		return -2;
+
+
+	// Invoca o dispatcher para retirar esta tarefa de execucao e dar o CPU a outra tarefa
+	Disp_dispatch();
 
 
 

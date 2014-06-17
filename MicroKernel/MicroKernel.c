@@ -22,15 +22,9 @@
 
 ISR(TIMER1_COMPA_vect)
 {
-	// Actualiza os timers
-
-	// NAO ESQUECER QUE SE OS TIMERS CHEGAREM AO FIM TEM DE NOTIFICAR AS TAREFAS
-	// A ESPERA E FAZER UM RESET.
-
-
-
-	//Sched_Schedule();
-	//Disp_Dispatch();
+	Timers_actualizaTimers();
+	Sched_Schedule();
+	Disp_Dispatch();
 }
 
 

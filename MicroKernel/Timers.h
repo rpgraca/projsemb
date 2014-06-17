@@ -16,6 +16,7 @@
 
 #include "ListaTarefas.h"
 #include "Context.h"
+#include "Dispatcher.h"
 
 
 
@@ -96,6 +97,24 @@ Timer_t* Timers_criaTimer(uint16_t periodo);
 * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
 */
 int8_t Timers_apagaTimer(Timer_t *timer);
+
+
+
+
+/*
+* Reinicia um timer.
+*
+* @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
+*/
+int8_t Timers_reiniciaTimer(Timer_t *timer);
+
+
+
+/*
+ * Actualiza os timers em uma unidade.
+ * Caso os timers terminem, as respectivas tarefas sao activadas e o timer reiniciado.
+ */
+void Timers_actualizaTimers();
 
 
 
