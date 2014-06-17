@@ -197,8 +197,11 @@ int8_t Timers_apagaTimer(Timer_t *timer)
 
 int8_t Timers_reiniciaTimer(Timer_t *timer)
 {
+	// Verificacao dos parametros passados a funcao
+	if (timer == NULL)
+		return -1;
 
-
+	timer->tActual = 0;
 
 	return 0;
 }
