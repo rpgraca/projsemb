@@ -24,7 +24,7 @@ ISR(TIMER1_COMPA_vect)
 {
 	Timers_actualizaTimers();
 	Sched_Schedule();
-	Disp_Dispatch();
+	Sched_Dispatch();
 }
 
 
@@ -41,7 +41,6 @@ int8_t UK_inicializa()
 	
 	
 	resultado += Sched_inicia();
-	//resultado += Disp_inicia();
 	resultado += Timers_inicia();
 	
 	//////////////////////////
@@ -64,7 +63,6 @@ int8_t UK_termina()
 	
 	
 	resultado += Sched_apaga();
-	//resultado += Disp_apaga();
 	resultado += Timers_apaga();
 
 	//////////////////////////

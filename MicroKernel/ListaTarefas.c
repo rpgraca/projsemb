@@ -21,8 +21,9 @@
 /**************************************************************/
 /*                      VARIAVEIS GLOBAIS                     */
 /**************************************************************/
-void * (*funcAtual)(void*);
+extern void * (*funcAtual)(void*);
 extern char *stackptrAtual;
+
 char * stackptrBak;
 
 

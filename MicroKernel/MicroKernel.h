@@ -17,7 +17,6 @@
 
 
 #include "Scheduler_Fixo.h"
-#include "Dispatcher.h"
 #include "Timers.h"
 
 
@@ -39,6 +38,9 @@
 
 Scheduler_t *scheduler;		// Apontador para o scheduler
 VectorTimers_t vecTimers;	// Vector dos timers criados
+
+char *stackptrAtual;
+void * (*funcAtual)(void*);
 
 
 

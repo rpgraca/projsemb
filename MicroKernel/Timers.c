@@ -271,7 +271,7 @@ int8_t Timers_esperaActivacao(Timer_t *timer)
 
 
 	// Invoca o dispatcher para retirar esta tarefa de execucao e dar o CPU a outra tarefa
-	Disp_dispatch();
+	Sched_dispatch();
 
 
 
