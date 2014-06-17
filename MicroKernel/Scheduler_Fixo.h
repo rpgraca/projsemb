@@ -16,6 +16,7 @@
 
 #include "ListaTarefas.h"
 //#include "Timers.h"
+#include "Context.h"
 
 
 /**************************************************************/
@@ -51,6 +52,7 @@ typedef struct
 /*                      VARIAVEIS GLOBAIS                     */
 /**************************************************************/
 extern Scheduler_t *scheduler;		// Apontador para o scheduler
+
 
 
 
@@ -96,6 +98,16 @@ int8_t Sched_eliminaTarefa(Tarefa_t *tarefa);
  * da respectiva tarefa.
  */
 void Sched_schedule();
+
+
+
+
+/*
+* Verifica se existe alguma tarefa de maior prioridade com activacoes
+* pendentes e, caso haja, activa-a (aloca os recursos do sistema para a
+* tarefa).
+*/
+void Sched_dispatch() __attribute__((naked, signal));
 
 
 

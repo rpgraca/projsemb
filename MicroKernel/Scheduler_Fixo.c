@@ -12,8 +12,18 @@
 
 #include "Scheduler_Fixo.h"
 
+#include <avr/io.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+
+
+/**************************************************************/
+/*                      VARIAVEIS GLOBAIS                     */
+/**************************************************************/
+char *stackptrAtual;
+
+
 
 
 
@@ -34,6 +44,10 @@ int8_t Sched_inicia()
 	if (scheduler->tarefas == NULL)
 		return -1;
 	
+
+	// Inicializa as variaveis globais
+	stackptrAtual = NULL;
+
 
 	return 0;
 }
@@ -79,5 +93,46 @@ int8_t Sched_eliminaTarefa(Tarefa_t *tarefa)
 
 void Sched_Schedule()
 {
-	// (...)
+	// Nao faz nada, porque os timers ja implementam a activacao e desactivacao das tarefas. 
+}
+
+
+
+
+void Sched_dispatch()//  __attribute__((signal,naked))
+{
+	ListaTarefas_t *listatarefas = scheduler->tarefas;
+
+
+	GUARDARCONTEXTO();
+
+	uint8_t i, j;
+	static int16_t prioridadeAtual;
+	static Tarefa_t * tarefaAtual = NULL;
+	if (tarefaAtual == NULL)
+	{
+		prioridadeAtual = -1;
+	}
+	else
+	{
+		prioridadeAtual = tarefaAtual->prioridade;
+		tarefaAtual->stackPtr = stackptrAtual;
+	}
+	// IMPORTANTE: Falta fazer clear a prioridade atual quando uma tarefa termina
+	for (i = listatarefas->nPrioridades - 1; i > System_Ceiling() && i > prioridadeAtual; i--)
+	{
+		for (j = 0; j < listatarefas->prioridades[i]->nTarefas; j++)
+		{
+			if (listatarefas->prioridades[i]->tarefas[j]->nActivacoes > 0)
+			{
+				tarefaAtual = listatarefas->prioridades[i]->tarefas[j];
+				stackptrAtual = tarefaAtual->stackPtr;
+				prioridadeAtual = i;
+				RECUPERARCONTEXTO();
+				asm volatile("reti");
+			}
+		}
+	}
+	RECUPERARCONTEXTO();
+	asm volatile("reti");
 }

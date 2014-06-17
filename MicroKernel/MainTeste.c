@@ -4,7 +4,7 @@
  * Created: 11-06-2014 00:30:50
  *  Author: Rui Graça
  */ 
-#include "Dispatcher.h"
+#include "Scheduler.h"
 #include "ListaTarefas.h"
 
 #include <avr/io.h>
@@ -20,7 +20,7 @@ void * funcA(void * ptr)
 		if(x==5)
 		{
 			listatarefas->prioridades[2]->tarefas[0]->nActivacoes = 1;
-			Disp_Dispatch();
+			Sched_dispatch();
 		}
 	}
 	return 0x00;
@@ -34,7 +34,7 @@ void * funcB(void * ptr)
 	{
 		x--;
 		listatarefas->prioridades[2]->tarefas[0]->nActivacoes = 0;
-		Disp_Dispatch();
+		Sched_dispatch();
 	}
 	return 0x00;
 }
@@ -54,7 +54,7 @@ int main(void)
 	ListaTarefas_adicionaTarefa(listatarefas,1,100,funcA);
 	ListaTarefas_adicionaTarefa(listatarefas,2,100,funcB);
 	listatarefas->prioridades[1]->tarefas[0]->nActivacoes = 1;
-	Disp_dispatch();
+	Sched_dispatch();
 	
     while(1)
     {

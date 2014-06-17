@@ -17,6 +17,17 @@
 #include <stdlib.h>
 
 
+
+/**************************************************************/
+/*                      VARIAVEIS GLOBAIS                     */
+/**************************************************************/
+void * (*funcAtual)(void*);
+extern char *stackptrAtual;
+char * stackptrBak;
+
+
+
+
 /**************************************************************/
 /*                 FUNCOES AUXLIARES - PROTOTIPOS             */
 /**************************************************************/
@@ -27,10 +38,6 @@ int8_t TarefasPrioridade_apaga(TarefasPrioridade_t* tarefasPrioridade);
 int8_t TarefasPrioridade_adicionaTarefa(TarefasPrioridade_t* tarefasPrioridade, uint8_t prioridade, uint16_t stackSize, void* (*funcao)(void *));
 int8_t TarefasPrioridade_removeTarefa(TarefasPrioridade_t* tarefasPrioridade, Tarefa_t *tarefa);
 
-
-void * (*funcAtual)(void*);
-extern char *stackptrAtual;
-char * stackptrBak;
 
 
 /**************************************************************/
