@@ -19,60 +19,22 @@
 
 
 
+/**************************************************************/
+/*                      VARIAVEIS GLOBAIS                     */
+/**************************************************************/
+// Vector dos timers criados
+extern VectorTimers_t vecTimers;
 
 
 /**************************************************************/
 /*                           FUNCOES                          */
 /**************************************************************/
 
-int8_t Timers_inicia()
+/* int8_t Timers_inicia()
 {
-	// Configuracao do timer do microcontrolador
-
-
-	//////////////////////////////////////////////////////////////////////////////////////////
-
-
-	/*
-	// Desactiva as interrupcoes
-	cli();
-
-	DDRB = (1<<LEDA) | (1<<LEDB);  // Define LED do arduino como saida (PORTB5)
-	OCR1A = (unsigned int) ((F_CPU/PRESCALAR)*CLOCKTIME);
-
-	TCCR1B |= (1 << WGM12);  // Mode 4, CTC on OCR1A
-
-	TIMSK1 |= (1 << OCIE1A); //Set interrupt on compare match
-
-	// Iniciar timer com prescaler definido devidamente
-	switch(PRESCALAR)
-	{
-	case 1:		TCCR1B |= (1 << CS10);
-	break;
-	case 8:		TCCR1B |= (1 << CS11);
-	break;
-	case 16:	TCCR1B |= (1 << CS11) | (1 << CS10);
-	break;
-	case 256:	TCCR1B |= (1 << CS12);
-	break;
-	case 1024:	TCCR1B |= (1 << CS12) | (1 << CS10);
-	break;
-	}
-	
-
-	// Activa as interrupcoes
-	sei();
-	*/
-
-	//////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-
 	// Inicializa o vector de timers
 	vecTimers.timers = NULL;
 	vecTimers.nTimers = 0;
-
 
 	return 0;
 }
@@ -109,7 +71,7 @@ int8_t Timers_termina()
 
 	return 0;
 }
-
+*/
 
 
 Timer_t* Timers_criaTimer(uint16_t periodo)

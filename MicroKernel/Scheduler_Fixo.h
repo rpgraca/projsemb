@@ -33,7 +33,7 @@
 /**************************************************************/
 
 // Estrutura do escalonador
-typedef struct
+/*typedef struct
 {
 	ListaTarefas_t *tarefas;
 
@@ -45,13 +45,14 @@ typedef struct
 	/////////////////////
 
 } Scheduler_t;
-
+*/
 
 
 /**************************************************************/
 /*                      VARIAVEIS GLOBAIS                     */
 /**************************************************************/
-extern Scheduler_t *scheduler;		// Apontador para o scheduler
+//extern Scheduler_t *scheduler;		// Apontador para o scheduler
+extern ListaTarefas_t listatarefas;
 
 
 

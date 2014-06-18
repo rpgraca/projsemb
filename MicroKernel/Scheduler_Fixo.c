@@ -34,14 +34,10 @@ extern char *stackptrAtual;
 int8_t Sched_inicia()
 {
 	// Inicializa o escalonador
-	scheduler = (Scheduler_t*) malloc(sizeof(Scheduler_t));
-	if (scheduler == NULL)
-		return -1;
-	
 	
 	// Cria a lista de tarefas
-	scheduler->tarefas = ListaTarefas_cria(MAX_N_PRIORIDADES);
-	if (scheduler->tarefas == NULL)
+	listatarefas = ListaTarefas_cria(MAX_N_PRIORIDADES);
+	if (listatarefas == NULL)
 		return -1;
 	
 
@@ -60,9 +56,7 @@ int8_t Sched_termina()
 	
 	
 	// Apaga a lista de tarefas
-	resultado = ListaTarefas_apaga(scheduler->tarefas);
-	
-	free(scheduler);
+	resultado = ListaTarefas_apaga(listatarefas);
 	
 	return resultado;
 }
@@ -73,7 +67,7 @@ int8_t Sched_adicionaTarefa(uint8_t prioridade, uint16_t stackSize, void* (*func
 {
 	uint8_t resultado;
 	
-	resultado = ListaTarefas_adicionaTarefa(scheduler->tarefas, prioridade, stackSize, funcao);
+	resultado = ListaTarefas_adicionaTarefa(listatarefas, prioridade, stackSize, funcao);
 	
 	return resultado;
 }
@@ -84,7 +78,7 @@ int8_t Sched_eliminaTarefa(Tarefa_t *tarefa)
 {
 	uint8_t resultado;
 	
-	resultado = ListaTarefas_removeTarefa(scheduler->tarefas, tarefa);
+	resultado = ListaTarefas_removeTarefa(listatarefas, tarefa);
 	
 	return resultado;
 }
@@ -101,7 +95,7 @@ void Sched_Schedule()
 
 void Sched_dispatch()//  __attribute__((signal,naked))
 {
-	ListaTarefas_t *listatarefas = scheduler->tarefas;
+	//ListaTarefas_t *listatarefas = scheduler->tarefas;
 
 
 	GUARDARCONTEXTO();

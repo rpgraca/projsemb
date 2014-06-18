@@ -6,65 +6,27 @@
 /* Rui Pedro Zenhas Graca					201004124                                    */
 /* Tiago dos Santos Maia Costa				200601289                                    */
 /*****************************************************************************************/
-/*                                       Micro-Kernel                                    */
+/*                                        ATmega                                         */
 /*****************************************************************************************/
 
-
-
-#ifndef _MICROKERNEL_H_
-#define _MICROKERNEL_H_
-
-
-
-#include "Scheduler_Fixo.h"
-#include "Timers.h"
-
-
-//////////////////////////
-//////////////////////////
-//////////////////////////
-//
-// ACRESCENTAR OS INCLUDES DOS RESTANTES COMPONENTES
-//
-//////////////////////////
-//////////////////////////
-//////////////////////////
-
-
+#ifndef _ATMEGA_H_
+#define _ATMEGA_H_
 
 /**************************************************************/
-/*                      VARIAVEIS GLOBAIS                     */
+/*                         DEFINICOES                         */
 /**************************************************************/
 
-//Scheduler_t *scheduler;		// Apontador para o scheduler
-//VectorTimers_t vecTimers;	// Vector dos timers criados
-ListaTarefas_t * listatarefas;
-
-char *stackptrAtual;
-void * (*funcAtual)(void*);
-
-
+// Definicoes do timer do microcontrolador
+#define	CLOCKTIME	0.001	// Tempo de tick em segundos (= 1 ms)
+#define PRESCALAR	8
 
 /**************************************************************/
 /*                           FUNCOES                          */
 /**************************************************************/
 
 /*
- * Inicializa o micro-kernel.
- * 
- * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
+ * Inicia interrupção do tick
  */
-int8_t UK_inicializa();
-
-
-/*
- * Termina o micro-kernel.
- * 
- * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
- */
-int8_t UK_termina();
-
-
-
+void ATmega_iniciaTick();
 
 #endif

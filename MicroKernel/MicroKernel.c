@@ -39,10 +39,10 @@ int8_t UK_inicializa()
 {
 	int8_t resultado = 0;
 	
-	
+	ATmega_iniciaTick();	
 	resultado += Sched_inicia();
 	resultado += Timers_inicia();
-	
+	sei();	
 	//////////////////////////
 	//////////////////////////
 	//////////////////////////

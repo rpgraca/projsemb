@@ -24,11 +24,6 @@
 /*                         DEFINICOES                         */
 /**************************************************************/
 
-// Definicoes do timer do microcontrolador
-#define	CLOCKTIME	0.001	// Tempo de tick em segundos (= 1 ms)
-#define PRESCALAR	8
-
-
 
 
 /**************************************************************/
@@ -53,21 +48,13 @@ typedef struct
 } VectorTimers_t;
 
 
-/**************************************************************/
-/*                      VARIAVEIS GLOBAIS                     */
-/**************************************************************/
-
-// Vector dos timers criados
-extern VectorTimers_t vecTimers;
-
-
 
 /**************************************************************/
 /*                           FUNCOES                          */
 /**************************************************************/
 
 /*
- * Incializa o timer do kernel (ticks).
+ * Incializa vetor de timers.
  *
  * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
  */
@@ -83,7 +70,7 @@ int8_t Timers_termina();
 
 
 /*
- * Cria um timer com um determinado periodo (em mili-segundos).
+ * Cria um timer com um determinado periodo (em ticks).
  * 
  * @return: Apontador para o timer criado ou NULL em caso de erro.
  */
@@ -140,7 +127,7 @@ int8_t Timers_timerTerminado(Timer_t *timer);
 /*
  * Suspende a tarefa por um periodo estabelecido.
  *
- * @param periodo: Periodo de suspensao da tarefa (em mili-segundos).
+ * @param periodo: Periodo de suspensao da tarefa (em ticks).
  * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
  */
 int8_t Timers_sleep(uint16_t periodo);
