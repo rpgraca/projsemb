@@ -38,7 +38,7 @@ Timer_t* Timers_criaTimer(uint16_t periodo,uint16_t numTarefas)
 
 
 	// Verificacao dos parametros passados a funcao
-	if (periodo <= 0)
+	if (numTarefas <= 0 || periodo <= 0)
 		return NULL;
 
 

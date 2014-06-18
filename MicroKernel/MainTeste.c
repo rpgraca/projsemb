@@ -9,6 +9,7 @@
 #include "ListaTarefas.h"
 #include "Timers.h"
 #include <avr/io.h>
+#include "Sinais.h"
 
 extern ListaTarefas_t * listatarefas;
 void tick() __attribute__((naked,signal));
@@ -19,6 +20,7 @@ void tick()
 	asm volatile("reti");
 }
 Timer_t *timer;
+Sinal_t *sinal;
 void * funcA(void * ptr)
 {
 	//timer = Timers_criaTimer(3);
@@ -36,6 +38,10 @@ void * funcA(void * ptr)
 			Timers_esperaActivacao(timer);
 			tick();
 		}
+		if(x==50)
+		{
+			Sinais_sinaliza(sinal);
+		}
 		tick();
 	}
 	return 0x00;
@@ -48,7 +54,14 @@ void * funcB(void * ptr)
 	while(1)
 	{
 		x++;
-		Timers_esperaActivacao(timer);
+		if(x==5)
+		{
+			Sinais_esperaSinal(sinal);
+		}
+		else
+		{
+			Timers_esperaActivacao(timer);	
+		}
 	}
 	return 0x00;
 }
@@ -80,6 +93,7 @@ int * z = (int*) malloc(sizeof(int));
 	ListaTarefas_adicionaTarefa(listatarefas,0,400,funcC);
 	listatarefas->prioridades[2]->tarefas[0]->activada = 0;
 	timer=Timers_criaTimer(7,2);
+	sinal=Sinais_criaSinal(1);
 	Sched_dispatch();
 	
     while(1)
