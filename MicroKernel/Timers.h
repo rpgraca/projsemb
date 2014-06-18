@@ -16,13 +16,14 @@
 
 #include "ListaTarefas.h"
 #include "Context.h"
-#include "Dispatcher.h"
+#include "Scheduler_Fixo.h"
 
 
 
 /**************************************************************/
 /*                         DEFINICOES                         */
 /**************************************************************/
+
 
 
 
@@ -47,6 +48,16 @@ typedef struct
 	uint8_t nTimers;
 } VectorTimers_t;
 
+/**************************************************************/
+/*							  MACROS                          */
+/**************************************************************/
+
+/*
+* Verifica se um timer ja terminou.
+*
+* @return: 1 em caso afirmativo e 0 caso contrario.
+*/
+#define Timers_timerTerminado(timer)	((timer==NULL)?-1:(timer->tActual >= timer->periodo))
 
 
 /**************************************************************/
@@ -87,21 +98,11 @@ int8_t Timers_apagaTimer(Timer_t *timer);
 
 
 
-
-/*
-* Reinicia um timer.
-*
-* @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
-*/
-int8_t Timers_reiniciaTimer(Timer_t *timer);
-
-
-
 /*
  * Actualiza os timers em uma unidade.
  * Caso os timers terminem, as respectivas tarefas sao activadas e o timer reiniciado.
  */
-void Timers_actualizaTimers();
+void Timers_actualizaTimers() __attribute__((naked,signal));
 
 
 
@@ -112,16 +113,6 @@ void Timers_actualizaTimers();
  * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
  */
 int8_t Timers_esperaActivacao(Timer_t *timer);
-
-
-
-/*
-* Verifica se um timer ja terminou.
-*
-* @return: 1 em caso afirmativo e 0 caso contrario.
-*/
-int8_t Timers_timerTerminado(Timer_t *timer);
-
 
 
 /*

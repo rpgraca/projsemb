@@ -13,8 +13,8 @@
 #ifndef _SEMAFORO_H_
 #define _SEMAFORO_H_
 
-
-
+#include <avr/io.h>
+#include <stdlib.h>
 
 /**************************************************************/
 /*                         DEFINICOES                         */
@@ -33,6 +33,20 @@ typedef struct
 	uint8_t estado;
 } Semaforo_t;
 
+/**************************************************************/
+/*                      VARIAVEIS GLOBAIS                     */
+/**************************************************************/
+extern uint8_t* ceilingStack;
+extern uint8_t ceilingstackSize;
+
+/**************************************************************/
+/*                            MACROS                          */
+/**************************************************************/
+/*
+ * Retorna valor no topo da stack (ceiling do sistema)
+ *
+ */
+#define System_Ceiling() (ceilingstackSize == 0?-1:ceilingStack[ceilingstackSize - 1])
 
 /**************************************************************/
 /*                           FUNCOES                          */
@@ -43,7 +57,7 @@ typedef struct
  *
  * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
  */
-uint_8 Semaforo_init(Semaforo_t semaforo, uint8_t ceiling);
+int8_t Semaforo_init(Semaforo_t* semaforo, uint8_t ceiling);
 
 /*
  * Tranca um semáforo.
@@ -58,12 +72,6 @@ void Semaforo_lock(Semaforo_t* semaforo);
  */
 void Semaforo_unlock(Semaforo_t* semaforo);
 
-/*
- * Lê valor no topo da stack (ceiling do sistema)
- *
- * @return: ceiling atual do sistema
- */
-uint8_t System_Ceiling();
 
 
 #endif

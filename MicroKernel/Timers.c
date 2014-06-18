@@ -23,55 +23,13 @@
 /*                      VARIAVEIS GLOBAIS                     */
 /**************************************************************/
 // Vector dos timers criados
-extern VectorTimers_t vecTimers;
+VectorTimers_t vecTimers;
+extern Tarefa_t * tarefaAtual;
 
 
 /**************************************************************/
 /*                           FUNCOES                          */
 /**************************************************************/
-
-/* int8_t Timers_inicia()
-{
-	// Inicializa o vector de timers
-	vecTimers.timers = NULL;
-	vecTimers.nTimers = 0;
-
-	return 0;
-}
-
-
-
-int8_t Timers_termina()
-{
-	int8_t i, resultado;
-
-
-	// Desactiva o timer do microcontrolador
-	
-	/////////////////////////////////////////////////////////////////
-	//
-	// (...)
-	//
-	/////////////////////////////////////////////////////////////////
-
-
-
-	// Apaga todos os timers activos
-	for (i = 0; i < vecTimers.nTimers; i++)
-	{
-		resultado = Timers_apagaTimer(vecTimers.timers[i]);
-
-		if (resultado < 0)
-			return -1;
-	}
-
-
-	//free(vecTimers.timers);			// Comentado, porque a funcao "Timers_apagaTimer()" ja apaga o vector
-
-
-	return 0;
-}
-*/
 
 
 Timer_t* Timers_criaTimer(uint16_t periodo)
@@ -92,7 +50,7 @@ Timer_t* Timers_criaTimer(uint16_t periodo)
 
 	timer->periodo = periodo;
 	timer->tActual = 0;
-	timer->tarefa = Tarefa_apontadorTarefa(funcAtual);
+	timer->tarefa = tarefaAtual;
 
 
 	// Realocacao de memoria do vector
@@ -155,25 +113,9 @@ int8_t Timers_apagaTimer(Timer_t *timer)
 }
 
 
-
-
-int8_t Timers_reiniciaTimer(Timer_t *timer)
-{
-	// Verificacao dos parametros passados a funcao
-	if (timer == NULL)
-		return -1;
-
-	timer->tActual = 0;
-
-	return 0;
-}
-
-
-
-
 void Timers_actualizaTimers()
 {
-	int8_t i, resultado;
+	int8_t i;
 
 
 	for (i = 0; i < vecTimers.nTimers; i++)
@@ -184,22 +126,15 @@ void Timers_actualizaTimers()
 
 		// Verifica se o timer terminou.
 		// Caso tenha, activa a respectiva tarefa e reinicia o timer.
-		if (Timers_timerTerminado(vecTimers.timers[i]))
+		if (vecTimers.timers[i]->tActual >= vecTimers.timers[i]->periodo)
 		{
-			resultado = Timers_reiniciaTimer(vecTimers.timers[i]);
-
-			if (resultado < 0)
-				return -1;
-
-			resultado = Tarefa_activaTarefa(vecTimers.timers[i]->tarefa);
-
-			if (resultado < 0)
-				return -2;
+			vecTimers.timers[i]->tActual=0;
+			vecTimers.timers[i]->tarefa->activada = 1;
 		}
 	}
 
 
-	return 0;
+	asm volatile("reti");
 }
 
 
@@ -221,7 +156,7 @@ int8_t Timers_esperaActivacao(Timer_t *timer)
 	// dos ticks vai activa-la.
 	if (Timers_timerTerminado(timer))
 	{
-		resultado = Tarefa_activaTarefa(timer->tarefa);
+		timer->tarefa->activada = 1;
 
 		if (resultado < 0)
 			return -2;
@@ -245,14 +180,8 @@ int8_t Timers_esperaActivacao(Timer_t *timer)
 
 
 
-int8_t Timers_timerTerminado(Timer_t *timer)
-{
-	// Verificacao dos parametros passados a funcao
-	if (timer == NULL)
-		return -1;
 
-	return (timer->tActual >= timer->periodo);
-}
+
 
 
 

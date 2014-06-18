@@ -4,24 +4,39 @@
  * Created: 11-06-2014 00:30:50
  *  Author: Rui Graça
  */ 
-#include "Scheduler.h"
+#include "Scheduler_Fixo.h"
+#include "ATmega.h"
 #include "ListaTarefas.h"
-
+#include "Timers.h"
 #include <avr/io.h>
 
-ListaTarefas_t * listatarefas;
-
+extern ListaTarefas_t * listatarefas;
+void tick() __attribute__((naked,signal));
+void tick()
+{
+	Timers_actualizaTimers();
+	Sched_dispatch();
+	asm volatile("reti");
+}
+Timer_t *timer;
 void * funcA(void * ptr)
 {
+	//timer = Timers_criaTimer(3);
 	int x = 0;
 	while(1)
 	{
 		x++;
 		if(x==5)
 		{
-			listatarefas->prioridades[2]->tarefas[0]->nActivacoes = 1;
-			Sched_dispatch();
+			listatarefas->prioridades[2]->tarefas[0]->activada = 1;
+			tick();
 		}
+		else if(x==12)
+		{
+			listatarefas->prioridades[1]->tarefas[0]->activada = 0;
+			tick();
+		}
+		tick();
 	}
 	return 0x00;
 
@@ -32,9 +47,7 @@ void * funcB(void * ptr)
 	int x=0x43;
 	while(1)
 	{
-		x--;
-		listatarefas->prioridades[2]->tarefas[0]->nActivacoes = 0;
-		Sched_dispatch();
+		Timers_esperaActivacao(timer);
 	}
 	return 0x00;
 }
@@ -50,10 +63,15 @@ int main(void)
 
 {
 //	funcX();
+int * x = (int*) malloc(sizeof(int));
+int * z = (int*) malloc(sizeof(int));
+	ATmega_idleStackptr();
 	listatarefas = ListaTarefas_cria(3);
-	ListaTarefas_adicionaTarefa(listatarefas,1,100,funcA);
-	ListaTarefas_adicionaTarefa(listatarefas,2,100,funcB);
-	listatarefas->prioridades[1]->tarefas[0]->nActivacoes = 1;
+	ListaTarefas_adicionaTarefa(listatarefas,1,400,funcA);
+	ListaTarefas_adicionaTarefa(listatarefas,2,400,funcB);
+	listatarefas->prioridades[1]->tarefas[0]->activada = 1;
+	timer=Timers_criaTimer(7);
+	timer->tarefa = listatarefas->prioridades[2]->tarefas[0];
 	Sched_dispatch();
 	
     while(1)

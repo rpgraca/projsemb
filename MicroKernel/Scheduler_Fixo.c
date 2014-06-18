@@ -22,8 +22,8 @@
 /*                      VARIAVEIS GLOBAIS                     */
 /**************************************************************/
 extern char *stackptrAtual;
-
-
+extern char *stackptrIdle;
+extern Tarefa_t *tarefaAtual;
 
 
 
@@ -63,11 +63,11 @@ int8_t Sched_termina()
 
 
 
-int8_t Sched_adicionaTarefa(uint8_t prioridade, uint16_t stackSize, void* (*funcao)(void *))
+int8_t Sched_adicionaTarefa(uint8_t prioridade, uint16_t ceilingstackSize, void* (*funcao)(void *))
 {
 	uint8_t resultado;
 	
-	resultado = ListaTarefas_adicionaTarefa(listatarefas, prioridade, stackSize, funcao);
+	resultado = ListaTarefas_adicionaTarefa(listatarefas, prioridade, ceilingstackSize, funcao);
 	
 	return resultado;
 }
@@ -100,9 +100,8 @@ void Sched_dispatch()//  __attribute__((signal,naked))
 
 	GUARDARCONTEXTO();
 
-	Tarefa_t * tarefaAtual = Tarefa_apontadorTarefa(funcAtual);
-	uint8_t i, j;
-	int16_t prioridadeAtual;
+	uint8_t j;
+	int16_t i,prioridadeAtual;
 
 	if (tarefaAtual == NULL)
 	{
@@ -111,24 +110,30 @@ void Sched_dispatch()//  __attribute__((signal,naked))
 
 	else
 	{
-		if(tarefaAtual->nAtivacoes == 0)
+		tarefaAtual->stackPtr = stackptrAtual;
+		if(tarefaAtual->activada == 0)
 		{
+			tarefaAtual = NULL;
 			prioridadeAtual = -1;
 			//COLOCAR STACKPOINTER NUM while(1) OU MANDAR CPU PARA POUPANCA DE ENERGIA CASO NAO HAJA ATIVACOES
 		}
 		else
 		{
 			prioridadeAtual = tarefaAtual->prioridade;
-			tarefaAtual->stackPtr = stackptrAtual;
 		}
 	}
 
 	for (i = listatarefas->nPrioridades - 1; i > System_Ceiling() && i > prioridadeAtual; i--)
 	{
 		// Dois ciclos para verificar ativacoes de forma Round Robin
+		if(listatarefas->prioridades[i]->nTarefas == 0)
+		{
+			continue;
+		}
+		
 		for (j = listatarefas->prioridades[i]->ultimaTarefa + 1; j < listatarefas->prioridades[i]->nTarefas; j++)
 		{
-			if (listatarefas->prioridades[i]->tarefas[j]->nActivacoes > 0)
+			if (listatarefas->prioridades[i]->tarefas[j]->activada > 0)
 			{
 				listatarefas->prioridades[i]->ultimaTarefa=j;
 				tarefaAtual = listatarefas->prioridades[i]->tarefas[j];
@@ -141,7 +146,7 @@ void Sched_dispatch()//  __attribute__((signal,naked))
 
 		for (j = 0; j <= listatarefas->prioridades[i]->ultimaTarefa; j++)
 		{
-			if (listatarefas->prioridades[i]->tarefas[j]->nActivacoes > 0)
+			if (listatarefas->prioridades[i]->tarefas[j]->activada > 0)
 			{
 				listatarefas->prioridades[i]->ultimaTarefa=j;
 				tarefaAtual = listatarefas->prioridades[i]->tarefas[j];
@@ -151,6 +156,12 @@ void Sched_dispatch()//  __attribute__((signal,naked))
 				asm volatile("reti");
 			}
 		}
+	}
+	if(tarefaAtual == NULL)
+	{
+		stackptrAtual = stackptrIdle;
+		RECUPERARSTACKPTR();
+		asm volatile("reti");
 	}
 	RECUPERARCONTEXTO();
 	asm volatile("reti");

@@ -10,6 +10,7 @@
 /*****************************************************************************************/
 
 #include "Semaforo.h"
+#include <stdlib.h>
 
 /**************************************************************/
 /*                      FUNCOES AUXILIARES                    */
@@ -17,16 +18,12 @@
 int8_t Stack_Push(uint8_t var);
 int8_t Stack_Pop();
 
-
-
 /**************************************************************/
 /*                      VARIAVEIS GLOBAIS                     */
 /**************************************************************/
-uint8_t* ceilingStack = NULL;
-uint8_t stackSize=0;
-uint8_t stackMaxsize=0;
-
-
+//extern uint8_t* ceilingStack = NULL;
+//extern uint8_t ceilingstackSize=0;
+uint8_t stackMaxsize;
 
 /**************************************************************/
 /*                           FUNCOES                          */
@@ -147,37 +144,26 @@ void Semaforo_unlock(Semaforo_t* semaforo)
 
 int8_t Stack_Push(uint8_t var)
 {
-	if(stackSize == stackMaxsize)
+	if(ceilingstackSize == stackMaxsize)
 	{
 		return -1;
 	}
 	
-	ceilingStack[stackSize] = var;
-	stackSize++;
+	ceilingStack[ceilingstackSize] = var;
+	ceilingstackSize++;
 	return 0;
 }
 
 int8_t Stack_Pop()
 {
-	if(stackSize == 0)
+	if(ceilingstackSize == 0)
 	{
 		return -2;
 	}
-	stackSize--;
-	return ceilingStack[stackSize];
+	ceilingstackSize--;
+	return ceilingStack[ceilingstackSize];
 }
 
-/*
- * Lê valor no topo da stack (ceiling do sistema)
- *
- * @return: ceiling atual do sistema
- */
-uint8_t System_Ceiling()
-{
-	if(stackSize == 0)
-	{
-		return -1;
-	}
-	return ceilingStack[stackSize - 1];
-}
+
+
 

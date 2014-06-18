@@ -12,6 +12,10 @@
 #ifndef _ATMEGA_H_
 #define _ATMEGA_H_
 
+#include "Context.h"
+#include <stdlib.h>
+#include <avr/io.h>
+
 /**************************************************************/
 /*                         DEFINICOES                         */
 /**************************************************************/
@@ -19,7 +23,7 @@
 // Definicoes do timer do microcontrolador
 #define	CLOCKTIME	0.001	// Tempo de tick em segundos (= 1 ms)
 #define PRESCALAR	8
-
+#define F_CPU		16000000
 /**************************************************************/
 /*                           FUNCOES                          */
 /**************************************************************/
@@ -28,5 +32,12 @@
  * Inicia interrupção do tick
  */
 void ATmega_iniciaTick();
+
+/*
+ * Cria stack com endereço de função que envia CPU para Idle Mode 
+ *
+ * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
+ */
+int8_t ATmega_idleStackptr();
 
 #endif

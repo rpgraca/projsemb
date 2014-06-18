@@ -17,7 +17,7 @@
 #include "ListaTarefas.h"
 //#include "Timers.h"
 #include "Context.h"
-
+#include "Semaforo.h"
 
 /**************************************************************/
 /*                         DEFINICOES                         */
@@ -52,7 +52,7 @@
 /*                      VARIAVEIS GLOBAIS                     */
 /**************************************************************/
 //extern Scheduler_t *scheduler;		// Apontador para o scheduler
-extern ListaTarefas_t listatarefas;
+extern ListaTarefas_t *listatarefas;
 
 
 
@@ -81,7 +81,7 @@ int8_t Sched_termina();
  *
  * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
  */
-int8_t Sched_adicionaTarefa(uint8_t prioridade, uint16_t stackSize, void* (*funcao)(void *));
+int8_t Sched_adicionaTarefa(uint8_t prioridade, uint16_t ceilingstackSize, void* (*funcao)(void *));
 
 
 /*
@@ -108,7 +108,7 @@ void Sched_schedule();
 * pendentes e, caso haja, activa-a (aloca os recursos do sistema para a
 * tarefa).
 */
-void Sched_dispatch() __attribute__((naked, signal));
+void Sched_dispatch() __attribute__((naked,signal));
 
 
 

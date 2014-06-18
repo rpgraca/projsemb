@@ -20,11 +20,10 @@
 /*                  INTERRUPT HANDLER DO TIMER                */
 /**************************************************************/
 
-ISR(TIMER1_COMPA_vect)
+void ISR(TIMER1_COMPA_vect)
 {
 	Timers_actualizaTimers();
-	Sched_Schedule();
-	Sched_Dispatch();
+	Sched_dispatch();
 }
 
 
@@ -40,6 +39,7 @@ int8_t UK_inicializa()
 	int8_t resultado = 0;
 	
 	ATmega_iniciaTick();	
+	resultado += ATmega_idleStackptr();
 	resultado += Sched_inicia();
 	resultado += Timers_inicia();
 	sei();	
@@ -62,8 +62,8 @@ int8_t UK_termina()
 	int8_t resultado = 0;
 	
 	
-	resultado += Sched_apaga();
-	resultado += Timers_apaga();
+	resultado += Sched_termina();
+	resultado += Timers_termina();
 
 	//////////////////////////
 	//////////////////////////

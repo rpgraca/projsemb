@@ -15,9 +15,10 @@
 #define _MICROKERNEL_H_
 
 
-
+#include <avr/io.h>
 #include "Scheduler_Fixo.h"
 #include "Timers.h"
+#include "ATmega.h"
 
 
 //////////////////////////
@@ -40,8 +41,14 @@
 //VectorTimers_t vecTimers;	// Vector dos timers criados
 ListaTarefas_t * listatarefas;
 
-char *stackptrAtual;
-void * (*funcAtual)(void*);
+Tarefa_t * tarefaAtual = NULL;
+char *stackptrAtual = NULL;
+char *stackptrIdle = NULL;
+void * (*funcAtual)(void*) = NULL;
+ 
+uint8_t* ceilingStack = NULL;
+uint8_t ceilingstackSize = 0;
+
 
 
 
