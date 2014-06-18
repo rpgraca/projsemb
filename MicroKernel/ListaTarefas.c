@@ -16,7 +16,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
+#include <avr/interrupt.h>
 
 /**************************************************************/
 /*                      VARIAVEIS GLOBAIS                     */
@@ -54,7 +54,7 @@ int8_t TarefasPrioridade_removeTarefa(TarefasPrioridade_t* tarefasPrioridade, Ta
 Tarefa_t* Tarefa_cria(uint8_t prioridade, uint16_t ceilingstackSize, void* (*funcao)(void *))
 {
 	Tarefa_t *tarefa;
-	
+	uint8_t tmpstatus = SREG;	// Guardar estado de interrupçoes
 
 	// Cria a tarefa
 	tarefa = (Tarefa_t*) malloc(sizeof(Tarefa_t) + ceilingstackSize);
@@ -69,15 +69,13 @@ Tarefa_t* Tarefa_cria(uint8_t prioridade, uint16_t ceilingstackSize, void* (*fun
 	tarefa->activada = 1;
 	tarefa->stackPtr = ((char*) tarefa) + ceilingstackSize;
 	
-	
 	// Cria o contexto da tarefa
+	cli(); // Desativar interrupçoes
 	GUARDARSTACKPTR();
 	stackptrBak = stackptrAtual;
 	stackptrAtual = tarefa->stackPtr;
 	funcAtual = tarefa->funcao;	
 	CRIARCONTEXTO();
-	//GUARDARSTACKPTR();
-	GUARDARCONTEXTO();
 	GUARDARSTACKPTR();
 	
 
@@ -89,6 +87,8 @@ Tarefa_t* Tarefa_cria(uint8_t prioridade, uint16_t ceilingstackSize, void* (*fun
 	RECUPERARSTACKPTR();
 	tarefa->stackPtr = stackptrBak;
 	funcAtual = NULL;
+	
+	SREG = tmpstatus; // Recuperar estado original das interrupçoes
 	
 	return tarefa;
 }
@@ -151,11 +151,16 @@ TarefasPrioridade_t* TarefasPrioridade_cria()
 int8_t TarefasPrioridade_apaga(TarefasPrioridade_t* tarefasPrioridade)
 {
 	int8_t i, resultado;
+	uint8_t tmpstatus = SREG;	// Guardar estado de interrupçoes
 
+	cli(); // Desativar interrupçoes
 
 	// Verificacao dos parametros passados a funcao
 	if (tarefasPrioridade == NULL)
+	{
+		SREG = tmpstatus;
 		return -1;
+	}
 
 	
 	// Remove todas as tarefas presentes no vector
@@ -164,12 +169,17 @@ int8_t TarefasPrioridade_apaga(TarefasPrioridade_t* tarefasPrioridade)
 		resultado = TarefasPrioridade_removeTarefa(tarefasPrioridade, tarefasPrioridade->tarefas[i]);
 
 		if (resultado < 0)
+		{
+			SREG = tmpstatus;
 			return -2;
+		}
 	}
 
 
 	// Apaga a estrutura
 	free(tarefasPrioridade);
+
+	SREG = tmpstatus;
 
 	return 0;
 }
@@ -186,27 +196,40 @@ int8_t TarefasPrioridade_adicionaTarefa(TarefasPrioridade_t* tarefasPrioridade, 
 	Tarefa_t *tarefa;
 
 
+	uint8_t tmpstatus = SREG;	// Guardar estado de interrupçoes
+	cli(); // Desativar interrupçoes
+
 	// Verificacao dos parametros passados a funcao
 	if (tarefasPrioridade == NULL)
+	{
+		SREG = tmpstatus;
 		return -1;
+	}
 
 
 	// Cria a tarefa
 	tarefa = Tarefa_cria(prioridade, ceilingstackSize, funcao);
 	if (tarefa == NULL)
-		return -1;
+	{
+		SREG = tmpstatus;
+		return -2;
+	}
 
 
 	// Realocacao de memoria do vector
 	tarefasPrioridade->tarefas = (Tarefa_t**)realloc(tarefasPrioridade->tarefas, (tarefasPrioridade->nTarefas + 1) * sizeof(Tarefa_t*));
 	if (tarefasPrioridade->tarefas == NULL)
-		return -1;
+	{
+		SREG = tmpstatus;
+		return -3;
+	}
 
 
 	// Adiciona a tarefa no vector
 	tarefasPrioridade->tarefas[tarefasPrioridade->nTarefas] = tarefa;
 	tarefasPrioridade->nTarefas++;
 
+	SREG = tmpstatus;
 
 	return 0;
 }
@@ -221,11 +244,18 @@ int8_t TarefasPrioridade_adicionaTarefa(TarefasPrioridade_t* tarefasPrioridade, 
 int8_t TarefasPrioridade_removeTarefa(TarefasPrioridade_t* tarefasPrioridade, Tarefa_t *tarefa)
 {
 	int8_t i, j, resultado;
-
-
+	uint8_t tmpstatus = SREG;	// Guardar estado de interrupçoes
+	
+	
+	
+	cli(); // Desativar interrupçoes
+	
 	// Verificacao dos parametros passados a funcao
 	if (tarefasPrioridade == NULL)
+	{
+		SREG = tmpstatus;
 		return -1;
+	}
 
 
 	// Procura a tarefa
@@ -236,7 +266,10 @@ int8_t TarefasPrioridade_removeTarefa(TarefasPrioridade_t* tarefasPrioridade, Ta
 			// Elimina a tarefa
 			resultado = Tarefa_apaga(tarefa);
 			if (resultado < 0)
+			{
+				SREG = tmpstatus;
 				return -2;
+			}
 			
 			// Copia as tarefas para o inicio do vector para deixar o espaco vazio no fim do vector
 			for (j = i; j < tarefasPrioridade->nTarefas - 1; j++)
@@ -246,11 +279,15 @@ int8_t TarefasPrioridade_removeTarefa(TarefasPrioridade_t* tarefasPrioridade, Ta
 			// Realocacao de memoria do vector
 			tarefasPrioridade->tarefas = (Tarefa_t**)realloc(tarefasPrioridade->tarefas, (tarefasPrioridade->nTarefas - 1) * sizeof(Tarefa_t*));
 			if ( (tarefasPrioridade->tarefas == NULL) && (tarefasPrioridade->nTarefas != 1) )	// Se nTarefas = 1, entao o vector vai ficar NULL
-				return -2;
+			{
+				SREG = tmpstatus;
+				return -3;
+			}
 
 
 			tarefasPrioridade->nTarefas--;
 
+			SREG = tmpstatus;
 
 			return 0;
 		}
@@ -273,11 +310,20 @@ int8_t TarefasPrioridade_removeTarefa(TarefasPrioridade_t* tarefasPrioridade, Ta
 
 int8_t Tarefa_desactivaTarefa(Tarefa_t *tarefa)
 {
+	uint8_t tmpstatus = SREG;	// Guardar estado de interrupçoes
+	cli(); // Desativar interrupçoes
+	
 	// Verificacao dos parametros passados a funcao
 	if (tarefa == NULL)
+	{
+		SREG = tmpstatus;
 		return -1;
+	}
 
 	tarefa->activada = 0;
+
+	SREG = tmpstatus;
+	
 	return 0;
 }
 
@@ -333,11 +379,17 @@ ListaTarefas_t* ListaTarefas_cria(uint8_t nPrioridades)
 int8_t ListaTarefas_apaga(ListaTarefas_t *listaTarefas)
 {
 	int8_t i, resultado;
+	uint8_t tmpstatus = SREG;	// Guardar estado de interrupçoes
+
+	cli(); // Desativar interrupçoes
 
 
 	// Verificacao dos parametros passados a funcao
 	if (listaTarefas == NULL)
+	{
+		SREG = tmpstatus;
 		return -1;
+	}
 	
 	
 	// Apaga o vector de prioridades
@@ -349,13 +401,17 @@ int8_t ListaTarefas_apaga(ListaTarefas_t *listaTarefas)
 		resultado = TarefasPrioridade_apaga(listaTarefas->prioridades[i]);
 		
 		if (resultado < 0)
+		{
+			SREG = tmpstatus;
 			return -2;
+		}
 	}
 
 
 	//free(listaTarefas->prioridades);		// Comentado, porque a funcao "TarefasPrioridade_apaga()" ja apaga a memoria
 	free(listaTarefas);
 	
+	SREG = tmpstatus;
 	
 	return 0;
 }
@@ -365,15 +421,22 @@ int8_t ListaTarefas_apaga(ListaTarefas_t *listaTarefas)
 int8_t ListaTarefas_adicionaTarefa(ListaTarefas_t *listaTarefas, uint8_t prioridade, uint16_t ceilingstackSize, void* (*funcao)(void *))
 {
 	int8_t resultado;
+	uint8_t tmpstatus = SREG;	// Guardar estado de interrupçoes
+
+	cli(); // Desativar interrupçoes
 
 
 	// Verificacao dos parametros passados a funcao
 	if ((listaTarefas == NULL) || (prioridade < 0 || prioridade >= listaTarefas->nPrioridades) || (ceilingstackSize <= 0) || (funcao == NULL) )
+	{
+		SREG = tmpstatus;
 		return -1;
+	}
 
 	resultado = TarefasPrioridade_adicionaTarefa(listaTarefas->prioridades[prioridade], prioridade, ceilingstackSize, funcao);
 	
-	
+	SREG = tmpstatus;
+
 	return resultado;
 }
 
@@ -382,13 +445,21 @@ int8_t ListaTarefas_adicionaTarefa(ListaTarefas_t *listaTarefas, uint8_t priorid
 int8_t ListaTarefas_removeTarefa(ListaTarefas_t *listaTarefas, Tarefa_t *tarefa)
 {
 	int8_t resultado;
+	uint8_t tmpstatus = SREG;	// Guardar estado de interrupçoes
+
+	cli(); // Desativar interrupçoes
 	
 	
 	// Verificacao dos parametros passados a funcao
 	if ( (listaTarefas == NULL) || (tarefa == NULL) )
+	{
+		SREG = tmpstatus;
 		return -1;
+	}
 	
 	resultado = TarefasPrioridade_removeTarefa(listaTarefas->prioridades[tarefa->prioridade], tarefa);
 
+
+	SREG = tmpstatus;
 	return resultado;
 }

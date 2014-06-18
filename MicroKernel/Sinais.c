@@ -35,17 +35,25 @@ Sinal_t* Sinais_criaSinal(uint16_t numTarefas)
 {
 	Sinal_t *sinal;
 
+	uint8_t tmpstatus = SREG;	// Guardar estado de interrupçoes
+	cli(); // Desativar interrupçoes
 
 	// Verificacao dos parametros passados a funcao
 	if (numTarefas <= 0)
+	{
+		SREG = tmpstatus;
 		return NULL;
+	}
 
 
 
 	// Cria o sinal
 	sinal = (Sinal_t*)malloc(sizeof(Sinal_t));
 	if (sinal == NULL)
+	{
+		SREG = tmpstatus;
 		return NULL;
+	}
 
 	sinal->numTarefas = numTarefas;
 	sinal->stackSize = 0;
@@ -55,12 +63,16 @@ Sinal_t* Sinais_criaSinal(uint16_t numTarefas)
 	// Realocacao de memoria do vector
 	vecSinais.sinais = (Sinal_t**)realloc(vecSinais.sinais, (vecSinais.nSinais + 1) * sizeof(Sinal_t*));
 	if (vecSinais.sinais == NULL)
+	{
+		SREG = tmpstatus;
 		return NULL;
+	}
 
 
 	vecSinais.sinais[vecSinais.nSinais] = sinal;
 	vecSinais.nSinais++;
 
+	SREG = tmpstatus;
 
 	return sinal;
 }
@@ -71,10 +83,15 @@ int8_t Sinais_apagaSinal(Sinal_t *sinal)
 {
 	uint8_t i, j;
 
+	uint8_t tmpstatus = SREG;	// Guardar estado de interrupçoes
+	cli(); // Desativar interrupçoes
 
 	// Verificacao dos parametros passados a funcao
 	if (sinal == NULL)
+	{
+		SREG = tmpstatus;
 		return -1;
+	}
 
 
 	// Procura o sinal
@@ -95,12 +112,16 @@ int8_t Sinais_apagaSinal(Sinal_t *sinal)
 			// Realocacao de memoria do vector
 			vecSinais.sinais = (Sinal_t**)realloc(vecSinais.sinais, (vecSinais.nSinais - 1) * sizeof(Sinal_t*));
 			if ((vecSinais.sinais == NULL) && (vecSinais.nSinais != 1))	// Se nSinais = 1, entao o vector vai ficar NULL
+			{
+				SREG = tmpstatus;
 				return -2;
+			}
 
 
 			vecSinais.nSinais--;
 
 
+			SREG = tmpstatus;
 			return 0;
 		}
 
@@ -109,6 +130,7 @@ int8_t Sinais_apagaSinal(Sinal_t *sinal)
 
 
 	// O sinal nao existe
+	SREG = tmpstatus;
 	return -3;
 }
 
@@ -118,13 +140,18 @@ int8_t Sinais_apagaSinal(Sinal_t *sinal)
 int8_t Sinais_esperaSinal(Sinal_t *sinal)
 {
 	int8_t resultado;
-
+	uint8_t tmpstatus = SREG;	// Guardar estado de interrupçoes
+	cli(); // Desativar interrupçoes
 
 	// Verificacao dos parametros passados a funcao
 	if (sinal == NULL)
+	{
+		SREG = tmpstatus;
 		return -1;
+	}
 	if(sinal->stackSize >= sinal->numTarefas)
 	{
+		SREG = tmpstatus;
 		return -2;
 	}
 
@@ -133,6 +160,8 @@ int8_t Sinais_esperaSinal(Sinal_t *sinal)
 
 	// Limpa a flag de tarefa activa
 	resultado = Tarefa_desactivaTarefa(tarefaAtual);
+
+	SREG = tmpstatus;
 
 	if (resultado < 0)
 		return -3;
@@ -150,9 +179,12 @@ int8_t Sinais_esperaSinal(Sinal_t *sinal)
 int8_t Sinais_sinaliza(Sinal_t *sinal)
 {
 	int j;
+	uint8_t tmpstatus = SREG;	// Guardar estado de interrupçoes
+	cli(); // Desativar interrupçoes
 
 	if(sinal == NULL)
 	{
+		SREG = tmpstatus;
 		return -1;
 	}
 
@@ -162,5 +194,6 @@ int8_t Sinais_sinaliza(Sinal_t *sinal)
 	}
 	sinal->stackSize = 0;
 	
+	SREG = tmpstatus;
 	return 0;
 }

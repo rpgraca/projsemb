@@ -80,7 +80,16 @@ extern void * (*funcAtual)(void *);
 					"out __SREG__,r0	\n\t	" \
 					"pop R0			\n\t	");}
 					
-
+#define CRIARCONTEXTOIDLE() { asm volatile("lds R28,stackptrAtual	\n\t	" \
+					"lds R29,stackptrAtual+1	\n\t	"\
+					"out __SP_L__,R28	\n\t	" \
+					"out __SP_H__,R29	\n\t	" \
+					"lds R0,funcAtual	\n\t" \
+					"push R0		\n\t	" \
+					"lds R0,funcAtual+1	\n\t	" \
+					"push R0		\n\t	"\
+					"clr r0		\n\t");}
+	
 #define CRIARCONTEXTO() { asm volatile("lds R28,stackptrAtual	\n\t	" \
 					"lds R29,stackptrAtual+1	\n\t	"\
 					"out __SP_L__,R28	\n\t	" \
@@ -89,7 +98,46 @@ extern void * (*funcAtual)(void *);
 					"push R0		\n\t	" \
 					"lds R0,funcAtual+1	\n\t	" \
 					"push R0		\n\t	" \
-					"clr R0		\n\t	" );}
+					"clr R0		\n\t	" \
+					"push r0		\n\t "\
+					"ldi r16,0x80		\n\t "\
+					"push r16	\n\t "\
+					"clr r1		\n\t "\
+					"push r1			\n\t "\
+					"push r1		\n\t "\
+					"push r1		\n\t "\
+					"push r1		\n\t "\
+					"push r1		\n\t "\
+					"push r1		\n\t "\
+					"push r1		\n\t "\
+					"push r1		\n\t "\
+					"push r1		\n\t "\
+					"push r1		\n\t "\
+					"push r1		\n\t "\
+					"push r1		\n\t "\
+					"push r1		\n\t "\
+					"push r1		\n\t "\
+					"push r1		\n\t "\
+					"push r1		\n\t "\
+					"push r1		\n\t "\
+					"push r1		\n\t "\
+					"push r1		\n\t "\
+					"push r1		\n\t "\
+					"push r1		\n\t "\
+					"push r1		\n\t "\
+					"push r1		\n\t "\
+					"push r1		\n\t "\
+					"push r1		\n\t "\
+					"push r1		\n\t "\
+					"push r1		\n\t "\
+					"push r28		\n\t "\
+					"push r29		\n\t "\
+					"push r1		\n\t "\
+					"push r1		\n\t "\
+					"in r28, __SP_L__	\n\t "\
+					"in r29, __SP_H__	\n\t "\
+					"sts stackptrAtual,r28	\n\t "\
+					"sts stackptrAtual+1,r29 	\n\t ");}
 					
 #define GUARDARSTACKPTR() {	asm volatile("in r28, __SP_L__	\n\t "\
 					"in r29, __SP_H__	\n\t "\

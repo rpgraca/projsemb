@@ -36,17 +36,25 @@ Timer_t* Timers_criaTimer(uint16_t periodo,uint16_t numTarefas)
 {
 	Timer_t *timer;
 
+	uint8_t tmpstatus = SREG;	// Guardar estado de interrupçoes
+	cli(); // Desativar interrupçoes
 
 	// Verificacao dos parametros passados a funcao
 	if (numTarefas <= 0 || periodo <= 0)
+	{
+		SREG = tmpstatus;
 		return NULL;
+	}
 
 
 
 	// Cria o timer
 	timer = (Timer_t*)malloc(sizeof(Timer_t));
 	if (timer == NULL)
+	{
+		SREG = tmpstatus;
 		return NULL;
+	}
 
 	timer->periodo = periodo;
 	timer->tActual = 0;
@@ -58,13 +66,17 @@ Timer_t* Timers_criaTimer(uint16_t periodo,uint16_t numTarefas)
 	// Realocacao de memoria do vector
 	vecTimers.timers = (Timer_t**)realloc(vecTimers.timers, (vecTimers.nTimers + 1) * sizeof(Timer_t*));
 	if (vecTimers.timers == NULL)
+	{
+		SREG = tmpstatus;
 		return NULL;
+	}
 
 
 	vecTimers.timers[vecTimers.nTimers] = timer;
 	vecTimers.nTimers++;
 
 
+	SREG = tmpstatus;
 	return timer;
 }
 
@@ -73,11 +85,15 @@ Timer_t* Timers_criaTimer(uint16_t periodo,uint16_t numTarefas)
 int8_t Timers_apagaTimer(Timer_t *timer)
 {
 	uint8_t i, j;
-
+	uint8_t tmpstatus = SREG;	// Guardar estado de interrupçoes
+	cli(); // Desativar interrupçoes
 
 	// Verificacao dos parametros passados a funcao
 	if (timer == NULL)
+	{
+		SREG = tmpstatus;
 		return -1;
+	}
 
 
 	// Procura o timer
@@ -98,18 +114,23 @@ int8_t Timers_apagaTimer(Timer_t *timer)
 			// Realocacao de memoria do vector
 			vecTimers.timers = (Timer_t**)realloc(vecTimers.timers, (vecTimers.nTimers - 1) * sizeof(Timer_t*));
 			if ((vecTimers.timers == NULL) && (vecTimers.nTimers != 1))	// Se nTimers = 1, entao o vector vai ficar NULL
-				return -2;
+			{
+				SREG = tmpstatus;
+				return -1;
+			}
 
 
 			vecTimers.nTimers--;
 
 
+			SREG = tmpstatus;
 			return 0;
 		}
 
 	}
 
 
+	SREG = tmpstatus;
 
 	// O timer nao existe
 	return -3;
@@ -150,13 +171,20 @@ void Timers_actualizaTimers()
 int8_t Timers_esperaActivacao(Timer_t *timer)
 {
 	int8_t resultado;
+	uint8_t tmpstatus = SREG;	// Guardar estado de interrupçoes
+	cli(); // Desativar interrupçoes
 
 
 	// Verificacao dos parametros passados a funcao
 	if (timer == NULL)
+	{
+		SREG = tmpstatus;
 		return -1;
+	}
+
 	if(timer->stackSize >= timer->numTarefas)
 	{
+		SREG = tmpstatus;
 		return -2;
 	}
 
@@ -178,6 +206,8 @@ int8_t Timers_esperaActivacao(Timer_t *timer)
 
 	// Limpa a flag de tarefa activa
 	resultado = Tarefa_desactivaTarefa(tarefaAtual);
+
+	SREG = tmpstatus;
 
 	if (resultado < 0)
 		return -3;

@@ -20,8 +20,9 @@
 /*                  INTERRUPT HANDLER DO TIMER                */
 /**************************************************************/
 
-void ISR(TIMER1_COMPA_vect)
+ISR(TIMER1_COMPA_vect)
 {
+	cli();
 	Timers_actualizaTimers();
 	Sched_dispatch();
 }

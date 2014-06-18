@@ -9,8 +9,11 @@
 #include "ListaTarefas.h"
 #include "Timers.h"
 #include <avr/io.h>
+#include <stdlib.h>
 #include "Sinais.h"
+#include <avr/interrupt.h>
 
+#define HEAPSIZE 400
 extern ListaTarefas_t * listatarefas;
 void tick() __attribute__((naked,signal));
 void tick()
@@ -25,6 +28,8 @@ void * funcA(void * ptr)
 {
 	//timer = Timers_criaTimer(3);
 	int x = 0;
+	timer=Timers_criaTimer(7,2);
+	sinal=Sinais_criaSinal(1);
 	while(1)
 	{
 		x++;
@@ -54,7 +59,11 @@ void * funcB(void * ptr)
 	while(1)
 	{
 		x++;
-		if(x==5)
+		if(x==4)
+		{
+			Timers_sleep(7);
+		}
+		else if(x==5)
 		{
 			Sinais_esperaSinal(sinal);
 		}
@@ -84,16 +93,14 @@ int main(void)
 
 {
 //	funcX();
-int * x = (int*) malloc(sizeof(int));
-int * z = (int*) malloc(sizeof(int));
+	char * tmpheap = (char*) malloc(HEAPSIZE);
 	ATmega_idleStackptr();
-	listatarefas = ListaTarefas_cria(3);
-	ListaTarefas_adicionaTarefa(listatarefas,1,400,funcA);
-	ListaTarefas_adicionaTarefa(listatarefas,2,400,funcB);
-	ListaTarefas_adicionaTarefa(listatarefas,0,400,funcC);
+	Sched_inicia();
+	Sched_adicionaTarefa(1,400,funcA);
+	Sched_adicionaTarefa(2,400,funcB);
+	Sched_adicionaTarefa(0,400,funcC);
 	listatarefas->prioridades[2]->tarefas[0]->activada = 0;
-	timer=Timers_criaTimer(7,2);
-	sinal=Sinais_criaSinal(1);
+	free(tmpheap);
 	Sched_dispatch();
 	
     while(1)

@@ -36,10 +36,12 @@ uint8_t stackMaxsize;
  */
 int8_t Semaforo_init(Semaforo_t* semaforo, uint8_t ceiling)
 {
-	cli();
+	uint8_t tmpstatus = SREG;	// Guardar estado de interrupçoes
+	cli(); // Desativar interrupçoes
+
 	if(semaforo != NULL)
 	{
-		sei();
+		SREG = tmpstatus;
 		return 1;
 	}
 
@@ -47,7 +49,7 @@ int8_t Semaforo_init(Semaforo_t* semaforo, uint8_t ceiling)
 
 	if(semaforo == NULL)
 	{
-		sei();
+		SREG = tmpstatus;
 		return -1;
 	}	
 
@@ -57,14 +59,15 @@ int8_t Semaforo_init(Semaforo_t* semaforo, uint8_t ceiling)
 	if (ceilingStack == NULL)
 	{
 		free(semaforo);
-		sei();
+		SREG = tmpstatus;
 		return -2;
 	}
 
 	semaforo->estado = UNLOCKED;
 	semaforo->ceiling = ceiling;
 
-	sei();
+	SREG = tmpstatus;
+	
 	return 0;
 }
 
@@ -77,20 +80,21 @@ int8_t Semaforo_init(Semaforo_t* semaforo, uint8_t ceiling)
 int8_t Semaforo_apaga(Semaforo_t* semaforo)
 {
 	uint8_t i, resultado;
+	uint8_t tmpstatus = SREG;	// Guardar estado de interrupçoes
 
-	cli();
+	cli(); // Desativar interrupçoes
 
 	// Verificacao dos parametros passados a funcao
 	if (semaforo == NULL)
 	{
-		sei();
+		SREG = tmpstatus;
 		return -1;
 	}
 
 	// Não deixa apagar semáforo trancado
 	if(semaforo->estado == LOCKED)
 	{
-		sei();
+		SREG = tmpstatus;
 		return -1;
 	}
 
@@ -107,7 +111,7 @@ int8_t Semaforo_apaga(Semaforo_t* semaforo)
 
 	// Apaga a estrutura
 	free(semaforo);
-	sei();
+	SREG = tmpstatus;
 
 	return 0;
 }
@@ -118,7 +122,10 @@ int8_t Semaforo_apaga(Semaforo_t* semaforo)
  */
 void Semaforo_lock(Semaforo_t* semaforo)
 {
-	cli();
+	uint8_t tmpstatus = SREG;	// Guardar estado de interrupçoes
+	
+	cli(); // Desativar interrupçoes
+	
 	semaforo->estado = LOCKED;
 	if(semaforo->ceiling >= System_Ceiling())
 	{
@@ -127,8 +134,9 @@ void Semaforo_lock(Semaforo_t* semaforo)
 	else
 	{
 		Stack_Push(System_Ceiling());
+
 	}
-	sei();
+	SREG = tmpstatus;
 }
 /*
  * Liberta um semáforo.
@@ -136,10 +144,13 @@ void Semaforo_lock(Semaforo_t* semaforo)
  */
 void Semaforo_unlock(Semaforo_t* semaforo)
 {
-	cli();
+	uint8_t tmpstatus = SREG;	// Guardar estado de interrupçoes
+	cli(); // Desativar interrupçoes
+	
 	semaforo->estado = UNLOCKED;
 	Stack_Pop();
-	sei();
+
+	SREG = tmpstatus;
 }
 
 int8_t Stack_Push(uint8_t var)

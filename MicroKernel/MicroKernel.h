@@ -16,6 +16,7 @@
 
 
 #include <avr/io.h>
+#include <avr/interrupt.h>
 #include "Scheduler_Fixo.h"
 #include "Timers.h"
 #include "ATmega.h"

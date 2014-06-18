@@ -91,8 +91,6 @@ void Sched_Schedule()
 }
 
 
-
-
 void Sched_dispatch()//  __attribute__((signal,naked))
 {
 	//ListaTarefas_t *listatarefas = scheduler->tarefas;
