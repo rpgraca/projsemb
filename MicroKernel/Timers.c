@@ -32,7 +32,7 @@ extern Tarefa_t * tarefaAtual;
 /**************************************************************/
 
 
-Timer_t* Timers_criaTimer(uint16_t periodo)
+Timer_t* Timers_criaTimer(uint16_t periodo,uint16_t numTarefas)
 {
 	Timer_t *timer;
 
@@ -50,8 +50,10 @@ Timer_t* Timers_criaTimer(uint16_t periodo)
 
 	timer->periodo = periodo;
 	timer->tActual = 0;
-	timer->tarefa = tarefaAtual;
+	timer->numTarefas = numTarefas;
+	timer->stackSize = 0;
 
+	timer->tarefas = (Tarefa_t**) malloc(sizeof(Tarefa_t*)*numTarefas);
 
 	// Realocacao de memoria do vector
 	vecTimers.timers = (Timer_t**)realloc(vecTimers.timers, (vecTimers.nTimers + 1) * sizeof(Timer_t*));
@@ -84,6 +86,7 @@ int8_t Timers_apagaTimer(Timer_t *timer)
 		if (vecTimers.timers[i] == timer)
 		{
 			// Elimina o timer
+			free(timer->tarefas);
 			free(timer);
 
 
@@ -115,7 +118,7 @@ int8_t Timers_apagaTimer(Timer_t *timer)
 
 void Timers_actualizaTimers()
 {
-	int8_t i;
+	int8_t i,j;
 
 
 	for (i = 0; i < vecTimers.nTimers; i++)
@@ -129,7 +132,11 @@ void Timers_actualizaTimers()
 		if (vecTimers.timers[i]->tActual >= vecTimers.timers[i]->periodo)
 		{
 			vecTimers.timers[i]->tActual=0;
-			vecTimers.timers[i]->tarefa->activada = 1;
+			for(j=0; j < vecTimers.timers[i]->stackSize; j++)
+			{
+				vecTimers.timers[i]->tarefas[j]->activada = 1;
+			}
+			vecTimers.timers[i]->stackSize = 0;
 		}
 	}
 
@@ -148,26 +155,32 @@ int8_t Timers_esperaActivacao(Timer_t *timer)
 	// Verificacao dos parametros passados a funcao
 	if (timer == NULL)
 		return -1;
-
+	if(timer->stackSize >= timer->numTarefas)
+	{
+		return -2;
+	}
 
 
 	// Verifica se o timer ja terminou.
 	// Se ainda nao terminou, nao faz nada, pois quando terminar o interrupt handler
 	// dos ticks vai activa-la.
-	if (Timers_timerTerminado(timer))
+	// Desnecessário porque Timers_timerTerminado(timer) nunca retorna 1 (reinicio segue-se logo ao timeout)
+	/*if (Timers_timerTerminado(timer))
 	{
-		timer->tarefa->activada = 1;
+		tarefaAtual->activada = 1;
 
 		if (resultado < 0)
 			return -2;
-	}
-
+	}*/
+	
+	timer->tarefas[timer->stackSize] = tarefaAtual;
+	timer->stackSize++;
 
 	// Limpa a flag de tarefa activa
-	resultado = Tarefa_desactivaTarefa(timer->tarefa);
+	resultado = Tarefa_desactivaTarefa(tarefaAtual);
 
 	if (resultado < 0)
-		return -2;
+		return -3;
 
 
 	// Invoca o dispatcher para retirar esta tarefa de execucao e dar o CPU a outra tarefa
@@ -192,7 +205,7 @@ int8_t Timers_sleep(uint16_t periodo)
 
 
 	// Cria o timer
-	timer = Timers_criaTimer(periodo);
+	timer = Timers_criaTimer(periodo,1);
 
 	if (timer == NULL)
 		return -1;

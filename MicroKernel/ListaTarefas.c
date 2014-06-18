@@ -66,7 +66,7 @@ Tarefa_t* Tarefa_cria(uint8_t prioridade, uint16_t ceilingstackSize, void* (*fun
 	tarefa->prioridade = prioridade;
 	tarefa->ceilingstackSize = ceilingstackSize;
 	tarefa->funcao = funcao;
-	tarefa->activada = 0;
+	tarefa->activada = 1;
 	tarefa->stackPtr = ((char*) tarefa) + ceilingstackSize;
 	
 	

@@ -34,10 +34,12 @@
 // Estrutura do timer
 typedef struct
 {
-	uint16_t periodo;		// Periodo do timer (em mili-segundos)
+	uint16_t periodo;		// Periodo do timer (em ticks)
 	uint16_t tActual;		// Tempo actual do timer
+	uint8_t numTarefas;		// Numero de tarefas que usam o timer
+	uint8_t stackSize;		// Numero de tarefas em espera
 
-	Tarefa_t *tarefa;		// Apontador para a tarefa a que este timer pertence
+	Tarefa_t **tarefas;		// Stack de tarefas em espera	
 } Timer_t;
 
 
@@ -85,7 +87,7 @@ int8_t Timers_termina();
  * 
  * @return: Apontador para o timer criado ou NULL em caso de erro.
  */
-Timer_t* Timers_criaTimer(uint16_t periodo);
+Timer_t* Timers_criaTimer(uint16_t periodo, uint16_t numTarefas);
 
 
 

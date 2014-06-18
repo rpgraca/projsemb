@@ -26,14 +26,14 @@ void * funcA(void * ptr)
 	while(1)
 	{
 		x++;
-		if(x==5)
+		if(x==8)
 		{
 			listatarefas->prioridades[2]->tarefas[0]->activada = 1;
 			tick();
 		}
 		else if(x==12)
 		{
-			listatarefas->prioridades[1]->tarefas[0]->activada = 0;
+			Timers_esperaActivacao(timer);
 			tick();
 		}
 		tick();
@@ -44,12 +44,20 @@ void * funcA(void * ptr)
 
 void * funcB(void * ptr)
 {
-	int x=0x43;
+	int x=0;
 	while(1)
 	{
+		x++;
 		Timers_esperaActivacao(timer);
 	}
 	return 0x00;
+}
+void * funcC(void* ptr)
+{
+	while(1)
+	{
+		tick();
+	}
 }
 void funcX(void) __attribute__((signal));
 void funcX(void)
@@ -69,9 +77,9 @@ int * z = (int*) malloc(sizeof(int));
 	listatarefas = ListaTarefas_cria(3);
 	ListaTarefas_adicionaTarefa(listatarefas,1,400,funcA);
 	ListaTarefas_adicionaTarefa(listatarefas,2,400,funcB);
-	listatarefas->prioridades[1]->tarefas[0]->activada = 1;
-	timer=Timers_criaTimer(7);
-	timer->tarefa = listatarefas->prioridades[2]->tarefas[0];
+	ListaTarefas_adicionaTarefa(listatarefas,0,400,funcC);
+	listatarefas->prioridades[2]->tarefas[0]->activada = 0;
+	timer=Timers_criaTimer(7,2);
 	Sched_dispatch();
 	
     while(1)
