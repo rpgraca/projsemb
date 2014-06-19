@@ -7,9 +7,7 @@ projsemb
 ## Falta fazer:
 
 > Desativar tarefa quando faz return;
-
-> Fazer Makefile com linkagem;
-
-> Testar no ATmega;
-
 > Testar semáforos;
+> Medir tempos;
+> Implementar teste por UART;
+> (...)
