@@ -6,7 +6,7 @@ projsemb
 
 ### Falta fazer:
 
-> Desativar tarefa quando faz return;
+> Remover passos, variáveis e argumentos desnecessários das funções do kernel
 
 > Testar semáforos;
 

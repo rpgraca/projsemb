@@ -133,12 +133,9 @@ int8_t ListaTarefas_adicionaTarefa(ListaTarefas_t *listaTarefas, uint8_t priorid
 int8_t ListaTarefas_removeTarefa(ListaTarefas_t *listaTarefas, Tarefa_t *tarefa);
 
 
-
 /*
- * Inicializa tarefa 
- */
-void funcInit(Tarefa_t tarefa);
-
-
+ * Função para onde salta uma tarefa sempre que faz return
+ */ 
+void ListaTarefas_terminaTarefaAtual();
 
 #endif

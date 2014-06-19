@@ -108,7 +108,7 @@ void Sched_schedule();
 * pendentes e, caso haja, activa-a (aloca os recursos do sistema para a
 * tarefa).
 */
-void Sched_dispatch() __attribute__((naked,signal));
+void Sched_dispatch() __attribute__((naked));
 
 
 

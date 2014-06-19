@@ -104,7 +104,7 @@ int8_t Timers_apagaTimer(Timer_t *timer);
  * Actualiza os timers em uma unidade.
  * Caso os timers terminem, as respectivas tarefas sao activadas e o timer reiniciado.
  */
-void Timers_actualizaTimers() __attribute__((naked,signal));
+void Timers_actualizaTimers() __attribute__((naked));
 
 
 

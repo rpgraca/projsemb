@@ -162,7 +162,7 @@ void Timers_actualizaTimers()
 	}
 
 
-	asm volatile("reti");
+	asm volatile("ret");
 }
 
 

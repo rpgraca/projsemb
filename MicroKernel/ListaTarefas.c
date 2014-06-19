@@ -23,6 +23,8 @@
 /**************************************************************/
 extern void * (*funcAtual)(void*);
 extern char *stackptrAtual;
+extern Tarefa_t * tarefaAtual;
+extern ListaTarefas_t *listatarefas;
 char * stackptrBak;
 void * argumento;
 
@@ -54,7 +56,7 @@ Tarefa_t* Tarefa_cria(uint8_t prioridade, uint16_t stackSize, void* (*funcao)(vo
 {
 	Tarefa_t *tarefa;
 	uint8_t tmpstatus = SREG;	// Guardar estado de interrupçoes
-
+	Tarefa_t * tmp = tarefaAtual; // Guardar temporiamente
 	// Cria a tarefa
 	tarefa = (Tarefa_t*) malloc(sizeof(Tarefa_t) + stackSize);
 
@@ -75,6 +77,7 @@ Tarefa_t* Tarefa_cria(uint8_t prioridade, uint16_t stackSize, void* (*funcao)(vo
 	stackptrBak = stackptrAtual;
 	stackptrAtual = tarefa->stackPtr;
 	funcAtual = tarefa->funcao;	
+	tarefaAtual = ListaTarefas_terminaTarefaAtual; //tarefaAtual é usado para enviar endereço de retorno
 	CRIARCONTEXTO();
 	GUARDARSTACKPTR();
 	
@@ -87,7 +90,7 @@ Tarefa_t* Tarefa_cria(uint8_t prioridade, uint16_t stackSize, void* (*funcao)(vo
 	RECUPERARSTACKPTR();
 	tarefa->stackPtr = stackptrBak;
 	funcAtual = NULL;
-	
+	tarefaAtual=tmp;
 	SREG = tmpstatus; // Recuperar estado original das interrupçoes
 	
 	return tarefa;
@@ -462,4 +465,12 @@ int8_t ListaTarefas_removeTarefa(ListaTarefas_t *listaTarefas, Tarefa_t *tarefa)
 
 	SREG = tmpstatus;
 	return resultado;
+}
+
+void ListaTarefas_terminaTarefaAtual()
+{
+	cli();
+	ListaTarefas_removeTarefa(listatarefas,tarefaAtual);
+	sei();
+	Sched_dispatch();
 }

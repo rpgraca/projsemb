@@ -94,6 +94,10 @@
 					"lds R29,stackptrAtual+1	\n\t	"\
 					"out __SP_L__,R28	\n\t	" \
 					"out __SP_H__,R29	\n\t	" \
+					"lds r0, tarefaAtual	\n\t" \
+					"push R0		\n\t	" \
+					"lds r0, tarefaAtual+1	\n\t" \
+					"push R0		\n\t	" \
 					"lds R0,funcAtual	\n\t" \
 					"push R0		\n\t	" \
 					"lds R0,funcAtual+1	\n\t	" \
