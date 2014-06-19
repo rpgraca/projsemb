@@ -21,9 +21,9 @@
 /**************************************************************/
 
 // Definicoes do timer do microcontrolador
-#define	CLOCKTIME	0.001	// Tempo de tick em segundos (= 1 ms)
+#define	CLOCKTIME	0.01	// Tempo de tick em segundos 
 #define PRESCALAR	8
-#define F_CPU		16000000
+//#define F_CPU		16000000
 /**************************************************************/
 /*                           FUNCOES                          */
 /**************************************************************/

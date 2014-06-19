@@ -21,8 +21,8 @@ int8_t Stack_Pop();
 /**************************************************************/
 /*                      VARIAVEIS GLOBAIS                     */
 /**************************************************************/
-//extern uint8_t* ceilingStack = NULL;
-//extern uint8_t ceilingstackSize=0;
+extern uint8_t* ceilingStack;
+extern uint8_t ceilingstackSize;
 uint8_t stackMaxsize;
 
 /**************************************************************/
@@ -79,7 +79,6 @@ int8_t Semaforo_init(Semaforo_t* semaforo, uint8_t ceiling)
  */
 int8_t Semaforo_apaga(Semaforo_t* semaforo)
 {
-	uint8_t i, resultado;
 	uint8_t tmpstatus = SREG;	// Guardar estado de interrupçoes
 
 	cli(); // Desativar interrupçoes

@@ -24,6 +24,9 @@
 extern char *stackptrAtual;
 extern char *stackptrIdle;
 extern Tarefa_t *tarefaAtual;
+extern ListaTarefas_t* listatarefas;
+extern uint8_t ceilingstackSize;
+extern uint8_t* ceilingStack;
 
 
 
@@ -63,11 +66,11 @@ int8_t Sched_termina()
 
 
 
-int8_t Sched_adicionaTarefa(uint8_t prioridade, uint16_t ceilingstackSize, void* (*funcao)(void *))
+int8_t Sched_adicionaTarefa(uint8_t prioridade, uint16_t stackSize, void* (*funcao)(void *))
 {
 	uint8_t resultado;
 	
-	resultado = ListaTarefas_adicionaTarefa(listatarefas, prioridade, ceilingstackSize, funcao);
+	resultado = ListaTarefas_adicionaTarefa(listatarefas, prioridade, stackSize, funcao);
 	
 	return resultado;
 }

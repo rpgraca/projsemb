@@ -15,6 +15,7 @@
 
 #include <avr/io.h>
 #include <stdlib.h>
+#include <avr/interrupt.h>
 
 /**************************************************************/
 /*                         DEFINICOES                         */
@@ -33,11 +34,6 @@ typedef struct
 	uint8_t estado;
 } Semaforo_t;
 
-/**************************************************************/
-/*                      VARIAVEIS GLOBAIS                     */
-/**************************************************************/
-extern uint8_t* ceilingStack;
-extern uint8_t ceilingstackSize;
 
 /**************************************************************/
 /*                            MACROS                          */

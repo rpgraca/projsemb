@@ -14,17 +14,27 @@
 #include "MicroKernel.h"
 
 
+ListaTarefas_t * listatarefas;
+
+Tarefa_t * tarefaAtual = NULL;
+char *stackptrAtual = NULL;
+char *stackptrIdle = NULL;
+void * (*funcAtual)(void*) = NULL;
+ 
+uint8_t* ceilingStack = NULL;
+uint8_t ceilingstackSize = 0;
 
 
 /**************************************************************/
 /*                  INTERRUPT HANDLER DO TIMER                */
 /**************************************************************/
 
-ISR(TIMER1_COMPA_vect)
+ISR(TIMER1_COMPA_vect,ISR_NAKED)
 {
 	cli();
 	Timers_actualizaTimers();
 	Sched_dispatch();
+	asm volatile("reti");
 }
 
 
@@ -37,19 +47,15 @@ ISR(TIMER1_COMPA_vect)
 
 int8_t UK_inicializa()
 {
-	char * tmpheap = (char *) malloc(HEAPSIZE);
 	int8_t resultado = 0;
 
 	
 	ATmega_iniciaTick();	
 	resultado += ATmega_idleStackptr();
 	resultado += Sched_inicia();
-	resultado += Timers_inicia();
+	//resultado += Timers_inicia();
 	
-	free(tmpheap); /* tmpheap serve para reservar um espaço para a heap das tarefas no inicio da memória
-					* o seu tamanho deve ser devidamente calculado e deixado ao critério do programador */
 					
-	sei();	
 	//////////////////////////
 	//////////////////////////
 	//////////////////////////
@@ -70,7 +76,6 @@ int8_t UK_termina()
 	
 	
 	resultado += Sched_termina();
-	resultado += Timers_termina();
 
 	//////////////////////////
 	//////////////////////////

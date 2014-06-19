@@ -52,7 +52,7 @@
 /*                      VARIAVEIS GLOBAIS                     */
 /**************************************************************/
 //extern Scheduler_t *scheduler;		// Apontador para o scheduler
-extern ListaTarefas_t *listatarefas;
+//extern ListaTarefas_t *listatarefas;
 
 
 
@@ -81,7 +81,7 @@ int8_t Sched_termina();
  *
  * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
  */
-int8_t Sched_adicionaTarefa(uint8_t prioridade, uint16_t ceilingstackSize, void* (*funcao)(void *));
+int8_t Sched_adicionaTarefa(uint8_t prioridade, uint16_t stackSize, void* (*funcao)(void *));
 
 
 /*

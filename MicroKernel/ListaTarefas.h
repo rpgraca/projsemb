@@ -36,7 +36,7 @@ typedef struct
 	uint8_t prioridade;
 	uint8_t activada;			// Flag que indica que a tarefa esta activa
 	
-	uint16_t ceilingstackSize;
+	uint16_t stackSize;
 	
 	void* (*funcao)(void *);
 	char *stackPtr;				// Apontador para a sua stack
@@ -122,7 +122,7 @@ int8_t ListaTarefas_apaga(ListaTarefas_t *listaTarefas);
  * 
  * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
  */
-int8_t ListaTarefas_adicionaTarefa(ListaTarefas_t *listaTarefas, uint8_t prioridade, uint16_t ceilingstackSize, void* (*funcao)(void *));
+int8_t ListaTarefas_adicionaTarefa(ListaTarefas_t *listaTarefas, uint8_t prioridade, uint16_t stackSize, void* (*funcao)(void *));
 
 
 /*

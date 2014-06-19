@@ -19,6 +19,8 @@
 #include <avr/interrupt.h>
 #include "Scheduler_Fixo.h"
 #include "Timers.h"
+#include "Sinais.h"
+#include "Semaforo.h"
 #include "ATmega.h"
 
 
@@ -36,7 +38,6 @@
 /**************************************************************/
 /*							DEFINICOES                        */
 /**************************************************************/
-#define HEAPSIZE	600
 
 /**************************************************************/
 /*                      VARIAVEIS GLOBAIS                     */
@@ -44,15 +45,6 @@
 
 //Scheduler_t *scheduler;		// Apontador para o scheduler
 //VectorTimers_t vecTimers;	// Vector dos timers criados
-ListaTarefas_t * listatarefas;
-
-Tarefa_t * tarefaAtual = NULL;
-char *stackptrAtual = NULL;
-char *stackptrIdle = NULL;
-void * (*funcAtual)(void*) = NULL;
- 
-uint8_t* ceilingStack = NULL;
-uint8_t ceilingstackSize = 0;
 
 
 

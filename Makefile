@@ -13,28 +13,37 @@ BAUD=115200
 PROTOCOL=arduino
 PART=ATMEGA328P
 CFLAGS=-Wall -Os -DF_CPU=$(F_CPU) -mmcu=$(MCU)
-PROG=uk
+PROG=main_testes
  
-.SUFFIXES: .elf .hex
- 
-.c.elf:
-	$(CC) $(CFLAGS) -o $@ $<
- 
-.elf.hex:
+
+all: $(PROG).hex
+
+$(PROG).hex: $(PROG).elf
 	$(OBJCOPY) -O $(BIN_FORMAT) -R .eeprom $< $@
- 
-.PHONY: all
-all: ${PROG}.hex
- 
-${PROG}.hex: ${PROG}.elf
- 
-${PROG}.elf: ${PROG}.c
- 
-.PHONY: clean
+
+$(PROG).elf: $(PROG).o MicroKernel/ATmega.o MicroKernel/ListaTarefas.o MicroKernel/MicroKernel.o MicroKernel/Scheduler_Fixo.o MicroKernel/Semaforo.o MicroKernel/Sinais.o MicroKernel/Timers.o
+	$(CC) $(CFLAGS) -o $@ $(PROG).o MicroKernel/ATmega.o MicroKernel/ListaTarefas.o MicroKernel/MicroKernel.o MicroKernel/Scheduler_Fixo.o MicroKernel/Semaforo.o MicroKernel/Sinais.o MicroKernel/Timers.o
+
+$(PROG).O: $(PROG).c
+	$(CC) $(CFLAGS) -o $@ $< -c
+MicroKernel/ATmega.o: MicroKernel/ATmega.c
+	$(CC) $(CFLAGS) -o $@ $< -c
+MicroKernel/ListaTarefas.o: MicroKernel/ListaTarefas.c
+	$(CC) $(CFLAGS) -o $@ $< -c
+MicroKernel/MicroKernel.o: MicroKernel/MicroKernel.c
+	$(CC) $(CFLAGS) -o $@ $< -c
+MicroKernel/Scheduler_Fixo.o: MicroKernel/Scheduler_Fixo.c  
+	$(CC) $(CFLAGS) -o $@ $< -c
+MicroKernel/Semaforo.o: MicroKernel/Semaforo.c  
+	$(CC) $(CFLAGS) -o $@ $< -c
+MicroKernel/Sinais.o: MicroKernel/Sinais.c  
+	$(CC) $(CFLAGS) -o $@ $< -c
+MicroKernel/Timers.o: MicroKernel/Timers.c
+	$(CC) $(CFLAGS) -o $@ $< -c
+
 clean:
-	$(RM) ${PROG}.elf ${PROG}.hex
+	$(RM) MicroKernel/*.o ${PROG}.elf ${PROG}.hex
  
-.PHONY: upload
 upload: ${PROG}.hex
 	$(AVRDUDE) -c $(PROTOCOL) -p $(PART) -P $(PORT) \
 		-b $(BAUD) -U flash:w:${PROG}.hex

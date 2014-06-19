@@ -1,5 +1,5 @@
-extern char * stackptrAtual;
-extern void * (*funcAtual)(void *);
+//extern char * stackptrAtual;
+//extern void * (*funcAtual)(void *);
 #define GUARDARCONTEXTO() {	asm volatile(	"push r0		\n\t "\
 					"in r0, __SREG__	\n\t "\
 					"cli			\n\t "\

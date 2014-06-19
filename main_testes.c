@@ -14,15 +14,17 @@
 
 #include "MicroKernel/MicroKernel.h"
 
-#include <stdio.h>
 #include <stdlib.h>
 
+#define HEAPSIZE	600
 
 
+#define LEDA		5
+#define LEDB		4
 
 void* funcA(void *arg)
 {
-	Timer_t *timer = Timers_criaTimer(100);
+	Timer_t *timer = Timers_criaTimer(50,1);
 
 	if (timer == NULL)
 		return NULL;
@@ -30,15 +32,9 @@ void* funcA(void *arg)
 
 	while (1)
 	{
-		/////////////////////////
-		//
-		// FUNCAO DA TAREFA
-		// (...)
-		//
-		/////////////////////////
 
 
-
+		PORTB ^= (1<<LEDA);
 		Timers_esperaActivacao(timer);
 	}
 
@@ -47,11 +43,9 @@ void* funcA(void *arg)
 }
 
 
-
-
 void* funcB(void *arg)
 {
-	Timer_t *timer = Timers_criaTimer(100);
+	Timer_t *timer = Timers_criaTimer(25,1);
 
 	if (timer == NULL)
 		return NULL;
@@ -59,14 +53,9 @@ void* funcB(void *arg)
 
 	while (1)
 	{
-		/////////////////////////
-		//
-		// FUNCAO DA TAREFA
-		// (...)
-		//
-		/////////////////////////
 
 
+		PORTB ^= (1<<LEDB);
 
 		Timers_esperaActivacao(timer);
 	}
@@ -86,12 +75,12 @@ void testes()
 	int resultado;
 
 
-	resultado = Sched_adicionaTarefa(0, 100, funcA);
+	resultado = Sched_adicionaTarefa(0, 150, funcA);
 	if (resultado < 0)
 		return;
 
 
-	resultado = Sched_adicionaTarefa(1, 50, funcB);
+	resultado = Sched_adicionaTarefa(1, 150, funcB);
 	if (resultado < 0)
 		return;
 }
@@ -102,29 +91,36 @@ void testes()
 int main()
 {
 	int resultado;
+	char * tmpheap = (char *) malloc(HEAPSIZE);
 	
 	//////////////////// INICIALIZACAO DO KERNEL ////////////////////
 
 	resultado = UK_inicializa();
-	if (resultado < 0)
-	{
-		printf("ERRO: a incializar o kernel\n");
-		exit(-1);
-	}
+	//if (resultado < 0)
+	//{
+	//	//printf("ERRO: a incializar o kernel\n");
+	//	exit(-1);
+	//}
 	
 	
 	//////////////////// TESTES ////////////////////
+	DDRB = (1<<LEDA) | (1<<LEDB);  // Define LED do arduino como saida (PORTB5)
 	testes();
-	
 
+	free(tmpheap); /* tmpheap serve para reservar um espaço para a heap das tarefas no inicio da memória
+					* o seu tamanho deve ser devidamente calculado e deixado ao critério do programador */
+
+	sei();
+
+	while(1);
 	//////////////////// TERMINACAO DO KERNEL ////////////////////
 
-	resultado = UK_termina();
-	if (resultado < 0)
-	{
-		printf("ERRO: a terminar o kernel\n");
-		exit(-1);
-	}
+	//resultado = UK_termina();
+	//if (resultado < 0)
+	//{
+	//	//printf("ERRO: a terminar o kernel\n");
+	//	exit(-1);
+	//}
 	
 	return 0;
 }

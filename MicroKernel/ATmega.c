@@ -20,6 +20,7 @@ void * ATmega_idleMode(void *);
 extern char *stackptrIdle;
 extern char *stackptrAtual;
 extern char *stackptrBak;
+extern void *(*funcAtual)(void*);
 /**************************************************************/
 /*                           FUNCOES                          */
 /**************************************************************/

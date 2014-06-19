@@ -23,7 +23,6 @@
 /**************************************************************/
 extern void * (*funcAtual)(void*);
 extern char *stackptrAtual;
-
 char * stackptrBak;
 
 
@@ -32,11 +31,11 @@ char * stackptrBak;
 /**************************************************************/
 /*                 FUNCOES AUXLIARES - PROTOTIPOS             */
 /**************************************************************/
-Tarefa_t* Tarefa_cria(uint8_t prioridade, uint16_t ceilingstackSize, void* (*funcao)(void *));
+Tarefa_t* Tarefa_cria(uint8_t prioridade, uint16_t stackSize, void* (*funcao)(void *));
 int8_t Tarefa_apaga(Tarefa_t *tarefa);
 TarefasPrioridade_t* TarefasPrioridade_cria();
 int8_t TarefasPrioridade_apaga(TarefasPrioridade_t* tarefasPrioridade);
-int8_t TarefasPrioridade_adicionaTarefa(TarefasPrioridade_t* tarefasPrioridade, uint8_t prioridade, uint16_t ceilingstackSize, void* (*funcao)(void *));
+int8_t TarefasPrioridade_adicionaTarefa(TarefasPrioridade_t* tarefasPrioridade, uint8_t prioridade, uint16_t stackSize, void* (*funcao)(void *));
 int8_t TarefasPrioridade_removeTarefa(TarefasPrioridade_t* tarefasPrioridade, Tarefa_t *tarefa);
 
 
@@ -51,23 +50,23 @@ int8_t TarefasPrioridade_removeTarefa(TarefasPrioridade_t* tarefasPrioridade, Ta
  * @param prioridade: 0 < prioridade < MAX_PRIORIDADE
  * @return: Apontador para a tarefa criada ou NULL em caso de erro.
  */
-Tarefa_t* Tarefa_cria(uint8_t prioridade, uint16_t ceilingstackSize, void* (*funcao)(void *))
+Tarefa_t* Tarefa_cria(uint8_t prioridade, uint16_t stackSize, void* (*funcao)(void *))
 {
 	Tarefa_t *tarefa;
 	uint8_t tmpstatus = SREG;	// Guardar estado de interrupçoes
 
 	// Cria a tarefa
-	tarefa = (Tarefa_t*) malloc(sizeof(Tarefa_t) + ceilingstackSize);
+	tarefa = (Tarefa_t*) malloc(sizeof(Tarefa_t) + stackSize);
 
 	if (tarefa == NULL)
 		return NULL;
 
 
 	tarefa->prioridade = prioridade;
-	tarefa->ceilingstackSize = ceilingstackSize;
+	tarefa->stackSize = stackSize;
 	tarefa->funcao = funcao;
 	tarefa->activada = 1;
-	tarefa->stackPtr = ((char*) tarefa) + ceilingstackSize;
+	tarefa->stackPtr = ((char*) tarefa) + stackSize;
 	
 	// Cria o contexto da tarefa
 	cli(); // Desativar interrupçoes
@@ -191,7 +190,7 @@ int8_t TarefasPrioridade_apaga(TarefasPrioridade_t* tarefasPrioridade)
  *
  * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
  */
-int8_t TarefasPrioridade_adicionaTarefa(TarefasPrioridade_t* tarefasPrioridade, uint8_t prioridade, uint16_t ceilingstackSize, void* (*funcao)(void *))
+int8_t TarefasPrioridade_adicionaTarefa(TarefasPrioridade_t* tarefasPrioridade, uint8_t prioridade, uint16_t stackSize, void* (*funcao)(void *))
 {
 	Tarefa_t *tarefa;
 
@@ -208,7 +207,7 @@ int8_t TarefasPrioridade_adicionaTarefa(TarefasPrioridade_t* tarefasPrioridade, 
 
 
 	// Cria a tarefa
-	tarefa = Tarefa_cria(prioridade, ceilingstackSize, funcao);
+	tarefa = Tarefa_cria(prioridade, stackSize, funcao);
 	if (tarefa == NULL)
 	{
 		SREG = tmpstatus;
@@ -418,7 +417,7 @@ int8_t ListaTarefas_apaga(ListaTarefas_t *listaTarefas)
 
 
 
-int8_t ListaTarefas_adicionaTarefa(ListaTarefas_t *listaTarefas, uint8_t prioridade, uint16_t ceilingstackSize, void* (*funcao)(void *))
+int8_t ListaTarefas_adicionaTarefa(ListaTarefas_t *listaTarefas, uint8_t prioridade, uint16_t stackSize, void* (*funcao)(void *))
 {
 	int8_t resultado;
 	uint8_t tmpstatus = SREG;	// Guardar estado de interrupçoes
@@ -427,13 +426,13 @@ int8_t ListaTarefas_adicionaTarefa(ListaTarefas_t *listaTarefas, uint8_t priorid
 
 
 	// Verificacao dos parametros passados a funcao
-	if ((listaTarefas == NULL) || (prioridade < 0 || prioridade >= listaTarefas->nPrioridades) || (ceilingstackSize <= 0) || (funcao == NULL) )
+	if ((listaTarefas == NULL) || (prioridade < 0 || prioridade >= listaTarefas->nPrioridades) || (stackSize <= 0) || (funcao == NULL) )
 	{
 		SREG = tmpstatus;
 		return -1;
 	}
 
-	resultado = TarefasPrioridade_adicionaTarefa(listaTarefas->prioridades[prioridade], prioridade, ceilingstackSize, funcao);
+	resultado = TarefasPrioridade_adicionaTarefa(listaTarefas->prioridades[prioridade], prioridade, stackSize, funcao);
 	
 	SREG = tmpstatus;
 
