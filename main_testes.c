@@ -15,15 +15,17 @@
 #include "MicroKernel/MicroKernel.h"
 
 #include <stdlib.h>
+#include <stdio.h>
+#include "uart.h"
 #include <avr/sleep.h>
 
-#define HEAPSIZE	1000
+#define HEAPSIZE	600
 
 
-#define LEDA		5
-#define LEDB		4
 Sinal_t *sinal1;
+Timer_t *timer;
 
+/*
 void* func1(void *arg)
 {
 	Timer_t *timer = Timers_criaTimer(1000,1);
@@ -107,6 +109,137 @@ void* func6(void *arg)
 		Timers_sleep(405);
 	}
 }
+*/
+
+void* func0(void *arg)
+{
+	//d printf("Entrei na tarefa 0\n");
+	int x=0;
+	int state=0;
+	while(1)
+	{
+		if(x==(int)arg)
+		{
+			PORTB ^= (1<< (int) arg);
+		}
+		if(state==0) x++;
+		else x--;
+		if(x==6 || x == 0)
+		{
+			state=1-state;
+		}
+		Timers_esperaActivacao(timer);
+		Sinais_sinaliza(sinal1);
+	}
+}
+
+
+void* func1(void *arg)
+{
+	//d printf("Entrei na tarefa 1\n");
+	int x=0;
+	int state=0;
+	while(1)
+	{
+		if(x==(int)arg)
+		{
+			PORTB ^= (1<< (int) arg);
+		}
+		if(state==0) x++;
+		else x--;
+		if(x==6 || x == 0)
+		{
+			state=1-state;
+		}
+		delay(2000);
+		Sinais_esperaSinal(sinal1);
+	}
+}
+
+
+void* func2(void *arg)
+{
+	//d printf("Entrei na tarefa 2\n");
+	int x=0;
+	int state=0;
+	while(1)
+	{
+		if(x==(int)arg)
+		{
+			PORTB ^= (1<< (int) arg);
+		}
+		if(state==0) x++;
+		else x--;
+		if(x==6 || x == 0)
+		{
+			state=1-state;
+		}
+		Sinais_esperaSinal(sinal1);
+	}
+}
+
+void* func3(void *arg)
+{
+	//d printf("Entrei na tarefa 3\n");
+	int x=0;
+	int state=0;
+	while(1)
+	{
+		if(x==(int)arg)
+		{
+			PORTB ^= (1<< (int) arg);
+		}
+		if(state==0) x++;
+		else x--;
+		if(x==6 || x == 0)
+		{
+			state=1-state;
+		}
+		Sinais_esperaSinal(sinal1);
+	}
+}
+
+void* func4(void *arg)
+{
+	//d printf("Entrei na tarefa 4\n");
+	int x=0;
+	int state=0;
+	while(1)
+	{
+		if(x==(int)arg)
+		{
+			PORTB ^= (1<< (int) arg);
+		}
+		if(state==0) x++;
+		else x--;
+		if(x==6 || x == 0)
+		{
+			state=1-state;
+		}
+		Sinais_esperaSinal(sinal1);
+	}
+}
+
+void* func5(void *arg)
+{
+	//d printf("Entrei na tarefa 5\n");
+	int x=0;
+	int state=0;
+	while(1)
+	{
+		if(x==(int)arg)
+		{
+			PORTB ^= (1<< (int) arg);
+		}
+		if(state==0) x++;
+		else x--;
+		if(x==6 || x == 0)
+		{
+			state=1-state;
+		}
+		Sinais_esperaSinal(sinal1);
+	}
+}
 
 
 /**************************************************************/
@@ -114,13 +247,12 @@ void* func6(void *arg)
 /**************************************************************/
 void testes()
 {
-	Sched_adicionaTarefa(3, 90, func1,(void*)5);
-	Sched_adicionaTarefa(3, 90, func2,(void*)4);
-	Sched_adicionaTarefa(0, 90, func3,(void*)3);
-	if(Sched_adicionaTarefa(1, 90, func4,(void*)2))
-		PORTB ^= (1<< 2);
-	Sched_adicionaTarefa(0, 90, func5,(void*)1);
-	Sched_adicionaTarefa(0, 90, func6,(void*)0);
+	Sched_adicionaTarefa(5, 90, func5,(void*)5);
+	Sched_adicionaTarefa(5, 90, func4,(void*)4);
+	Sched_adicionaTarefa(3, 90, func3,(void*)3);
+	Sched_adicionaTarefa(2, 90, func0,(void*)2);
+	Sched_adicionaTarefa(2, 90, func2,(void*)1);
+	Sched_adicionaTarefa(1, 90, func1,(void*)0);
 }
 
 
@@ -130,19 +262,28 @@ int main()
 {
 	char * tmpheap = (char *) malloc(HEAPSIZE);
 	
+	//uart_init();
+    //stdout = &uart_output;
+    //stdin  = &uart_input;
+
+	//d printf("\n\nolá!\n");
+	
 	//////////////////// INICIALIZACAO DO KERNEL ////////////////////
 
 	UK_inicializa();
 	DDRB = 0xFF;  // Define LED do arduino como saida (PORTB5)
 	//if (resultado < 0)
 	//{
-	//	//printf("ERRO: a incializar o kernel\n");
+	//	////d printf("ERRO: a incializar o kernel\n");
 	//	exit(-1);
 	//}
 	
 	
 	//////////////////// TESTES ////////////////////
 	testes();
+
+	timer = Timers_criaTimer(100,6);
+	sinal1 = Sinais_criaSinal(6);
 
 	free(tmpheap); /* tmpheap serve para reservar um espaço para a heap das tarefas no inicio da memória
 					* o seu tamanho deve ser devidamente calculado e deixado ao critério do programador */

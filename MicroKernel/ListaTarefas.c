@@ -59,10 +59,14 @@ Tarefa_t* Tarefa_cria(uint8_t prioridade, uint16_t stackSize, void* (*funcao)(vo
 	uint8_t tmpstatus = SREG;	// Guardar estado de interrupçoes
 	Tarefa_t * tmp = tarefaAtual; // Guardar temporiamente
 	// Cria a tarefa
+	//d printf("Tarefa_cria(): A criar tarefa %d\n",(int) arg);
 	tarefa = (Tarefa_t*) malloc(sizeof(Tarefa_t) + stackSize);
 
 	if (tarefa == NULL)
+	{
+		//d printf("Tarefa_cria(): A tarefa %d não foi criada por erro no malloc()\n",(int) arg);
 		return NULL;
+	}
 
 
 	tarefa->prioridade = prioridade;
@@ -93,6 +97,8 @@ Tarefa_t* Tarefa_cria(uint8_t prioridade, uint16_t stackSize, void* (*funcao)(vo
 	funcAtual = NULL;
 	tarefaAtual=tmp;
 	SREG = tmpstatus; // Recuperar estado original das interrupçoes
+
+	//d printf("Tarefa_cria(): A tarefa %d foi criada com sucesso\n",(int) arg);
 	
 	return tarefa;
 }
@@ -131,10 +137,14 @@ TarefasPrioridade_t* TarefasPrioridade_cria()
 	TarefasPrioridade_t *tarefasPrioridade;
 
 
+	//d printf("TarefasPrioridade_cria(): A criar nivel de prioridade\n");
 	// Cria a estrutura
 	tarefasPrioridade = (TarefasPrioridade_t*)malloc(sizeof(TarefasPrioridade_t));
 	if (tarefasPrioridade == NULL)
+	{
+		//d printf("TarefasPrioridade_cria(): Erro no malloc()\n");
 		return NULL;
+	}
 
 
 	
@@ -143,6 +153,7 @@ TarefasPrioridade_t* TarefasPrioridade_cria()
 	tarefasPrioridade->ultimaTarefa = 0;
 
 
+	//d printf("TarefasPrioridade_cria(): Sucesso\n");
 	return tarefasPrioridade;
 }
 
@@ -200,12 +211,14 @@ int8_t TarefasPrioridade_adicionaTarefa(TarefasPrioridade_t* tarefasPrioridade, 
 	Tarefa_t *tarefa;
 
 
+	//d printf("TarefasPrioridade_adicionaTarefa(): A adicionar tarefa %d ao nivel de prioridade %u\n",(int) arg,(unsigned int) prioridade);
 	uint8_t tmpstatus = SREG;	// Guardar estado de interrupçoes
 	cli(); // Desativar interrupçoes
 
 	// Verificacao dos parametros passados a funcao
 	if (tarefasPrioridade == NULL)
 	{
+		//d printf("TarefasPrioridade_adicionaTarefa(): A retornar porque o apontador recebido é NULL\n");
 		SREG = tmpstatus;
 		return -1;
 	}
@@ -215,6 +228,7 @@ int8_t TarefasPrioridade_adicionaTarefa(TarefasPrioridade_t* tarefasPrioridade, 
 	tarefa = Tarefa_cria(prioridade, stackSize, funcao, arg);
 	if (tarefa == NULL)
 	{
+		//d printf("TarefasPrioridade_adicionaTarefa(): A retornar por erro a criar tarefa\n");
 		SREG = tmpstatus;
 		return -2;
 	}
@@ -224,6 +238,7 @@ int8_t TarefasPrioridade_adicionaTarefa(TarefasPrioridade_t* tarefasPrioridade, 
 	tarefasPrioridade->tarefas = (Tarefa_t**)realloc(tarefasPrioridade->tarefas, (tarefasPrioridade->nTarefas + 1) * sizeof(Tarefa_t*));
 	if (tarefasPrioridade->tarefas == NULL)
 	{
+		//d printf("TarefasPrioridade_adicionaTarefa(): A retornar por erro a realocar\n");
 		SREG = tmpstatus;
 		return -3;
 	}
@@ -234,6 +249,7 @@ int8_t TarefasPrioridade_adicionaTarefa(TarefasPrioridade_t* tarefasPrioridade, 
 	tarefasPrioridade->nTarefas++;
 
 	SREG = tmpstatus;
+	//d printf("TarefasPrioridade_adicionaTarefa(): Sucesso\n");
 
 	return 0;
 }
