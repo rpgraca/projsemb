@@ -15,6 +15,7 @@
 #include <avr/io.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "Scheduler_Fixo.h"
 
 #include <avr/interrupt.h>
 
@@ -77,7 +78,7 @@ Tarefa_t* Tarefa_cria(uint8_t prioridade, uint16_t stackSize, void* (*funcao)(vo
 	stackptrBak = stackptrAtual;
 	stackptrAtual = tarefa->stackPtr;
 	funcAtual = tarefa->funcao;	
-	tarefaAtual = ListaTarefas_terminaTarefaAtual; //tarefaAtual é usado para enviar endereço de retorno
+	tarefaAtual = (Tarefa_t *) ListaTarefas_terminaTarefaAtual; //tarefaAtual é usado para enviar endereço de retorno
 	CRIARCONTEXTO();
 	GUARDARSTACKPTR();
 	

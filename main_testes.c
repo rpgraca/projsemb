@@ -17,13 +17,14 @@
 #include <stdlib.h>
 #include <avr/sleep.h>
 
-#define HEAPSIZE	600
+#define HEAPSIZE	1000
 
 
 #define LEDA		5
 #define LEDB		4
+Sinal_t *sinal1;
 
-void* funcA(void *arg)
+void* func1(void *arg)
 {
 	Timer_t *timer = Timers_criaTimer(1000,1);
 	int x=0;
@@ -31,7 +32,7 @@ void* funcA(void *arg)
 		return NULL;
 
 
-	for(x=0;x<10;x++)	
+	for(x=0;x<31;x++)	
 	{
 
 
@@ -44,7 +45,7 @@ void* funcA(void *arg)
 }
 
 
-void* funcB(void *arg)
+void* func2(void *arg)
 {
 	Timer_t *timer = Timers_criaTimer(250,1);
 
@@ -66,16 +67,45 @@ void* funcB(void *arg)
 }
 
 
-void* funcC(void *arg)
+void* func3(void *arg)
+{
+	Timers_sleep(2000);
+	Timer_t *timer = Timers_criaTimer(150,1);
+	while (1)
+	{
+		PORTB ^= (1<< (int) arg);
+		Timers_esperaActivacao(timer);
+	}
+}
+
+void* func4(void *arg)
 {
 	while (1)
 	{
-
-
-
+		Timers_sleep(100);
+		PORTB ^= (1<< (int) arg);
 	}
+}
 
-	
+void* func5(void *arg)
+{
+	while (1)
+	{
+		Timers_sleep(100);
+		PORTB ^= (1<< (int) arg);
+	}
+}
+
+void* func6(void *arg)
+{
+
+	Timers_sleep(75);
+	while (1)
+	{
+		PORTB ^= (1<< (int) arg);
+		//Sinais_sinaliza(sinal1);
+		Timers_sleep(405);
+	}
 }
 
 
@@ -84,19 +114,13 @@ void* funcC(void *arg)
 /**************************************************************/
 void testes()
 {
-	int resultado;
-
-
-	resultado = Sched_adicionaTarefa(2, 150, funcA,5);
-	if (resultado < 0)
-		return;
-
-
-	resultado = Sched_adicionaTarefa(1, 150, funcB,4);
-	if (resultado < 0)
-		return;
-	
-//	resultado = Sched_adicionaTarefa(0, 50, funcC);
+	Sched_adicionaTarefa(3, 90, func1,(void*)5);
+	Sched_adicionaTarefa(3, 90, func2,(void*)4);
+	Sched_adicionaTarefa(0, 90, func3,(void*)3);
+	if(Sched_adicionaTarefa(1, 90, func4,(void*)2))
+		PORTB ^= (1<< 2);
+	Sched_adicionaTarefa(0, 90, func5,(void*)1);
+	Sched_adicionaTarefa(0, 90, func6,(void*)0);
 }
 
 
@@ -104,14 +128,12 @@ void testes()
 
 int main()
 {
-	int resultado;
 	char * tmpheap = (char *) malloc(HEAPSIZE);
 	
 	//////////////////// INICIALIZACAO DO KERNEL ////////////////////
 
-	resultado = UK_inicializa();
+	UK_inicializa();
 	DDRB = 0xFF;  // Define LED do arduino como saida (PORTB5)
-	PORTB ^= (1<<3);
 	//if (resultado < 0)
 	//{
 	//	//printf("ERRO: a incializar o kernel\n");
@@ -126,5 +148,6 @@ int main()
 					* o seu tamanho deve ser devidamente calculado e deixado ao critério do programador */
 
 	UK_inicia();	
-		PORTB ^= (1<<0);
+		
+	return 0;
 }
