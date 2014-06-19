@@ -15,6 +15,7 @@
 #include <avr/io.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <avr/sleep.h>
 
 
 
@@ -96,50 +97,53 @@ void Sched_Schedule()
 
 void Sched_dispatch()//  __attribute__((signal,naked))
 {
-	//ListaTarefas_t *listatarefas = scheduler->tarefas;
-
-
-	GUARDARCONTEXTO();
-
-	uint8_t j;
+	uint8_t j, FLAG_INATIVO;
 	int16_t i,prioridadeAtual;
 
 	if (tarefaAtual == NULL)
 	{
+		FLAG_INATIVO = 1;
 		prioridadeAtual = -1;
 	}
 
 	else
 	{
-		tarefaAtual->stackPtr = stackptrAtual;
+		FLAG_INATIVO = 0;
 		if(tarefaAtual->activada == 0)
 		{
+			GUARDARCONTEXTO();
+			tarefaAtual->stackPtr = stackptrAtual;
 			tarefaAtual = NULL;
 			prioridadeAtual = -1;
-			//COLOCAR STACKPOINTER NUM while(1) OU MANDAR CPU PARA POUPANCA DE ENERGIA CASO NAO HAJA ATIVACOES
 		}
+
 		else
 		{
 			prioridadeAtual = tarefaAtual->prioridade;
 		}
+
 	}
 
 	for (i = listatarefas->nPrioridades - 1; i > System_Ceiling() && i > prioridadeAtual; i--)
 	{
-		// Dois ciclos para verificar ativacoes de forma Round Robin
 		if(listatarefas->prioridades[i]->nTarefas == 0)
 		{
 			continue;
 		}
 		
+		// Dois ciclos para verificar ativacoes de forma Round Robin
 		for (j = listatarefas->prioridades[i]->ultimaTarefa + 1; j < listatarefas->prioridades[i]->nTarefas; j++)
 		{
 			if (listatarefas->prioridades[i]->tarefas[j]->activada > 0)
 			{
 				listatarefas->prioridades[i]->ultimaTarefa=j;
+				if(tarefaAtual != NULL)
+				{
+					GUARDARCONTEXTO();
+					tarefaAtual->stackPtr = stackptrAtual;
+				}
 				tarefaAtual = listatarefas->prioridades[i]->tarefas[j];
 				stackptrAtual = tarefaAtual->stackPtr;
-				prioridadeAtual = i;
 				RECUPERARCONTEXTO();
 				asm volatile("reti");
 			}
@@ -150,20 +154,32 @@ void Sched_dispatch()//  __attribute__((signal,naked))
 			if (listatarefas->prioridades[i]->tarefas[j]->activada > 0)
 			{
 				listatarefas->prioridades[i]->ultimaTarefa=j;
+				if(tarefaAtual != NULL)
+				{
+					GUARDARCONTEXTO();
+					tarefaAtual->stackPtr = stackptrAtual;
+				}
 				tarefaAtual = listatarefas->prioridades[i]->tarefas[j];
 				stackptrAtual = tarefaAtual->stackPtr;
-				prioridadeAtual = i;
 				RECUPERARCONTEXTO();
 				asm volatile("reti");
 			}
 		}
 	}
+
 	if(tarefaAtual == NULL)
 	{
-		stackptrAtual = stackptrIdle;
-		RECUPERARSTACKPTR();
-		asm volatile("reti");
+		// Caso nao haja tarefas a executar, limpa PC de retorno da stack e vai para sleepmode
+		// FLAG_INATIVO indica se a o CPU já estava inativo antes, só nesse caso é que é preciso limpar
+		// endereço de retorno da stack
+		if(FLAG_INATIVO == 1)
+		{
+			RECUPERARSTACKPTR();
+			stackptrAtual -= 2;
+			GUARDARSTACKPTR();
+		}
+		sei();
+		sleep_mode();
 	}
-	RECUPERARCONTEXTO();
 	asm volatile("reti");
 }

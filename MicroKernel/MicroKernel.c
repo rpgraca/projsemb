@@ -69,6 +69,11 @@ int8_t UK_inicializa()
 	return (resultado == 0 ? 0 : -1);
 }
 
+void UK_inicia()
+{
+	Sched_dispatch();
+}
+
 
 int8_t UK_termina()
 {

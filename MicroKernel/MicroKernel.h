@@ -69,6 +69,7 @@ int8_t UK_inicializa();
 int8_t UK_termina();
 
 
+void UK_inicia();
 
 
 #endif

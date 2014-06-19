@@ -12,7 +12,7 @@ PORT=/dev/ttyACM0
 BAUD=115200
 PROTOCOL=arduino
 PART=ATMEGA328P
-CFLAGS=-Wall -Os -DF_CPU=$(F_CPU) -mmcu=$(MCU)
+CFLAGS=-Wall -O0 -DF_CPU=$(F_CPU) -mmcu=$(MCU)
 PROG=main_testes
  
 
@@ -42,7 +42,7 @@ MicroKernel/Timers.o: MicroKernel/Timers.c
 	$(CC) $(CFLAGS) -o $@ $< -c
 
 clean:
-	$(RM) MicroKernel/*.o ${PROG}.elf ${PROG}.hex
+	$(RM) ${PROG}.o MicroKernel/*.o ${PROG}.elf ${PROG}.hex
  
 upload: ${PROG}.hex
 	$(AVRDUDE) -c $(PROTOCOL) -p $(PART) -P $(PORT) \

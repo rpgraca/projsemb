@@ -15,6 +15,7 @@
 #include "MicroKernel/MicroKernel.h"
 
 #include <stdlib.h>
+#include <avr/sleep.h>
 
 #define HEAPSIZE	600
 
@@ -24,7 +25,7 @@
 
 void* funcA(void *arg)
 {
-	Timer_t *timer = Timers_criaTimer(50,1);
+	Timer_t *timer = Timers_criaTimer(1000,1);
 
 	if (timer == NULL)
 		return NULL;
@@ -45,7 +46,7 @@ void* funcA(void *arg)
 
 void* funcB(void *arg)
 {
-	Timer_t *timer = Timers_criaTimer(25,1);
+	Timer_t *timer = Timers_criaTimer(250,1);
 
 	if (timer == NULL)
 		return NULL;
@@ -65,6 +66,17 @@ void* funcB(void *arg)
 }
 
 
+void* funcC(void *arg)
+{
+	while (1)
+	{
+
+
+
+	}
+
+	
+}
 
 
 /**************************************************************/
@@ -75,7 +87,7 @@ void testes()
 	int resultado;
 
 
-	resultado = Sched_adicionaTarefa(0, 150, funcA);
+	resultado = Sched_adicionaTarefa(2, 150, funcA);
 	if (resultado < 0)
 		return;
 
@@ -83,6 +95,8 @@ void testes()
 	resultado = Sched_adicionaTarefa(1, 150, funcB);
 	if (resultado < 0)
 		return;
+	
+//	resultado = Sched_adicionaTarefa(0, 50, funcC);
 }
 
 
@@ -96,6 +110,8 @@ int main()
 	//////////////////// INICIALIZACAO DO KERNEL ////////////////////
 
 	resultado = UK_inicializa();
+	DDRB = 0xFF;  // Define LED do arduino como saida (PORTB5)
+	PORTB ^= (1<<3);
 	//if (resultado < 0)
 	//{
 	//	//printf("ERRO: a incializar o kernel\n");
@@ -104,23 +120,11 @@ int main()
 	
 	
 	//////////////////// TESTES ////////////////////
-	DDRB = (1<<LEDA) | (1<<LEDB);  // Define LED do arduino como saida (PORTB5)
 	testes();
 
 	free(tmpheap); /* tmpheap serve para reservar um espaço para a heap das tarefas no inicio da memória
 					* o seu tamanho deve ser devidamente calculado e deixado ao critério do programador */
 
-	sei();
-
-	while(1);
-	//////////////////// TERMINACAO DO KERNEL ////////////////////
-
-	//resultado = UK_termina();
-	//if (resultado < 0)
-	//{
-	//	//printf("ERRO: a terminar o kernel\n");
-	//	exit(-1);
-	//}
-	
-	return 0;
+	UK_inicia();	
+		PORTB ^= (1<<0);
 }
