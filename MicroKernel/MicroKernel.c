@@ -51,7 +51,6 @@ int8_t UK_inicializa()
 
 	
 	ATmega_iniciaTick();	
-	resultado += ATmega_idleStackptr();
 	resultado += Sched_inicia();
 	//resultado += Timers_inicia();
 	

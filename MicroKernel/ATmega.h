@@ -33,11 +33,4 @@
  */
 void ATmega_iniciaTick();
 
-/*
- * Cria stack com endereço de função que envia CPU para Idle Mode 
- *
- * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
- */
-int8_t ATmega_idleStackptr();
-
 #endif

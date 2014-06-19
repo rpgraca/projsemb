@@ -11,9 +11,6 @@
 
 #include "ATmega.h"
 
-void * ATmega_idleMode(void *);
-
-
 /**************************************************************/
 /*                       VARIAVEIS GLOBAIS                    */
 /**************************************************************/
@@ -48,32 +45,3 @@ void ATmega_iniciaTick()
 	}
 }
 
-int8_t ATmega_idleStackptr()
-{
-	stackptrIdle = (char *) malloc(sizeof(char*));
-
-	// Cria o contexto da tarefa
-	GUARDARSTACKPTR();
-	stackptrBak = stackptrAtual;
-	stackptrAtual = stackptrIdle;
-	funcAtual = ATmega_idleMode;	
-	CRIARCONTEXTO();
-
-	// Troca Bak e Atual
-	stackptrBak = (char *) ((uint16_t) stackptrAtual ^ (uint16_t) stackptrBak);
-	stackptrAtual = (char *) ((uint16_t) stackptrAtual ^ (uint16_t) stackptrBak);
-	stackptrBak =  (char *) ((uint16_t) stackptrAtual ^ (uint16_t) stackptrBak);
-	
-	RECUPERARSTACKPTR();
-	stackptrIdle = stackptrBak-2;
-	return 0;
-}
-
-void * ATmega_idleMode(void * x)
-{
-	// Põe CPU em Idle Mode
-	while(1)
-	{
-		MCUCR &= ~(1 << SM2) & ~(1 << SM1) & ~(1 << SM0); 
-	}
-}
