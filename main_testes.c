@@ -35,7 +35,7 @@ void* funcA(void *arg)
 	{
 
 
-		PORTB ^= (1<<LEDA);
+		PORTB ^= (1<< (int) arg);
 		Timers_esperaActivacao(timer);
 	}
 
@@ -56,7 +56,7 @@ void* funcB(void *arg)
 	{
 
 
-		PORTB ^= (1<<LEDB);
+		PORTB ^= (1<< (int) arg);
 
 		Timers_esperaActivacao(timer);
 	}
@@ -87,12 +87,12 @@ void testes()
 	int resultado;
 
 
-	resultado = Sched_adicionaTarefa(2, 150, funcA);
+	resultado = Sched_adicionaTarefa(2, 150, funcA,5);
 	if (resultado < 0)
 		return;
 
 
-	resultado = Sched_adicionaTarefa(1, 150, funcB);
+	resultado = Sched_adicionaTarefa(1, 150, funcB,4);
 	if (resultado < 0)
 		return;
 	

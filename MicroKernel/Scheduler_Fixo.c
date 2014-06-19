@@ -67,11 +67,11 @@ int8_t Sched_termina()
 
 
 
-int8_t Sched_adicionaTarefa(uint8_t prioridade, uint16_t stackSize, void* (*funcao)(void *))
+int8_t Sched_adicionaTarefa(uint8_t prioridade, uint16_t stackSize, void* (*funcao)(void *), void* arg)
 {
 	uint8_t resultado;
 	
-	resultado = ListaTarefas_adicionaTarefa(listatarefas, prioridade, stackSize, funcao);
+	resultado = ListaTarefas_adicionaTarefa(listatarefas, prioridade, stackSize, funcao, arg);
 	
 	return resultado;
 }

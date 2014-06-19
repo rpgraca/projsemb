@@ -126,8 +126,10 @@
 					"push r1		\n\t "\
 					"push r1		\n\t "\
 					"push r1		\n\t "\
-					"push r1		\n\t "\
-					"push r1		\n\t "\
+					"lds r24,argumento	\n\t"\
+					"push r24		\n\t "\
+					"lds r25,argumento+1	\n\t"\
+					"push r25		\n\t "\
 					"push r1		\n\t "\
 					"push r1		\n\t "\
 					"push r28		\n\t "\

@@ -24,18 +24,18 @@
 extern void * (*funcAtual)(void*);
 extern char *stackptrAtual;
 char * stackptrBak;
-
+void * argumento;
 
 
 
 /**************************************************************/
 /*                 FUNCOES AUXLIARES - PROTOTIPOS             */
 /**************************************************************/
-Tarefa_t* Tarefa_cria(uint8_t prioridade, uint16_t stackSize, void* (*funcao)(void *));
+Tarefa_t* Tarefa_cria(uint8_t prioridade, uint16_t stackSize, void* (*funcao)(void *), void* arg);
 int8_t Tarefa_apaga(Tarefa_t *tarefa);
 TarefasPrioridade_t* TarefasPrioridade_cria();
 int8_t TarefasPrioridade_apaga(TarefasPrioridade_t* tarefasPrioridade);
-int8_t TarefasPrioridade_adicionaTarefa(TarefasPrioridade_t* tarefasPrioridade, uint8_t prioridade, uint16_t stackSize, void* (*funcao)(void *));
+int8_t TarefasPrioridade_adicionaTarefa(TarefasPrioridade_t* tarefasPrioridade, uint8_t prioridade, uint16_t stackSize, void* (*funcao)(void *), void* arg);
 int8_t TarefasPrioridade_removeTarefa(TarefasPrioridade_t* tarefasPrioridade, Tarefa_t *tarefa);
 
 
@@ -50,7 +50,7 @@ int8_t TarefasPrioridade_removeTarefa(TarefasPrioridade_t* tarefasPrioridade, Ta
  * @param prioridade: 0 < prioridade < MAX_PRIORIDADE
  * @return: Apontador para a tarefa criada ou NULL em caso de erro.
  */
-Tarefa_t* Tarefa_cria(uint8_t prioridade, uint16_t stackSize, void* (*funcao)(void *))
+Tarefa_t* Tarefa_cria(uint8_t prioridade, uint16_t stackSize, void* (*funcao)(void *), void * arg)
 {
 	Tarefa_t *tarefa;
 	uint8_t tmpstatus = SREG;	// Guardar estado de interrupçoes
@@ -68,6 +68,7 @@ Tarefa_t* Tarefa_cria(uint8_t prioridade, uint16_t stackSize, void* (*funcao)(vo
 	tarefa->activada = 1;
 	tarefa->stackPtr = ((char*) tarefa) + stackSize;
 	
+	argumento = arg;	
 	// Cria o contexto da tarefa
 	cli(); // Desativar interrupçoes
 	GUARDARSTACKPTR();
@@ -190,7 +191,7 @@ int8_t TarefasPrioridade_apaga(TarefasPrioridade_t* tarefasPrioridade)
  *
  * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
  */
-int8_t TarefasPrioridade_adicionaTarefa(TarefasPrioridade_t* tarefasPrioridade, uint8_t prioridade, uint16_t stackSize, void* (*funcao)(void *))
+int8_t TarefasPrioridade_adicionaTarefa(TarefasPrioridade_t* tarefasPrioridade, uint8_t prioridade, uint16_t stackSize, void* (*funcao)(void *),void * arg)
 {
 	Tarefa_t *tarefa;
 
@@ -207,7 +208,7 @@ int8_t TarefasPrioridade_adicionaTarefa(TarefasPrioridade_t* tarefasPrioridade, 
 
 
 	// Cria a tarefa
-	tarefa = Tarefa_cria(prioridade, stackSize, funcao);
+	tarefa = Tarefa_cria(prioridade, stackSize, funcao, arg);
 	if (tarefa == NULL)
 	{
 		SREG = tmpstatus;
@@ -417,7 +418,7 @@ int8_t ListaTarefas_apaga(ListaTarefas_t *listaTarefas)
 
 
 
-int8_t ListaTarefas_adicionaTarefa(ListaTarefas_t *listaTarefas, uint8_t prioridade, uint16_t stackSize, void* (*funcao)(void *))
+int8_t ListaTarefas_adicionaTarefa(ListaTarefas_t *listaTarefas, uint8_t prioridade, uint16_t stackSize, void* (*funcao)(void *), void * arg)
 {
 	int8_t resultado;
 	uint8_t tmpstatus = SREG;	// Guardar estado de interrupçoes
@@ -432,7 +433,7 @@ int8_t ListaTarefas_adicionaTarefa(ListaTarefas_t *listaTarefas, uint8_t priorid
 		return -1;
 	}
 
-	resultado = TarefasPrioridade_adicionaTarefa(listaTarefas->prioridades[prioridade], prioridade, stackSize, funcao);
+	resultado = TarefasPrioridade_adicionaTarefa(listaTarefas->prioridades[prioridade], prioridade, stackSize, funcao,arg);
 	
 	SREG = tmpstatus;
 

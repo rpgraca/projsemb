@@ -122,7 +122,7 @@ int8_t ListaTarefas_apaga(ListaTarefas_t *listaTarefas);
  * 
  * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
  */
-int8_t ListaTarefas_adicionaTarefa(ListaTarefas_t *listaTarefas, uint8_t prioridade, uint16_t stackSize, void* (*funcao)(void *));
+int8_t ListaTarefas_adicionaTarefa(ListaTarefas_t *listaTarefas, uint8_t prioridade, uint16_t stackSize, void* (*funcao)(void *), void *arg);
 
 
 /*
