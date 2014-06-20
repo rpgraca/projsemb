@@ -77,7 +77,7 @@ typedef struct
  *
  * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
  */
-int8_t Tarefa_activaTarefa(Tarefa_t *tarefa);
+//int8_t Tarefa_activaTarefa(Tarefa_t *tarefa);
 
 
 /*
@@ -85,7 +85,7 @@ int8_t Tarefa_activaTarefa(Tarefa_t *tarefa);
 *
 * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
 */
-int8_t Tarefa_desactivaTarefa(Tarefa_t *tarefa);
+//int8_t Tarefa_desactivaTarefa(Tarefa_t *tarefa);
 
 
 /*
@@ -122,7 +122,7 @@ int8_t ListaTarefas_apaga(ListaTarefas_t *listaTarefas);
  * 
  * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
  */
-int8_t ListaTarefas_adicionaTarefa(ListaTarefas_t *listaTarefas, uint8_t prioridade, uint16_t stackSize, void* (*funcao)(void *), void *arg);
+int8_t ListaTarefas_adicionaTarefa(uint8_t prioridade, uint16_t stackSize, void* (*funcao)(void *), void *arg);
 
 
 /*

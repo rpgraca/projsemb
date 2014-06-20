@@ -36,12 +36,10 @@ Sinal_t* Sinais_criaSinal(uint16_t numTarefas)
 	Sinal_t *sinal;
 
 	uint8_t tmpstatus = SREG;	// Guardar estado de interrupçoes
-	cli(); // Desativar interrupçoes
 
 	// Verificacao dos parametros passados a funcao
 	if (numTarefas <= 0)
 	{
-		SREG = tmpstatus;
 		return NULL;
 	}
 
@@ -51,7 +49,6 @@ Sinal_t* Sinais_criaSinal(uint16_t numTarefas)
 	sinal = (Sinal_t*)malloc(sizeof(Sinal_t));
 	if (sinal == NULL)
 	{
-		SREG = tmpstatus;
 		return NULL;
 	}
 
@@ -60,6 +57,7 @@ Sinal_t* Sinais_criaSinal(uint16_t numTarefas)
 
 	sinal->tarefas = (Tarefa_t**) malloc(sizeof(Tarefa_t*)*numTarefas);
 
+	cli(); // Desativar interrupçoes
 	// Realocacao de memoria do vector
 	vecSinais.sinais = (Sinal_t**)realloc(vecSinais.sinais, (vecSinais.nSinais + 1) * sizeof(Sinal_t*));
 	if (vecSinais.sinais == NULL)
@@ -99,6 +97,9 @@ int8_t Sinais_apagaSinal(Sinal_t *sinal)
 	{
 		if (vecSinais.sinais[i] == sinal)
 		{
+			// Sinaliza o sinal
+			Sinais_sinaliza(sinal);
+
 			// Elimina o sinal
 			free(sinal->tarefas);
 			free(sinal);
@@ -139,16 +140,16 @@ int8_t Sinais_apagaSinal(Sinal_t *sinal)
 
 int8_t Sinais_esperaSinal(Sinal_t *sinal)
 {
-	int8_t resultado;
 	uint8_t tmpstatus = SREG;	// Guardar estado de interrupçoes
-	cli(); // Desativar interrupçoes
 
 	// Verificacao dos parametros passados a funcao
+	cli(); // Desativar interrupçoes
 	if (sinal == NULL)
 	{
 		SREG = tmpstatus;
 		return -1;
 	}
+
 	if(sinal->stackSize >= sinal->numTarefas)
 	{
 		SREG = tmpstatus;
@@ -159,17 +160,15 @@ int8_t Sinais_esperaSinal(Sinal_t *sinal)
 	sinal->stackSize++;
 
 	// Limpa a flag de tarefa activa
-	resultado = Tarefa_desactivaTarefa(tarefaAtual);
+	tarefaAtual->activada=0;
 
-	SREG = tmpstatus;
 
-	if (resultado < 0)
-		return -3;
 
 
 	// Invoca o dispatcher para retirar esta tarefa de execucao e dar o CPU a outra tarefa
 	Sched_dispatch();
 
+	SREG = tmpstatus;
 
 
 	return 0;

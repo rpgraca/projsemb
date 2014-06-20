@@ -67,17 +67,6 @@ int8_t Sched_termina()
 
 
 
-int8_t Sched_adicionaTarefa(uint8_t prioridade, uint16_t stackSize, void* (*funcao)(void *), void* arg)
-{
-	uint8_t resultado;
-	
-	resultado = ListaTarefas_adicionaTarefa(listatarefas, prioridade, stackSize, funcao, arg);
-	
-	return resultado;
-}
-
-
-
 int8_t Sched_eliminaTarefa(Tarefa_t *tarefa)
 {
 	uint8_t resultado;
@@ -145,7 +134,7 @@ void Sched_dispatch()//  __attribute__((signal,naked))
 				tarefaAtual = listatarefas->prioridades[i]->tarefas[j];
 				stackptrAtual = tarefaAtual->stackPtr;
 				RECUPERARCONTEXTO();
-				asm volatile("ret");
+				return;
 			}
 		}
 
@@ -162,7 +151,7 @@ void Sched_dispatch()//  __attribute__((signal,naked))
 				tarefaAtual = listatarefas->prioridades[i]->tarefas[j];
 				stackptrAtual = tarefaAtual->stackPtr;
 				RECUPERARCONTEXTO();
-				asm volatile("ret");
+				return;
 			}
 		}
 	}
@@ -181,5 +170,5 @@ void Sched_dispatch()//  __attribute__((signal,naked))
 		sei();
 		sleep_mode();
 	}
-	asm volatile("ret");
+	return;
 }

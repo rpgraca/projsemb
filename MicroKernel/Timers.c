@@ -37,7 +37,6 @@ Timer_t* Timers_criaTimer(uint16_t periodo,uint16_t numTarefas)
 	Timer_t *timer;
 
 	uint8_t tmpstatus = SREG;	// Guardar estado de interrupçoes
-	cli(); // Desativar interrupçoes
 
 	// Verificacao dos parametros passados a funcao
 	if (numTarefas <= 0 || periodo <= 0)
@@ -64,6 +63,7 @@ Timer_t* Timers_criaTimer(uint16_t periodo,uint16_t numTarefas)
 	timer->tarefas = (Tarefa_t**) malloc(sizeof(Tarefa_t*)*numTarefas);
 
 	// Realocacao de memoria do vector
+	cli(); // Desativar interrupçoes
 	vecTimers.timers = (Timer_t**)realloc(vecTimers.timers, (vecTimers.nTimers + 1) * sizeof(Timer_t*));
 	if (vecTimers.timers == NULL)
 	{
@@ -86,6 +86,7 @@ int8_t Timers_apagaTimer(Timer_t *timer)
 {
 	uint8_t i, j;
 	uint8_t tmpstatus = SREG;	// Guardar estado de interrupçoes
+
 	cli(); // Desativar interrupçoes
 
 	// Verificacao dos parametros passados a funcao
@@ -161,8 +162,7 @@ void Timers_actualizaTimers()
 		}
 	}
 
-
-	asm volatile("ret");
+	return;
 }
 
 
@@ -170,51 +170,35 @@ void Timers_actualizaTimers()
 
 int8_t Timers_esperaActivacao(Timer_t *timer)
 {
-	int8_t resultado;
 	uint8_t tmpstatus = SREG;	// Guardar estado de interrupçoes
-	cli(); // Desativar interrupçoes
 
+	cli(); // Desativar interrupçoes
 
 	// Verificacao dos parametros passados a funcao
 	if (timer == NULL)
 	{
-		SREG = tmpstatus;
+//		SREG = tmpstatus;
 		return -1;
 	}
 
 	if(timer->stackSize >= timer->numTarefas)
 	{
-		SREG = tmpstatus;
+//		SREG = tmpstatus;
 		return -2;
 	}
 
 
-	// Verifica se o timer ja terminou.
-	// Se ainda nao terminou, nao faz nada, pois quando terminar o interrupt handler
-	// dos ticks vai activa-la.
-	// Desnecessário porque Timers_timerTerminado(timer) nunca retorna 1 (reinicio segue-se logo ao timeout)
-	/*if (Timers_timerTerminado(timer))
-	{
-		tarefaAtual->activada = 1;
-
-		if (resultado < 0)
-			return -2;
-	}*/
 	
 	timer->tarefas[timer->stackSize] = tarefaAtual;
 	timer->stackSize++;
 
 	// Limpa a flag de tarefa activa
-	resultado = Tarefa_desactivaTarefa(tarefaAtual);
-
-	SREG = tmpstatus;
-
-	if (resultado < 0)
-		return -3;
+	tarefaAtual->activada = 0;
 
 
 	// Invoca o dispatcher para retirar esta tarefa de execucao e dar o CPU a outra tarefa
 	Sched_dispatch();
+	SREG = tmpstatus;
 
 
 
