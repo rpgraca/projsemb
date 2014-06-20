@@ -96,23 +96,22 @@ Timer_t *timer;
 //1 		Timers_sleep(40);
 //1 	}
 //1 }
-Semaforo_t* sem;
+//Semaforo_t* sem;
 
 void* func0(void *arg)
 {
 	//d printf("Entrei na tarefa 0\n");
- 	Timer_t *timer = Timers_criaTimer(10,1);
+ 	Timer_t *timer = Timers_criaTimer(75,1);
 	int x=0;
 	int state=0;
 	PORTB ^= (1<< (int) arg);
 	while(1)
 	{
+
+		//Semaforo_lock(sem);
 		//printf("Tarefa 0\n");
-		if(x==0)
-		{
-			//PORTB ^= (1<< (int) arg);
-		//	PORTB ^= (1<< (int) 0);
-		}
+		//Semaforo_unlock(sem);
+
 		if(state==0) x++;
 		else x--;
 		if(x==6 || x == 0)
@@ -132,15 +131,14 @@ void* func1(void *arg)
 	int state=0;
 	while(1)
 	{
+
+		//Semaforo_lock(sem);
+		//printf("Tarefa 0\n");
+		//Semaforo_unlock(sem);
 		if(x==1)
 		{
 			PORTB ^= (1<< (int) arg);
-			//PORTB ^= (1<< (int) 1);
-
 		}
-		//Semaforo_lock(sem);
-		//printf("Olá, 12345678910. QWERTYUIOPASDFGHJKLZXCVBNMqwertyuioasdfghjklzxcvbnm\n");
-		//Semaforo_unlock(sem);
 		if(state==0) x++;
 		else x--;
 		if(x==6 || x == 0)
@@ -159,12 +157,14 @@ void* func2(void *arg)
 	int state=0;
 	while(1)
 	{
-		//printf("Tarefa 2\n");
+
 		//Semaforo_lock(sem);
+		//printf("Tarefa 2\n");
+		//Semaforo_unlock(sem);
+		////Semaforo_lock(sem);
 		if(x==2)
 		{
-			//PORTB ^= (1<< (int) arg);
-			PORTB ^= (1<< (int) 2);
+			PORTB ^= (1<< (int) arg);
 		}
 		if(state==0) x++;
 		else x--;
@@ -172,23 +172,23 @@ void* func2(void *arg)
 		{
 			state=1-state;
 		}
-		//Semaforo_unlock(sem);
+		////Semaforo_unlock(sem);
 		Sinais_esperaSinal(sinal1);
 	}
 }
 
 void* func3(void *arg)
 {
-	//d printf("Entrei na tarefa 3\n");
 	int x=0;
 	int state=0;
 	while(1)
 	{
+		//Semaforo_lock(sem);
 		//printf("Tarefa 3\n");
+		//Semaforo_unlock(sem);
 		if(x==3)
 		{
 			PORTB ^= (1<< (int) arg);
-			//PORTB ^= (1<< (int) 3);
 		}
 		if(state==0) x++;
 		else x--;
@@ -206,11 +206,12 @@ void* func4(void *arg)
 	int state=0;
 	while(1)
 	{
+		//Semaforo_lock(sem);
 		//printf("Tarefa 4\n");
+		//Semaforo_unlock(sem);
 		if(x==4)
 		{
 			PORTB ^= (1<< (uint8_t) arg);
-			//PORTB ^= (1<< (int) 4);
 		}
 		if(state==0) x++;
 		else x--;
@@ -232,8 +233,7 @@ void* func5(void *arg)
 		//printf("Tarefa 5\n");
 		if(x==5)
 		{
-			//PORTB ^= (1<< (int) arg);
-			PORTB ^= (1<< (int) 5);
+			PORTB ^= (1<< (int) arg);
 		}
 		if(state==0) x++;
 		else x--;
@@ -250,11 +250,11 @@ void* func5(void *arg)
 /**************************************************************/
 void testes()
 {
-	ListaTarefas_adicionaTarefa(3, 140, func5,(void*)5);
-	ListaTarefas_adicionaTarefa(4, 140, func4,(void*)4);
-	ListaTarefas_adicionaTarefa(2, 140, func3,(void*)3);
+	ListaTarefas_adicionaTarefa(5, 140, func5,(void*)5);
+	ListaTarefas_adicionaTarefa(5, 140, func4,(void*)4);
+	ListaTarefas_adicionaTarefa(3, 140, func3,(void*)3);
 	ListaTarefas_adicionaTarefa(2, 140, func2,(void*)2);
-	ListaTarefas_adicionaTarefa(4, 140, func1,(void*)1);
+	ListaTarefas_adicionaTarefa(0, 140, func1,(void*)1);
 	ListaTarefas_adicionaTarefa(1, 140, func0,(void*)0);
 }
 
@@ -265,16 +265,15 @@ int main()
 {
 	char * tmpheap = (char *) malloc(HEAPSIZE);
 	
-	uart_init();
-    stdout = &uart_output;
-    stdin  = &uart_input;
 
-	//d printf("\n\nolá!\n");
+
+//	uart_init();
+//	stdout = &uart_output;
 	
 	//////////////////// INICIALIZACAO DO KERNEL ////////////////////
 
 	UK_inicializa();
-	DDRB = 0xFF;  // Define LED do arduino como saida (PORTB5)
+	DDRB = 0xFF; 
 	//if (resultado < 0)
 	//{
 	//	////d printf("ERRO: a incializar o kernel\n");
@@ -286,7 +285,7 @@ int main()
 	testes();
 
 	sinal1 = Sinais_criaSinal(5);
-	Semaforo_init(sem,5);
+	//Semaforo_init(&sem,4);
 
 	free(tmpheap); /* tmpheap serve para reservar um espaço para a heap das tarefas no inicio da memória
 					* o seu tamanho deve ser devidamente calculado e deixado ao critério do programador */

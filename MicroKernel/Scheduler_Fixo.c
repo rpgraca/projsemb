@@ -28,6 +28,7 @@ extern Tarefa_t *tarefaAtual;
 extern ListaTarefas_t* listatarefas;
 extern uint8_t ceilingstackSize;
 extern uint8_t* ceilingStack;
+extern Tarefa_t ** tarefasStack;
 
 
 
@@ -134,7 +135,7 @@ void Sched_dispatch()//  __attribute__((signal,naked))
 				tarefaAtual = listatarefas->prioridades[i]->tarefas[j];
 				stackptrAtual = tarefaAtual->stackPtr;
 				RECUPERARCONTEXTO();
-				return;
+				asm volatile("ret");
 			}
 		}
 
@@ -151,13 +152,21 @@ void Sched_dispatch()//  __attribute__((signal,naked))
 				tarefaAtual = listatarefas->prioridades[i]->tarefas[j];
 				stackptrAtual = tarefaAtual->stackPtr;
 				RECUPERARCONTEXTO();
-				return;
+				asm volatile("ret");
 			}
 		}
 	}
 
 	if(tarefaAtual == NULL)
 	{
+		// Verificar se há tarefas com semáforos
+		if(System_Ceiling() > -1)
+		{
+			tarefaAtual = Stack_Top(); 
+			stackptrAtual = tarefaAtual->stackPtr;
+			RECUPERARCONTEXTO();
+			asm volatile("ret");
+		}
 		// Caso nao haja tarefas a executar, limpa PC de retorno da stack e vai para sleepmode
 		// FLAG_INATIVO indica se a o CPU já estava inativo antes, só nesse caso é que é preciso limpar
 		// endereço de retorno da stack
@@ -170,5 +179,5 @@ void Sched_dispatch()//  __attribute__((signal,naked))
 		sei();
 		sleep_mode();
 	}
-	return;
+	asm volatile("ret");
 }

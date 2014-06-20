@@ -10,13 +10,15 @@
 /*****************************************************************************************/
 
 #include "Semaforo.h"
+#include "ListaTarefas.h"
+#include "Scheduler_Fixo.h"
 #include <stdlib.h>
 
 /**************************************************************/
 /*                      FUNCOES AUXILIARES                    */
 /**************************************************************/
 int8_t Stack_Push(uint8_t var);
-int8_t Stack_Pop();
+void Stack_Pop();
 
 /**************************************************************/
 /*                      VARIAVEIS GLOBAIS                     */
@@ -24,6 +26,8 @@ int8_t Stack_Pop();
 extern uint8_t* ceilingStack;
 extern uint8_t ceilingstackSize;
 uint8_t stackMaxsize;
+extern Tarefa_t** tarefasStack;
+extern Tarefa_t * tarefaAtual;
 
 /**************************************************************/
 /*                           FUNCOES                          */
@@ -34,20 +38,20 @@ uint8_t stackMaxsize;
  *
  * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
  */
-int8_t Semaforo_init(Semaforo_t* semaforo, uint8_t ceiling)
+int8_t Semaforo_init(Semaforo_t** semaforo, uint8_t ceiling)
 {
 	uint8_t tmpstatus = SREG;	// Guardar estado de interrupçoes
 	cli(); // Desativar interrupçoes
 
-	if(semaforo != NULL)
+	if(*semaforo != NULL)
 	{
 		SREG = tmpstatus;
 		return 1;
 	}
 
-	semaforo = (Semaforo_t *) malloc(sizeof(Semaforo_t));
+	*semaforo = (Semaforo_t *) malloc(sizeof(Semaforo_t));
 
-	if(semaforo == NULL)
+	if(*semaforo == NULL)
 	{
 		SREG = tmpstatus;
 		return -1;
@@ -58,13 +62,24 @@ int8_t Semaforo_init(Semaforo_t* semaforo, uint8_t ceiling)
 
 	if (ceilingStack == NULL)
 	{
+		free(tarefasStack);
 		free(semaforo);
 		SREG = tmpstatus;
 		return -2;
 	}
 
-	semaforo->estado = UNLOCKED;
-	semaforo->ceiling = ceiling;
+	tarefasStack = (Tarefa_t**) realloc(tarefasStack, stackMaxsize * sizeof(Tarefa_t*));
+
+	if (tarefasStack == NULL)
+	{
+		free(ceilingStack);
+		free(semaforo);
+		SREG = tmpstatus;
+		return -2;
+	}
+
+	(*semaforo)->estado = UNLOCKED;
+	(*semaforo)->ceiling = ceiling;
 
 	SREG = tmpstatus;
 	
@@ -101,10 +116,12 @@ int8_t Semaforo_apaga(Semaforo_t* semaforo)
 	if(stackMaxsize == 0)
 	{
 		free(ceilingStack);
+		free(tarefasStack);
 	}	
 	else
 	{
 		ceilingStack = (uint8_t*) realloc(ceilingStack,  stackMaxsize * sizeof(uint8_t));
+		tarefasStack = (Tarefa_t**) realloc(tarefasStack, stackMaxsize * sizeof(Tarefa_t*));
 	}
 
 
@@ -133,7 +150,6 @@ void Semaforo_lock(Semaforo_t* semaforo)
 	else
 	{
 		Stack_Push(System_Ceiling());
-
 	}
 	SREG = tmpstatus;
 }
@@ -149,6 +165,7 @@ void Semaforo_unlock(Semaforo_t* semaforo)
 	semaforo->estado = UNLOCKED;
 	Stack_Pop();
 
+	Sched_dispatch();
 	SREG = tmpstatus;
 }
 
@@ -160,18 +177,18 @@ int8_t Stack_Push(uint8_t var)
 	}
 	
 	ceilingStack[ceilingstackSize] = var;
+	tarefasStack[ceilingstackSize] = tarefaAtual;
 	ceilingstackSize++;
 	return 0;
 }
 
-int8_t Stack_Pop()
+void Stack_Pop()
 {
 	if(ceilingstackSize == 0)
 	{
-		return -2;
+		return;
 	}
 	ceilingstackSize--;
-	return ceilingStack[ceilingstackSize];
 }
 
 

@@ -43,6 +43,7 @@ typedef struct
  *
  */
 #define System_Ceiling() (ceilingstackSize == 0?-1:ceilingStack[ceilingstackSize - 1])
+#define Stack_Top()		 (tarefasStack[ceilingstackSize - 1])
 
 /**************************************************************/
 /*                           FUNCOES                          */
@@ -53,7 +54,7 @@ typedef struct
  *
  * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
  */
-int8_t Semaforo_init(Semaforo_t* semaforo, uint8_t ceiling);
+int8_t Semaforo_init(Semaforo_t** semaforo, uint8_t ceiling);
 
 /*
  * Tranca um semáforo.

@@ -162,7 +162,7 @@ void Timers_actualizaTimers()
 		}
 	}
 
-	return;
+	asm volatile("ret");
 }
 
 

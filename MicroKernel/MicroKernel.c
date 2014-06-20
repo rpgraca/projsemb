@@ -22,6 +22,7 @@ char *stackptrIdle = NULL;
 void * (*funcAtual)(void*) = NULL;
  
 uint8_t* ceilingStack = NULL;
+Tarefa_t** tarefasStack = NULL;
 uint8_t ceilingstackSize = 0;
 
 
