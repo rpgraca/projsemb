@@ -153,13 +153,14 @@ void* func1(void *arg)
 	
 	while(1)
 	{
-	  
+	
+	 /*
 	tmpstatus = SREG;	// Guardar estado de interrupçoes
 	cli(); // Desativar interrupçoes
 	printf("Tarefa %i\n",(int)arg);
-	//printf("\n| Temperatura: %.1f C |\n",temperatura(ReadADC(0),REFS0));
+	printf("\n| Temperatura: %.1f C |\n",temperatura(ReadADC(0),5));
 	SREG = tmpstatus;
-		
+	*/	
 	  
 		if(x==(int)arg)
 		{
@@ -286,7 +287,8 @@ int main()
 	stdout = &uart_output;
 	stdin  = &uart_input;
 
-	
+//	lcd_setup();
+//	lcd_demo();
 	//d printf("\n\nolá!\n");
 	
 	//////////////////// INICIALIZACAO DO KERNEL ////////////////////

@@ -21,7 +21,7 @@ all: $(PROG).hex
 $(PROG).hex: $(PROG).elf
 	$(OBJCOPY) -O $(BIN_FORMAT) -R .eeprom $< $@
 
-$(PROG).elf: $(PROG).o MicroKernel/ATmega.o MicroKernel/ListaTarefas.o MicroKernel/MicroKernel.o MicroKernel/Scheduler_Fixo.o MicroKernel/Semaforo.o MicroKernel/Sinais.o MicroKernel/Timers.o uart.o ext_libs.o
+$(PROG).elf: $(PROG).o MicroKernel/ATmega.o MicroKernel/ListaTarefas.o MicroKernel/MicroKernel.o MicroKernel/Scheduler_Fixo.o MicroKernel/Semaforo.o MicroKernel/Sinais.o MicroKernel/Timers.o uart.o ext_libs.o 
 	$(CC) $(CFLAGS) -o $@ $(PROG).o MicroKernel/ATmega.o MicroKernel/ListaTarefas.o MicroKernel/MicroKernel.o MicroKernel/Scheduler_Fixo.o MicroKernel/Semaforo.o MicroKernel/Sinais.o MicroKernel/Timers.o uart.o ext_libs.o
 
 $(PROG).O: $(PROG).c
@@ -45,8 +45,9 @@ uart.o: uart.c
 ext_libs.o: ext_libs.c
 	$(CC) $(CFLAGS) -o $@ $< -c
 
+
 clean:
-	$(RM) ${PROG}.o MicroKernel/*.o ${PROG}.elf ${PROG}.hex
+	$(RM) ${PROG}.o MicroKernel/*.o glcd/*.o glcd/controllers/*.o glcd/devices/*.o ${PROG}.elf ${PROG}.hex
  
 upload: ${PROG}.hex
 	$(AVRDUDE) -c $(PROTOCOL) -p $(PART) -P $(PORT) \
