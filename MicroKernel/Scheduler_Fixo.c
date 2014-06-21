@@ -87,6 +87,7 @@ void Sched_Schedule()
 
 void Sched_dispatch()//  __attribute__((signal,naked))
 {
+	PORTB = 0xFF;
 	uint8_t j, FLAG_INATIVO;
 	int16_t i,prioridadeAtual;
 
@@ -135,6 +136,7 @@ void Sched_dispatch()//  __attribute__((signal,naked))
 				tarefaAtual = listatarefas->prioridades[i]->tarefas[j];
 				stackptrAtual = tarefaAtual->stackPtr;
 				RECUPERARCONTEXTO();
+				PORTB = 0;
 				asm volatile("ret");
 			}
 		}
@@ -152,6 +154,7 @@ void Sched_dispatch()//  __attribute__((signal,naked))
 				tarefaAtual = listatarefas->prioridades[i]->tarefas[j];
 				stackptrAtual = tarefaAtual->stackPtr;
 				RECUPERARCONTEXTO();
+				PORTB = 0;
 				asm volatile("ret");
 			}
 		}
@@ -165,6 +168,7 @@ void Sched_dispatch()//  __attribute__((signal,naked))
 			tarefaAtual = Stack_Top(); 
 			stackptrAtual = tarefaAtual->stackPtr;
 			RECUPERARCONTEXTO();
+			PORTB = 0;
 			asm volatile("ret");
 		}
 		// Caso nao haja tarefas a executar, limpa PC de retorno da stack e vai para sleepmode
@@ -176,8 +180,10 @@ void Sched_dispatch()//  __attribute__((signal,naked))
 			stackptrAtual -= 2;
 			GUARDARSTACKPTR();
 		}
+		PORTB = 0;
 		sei();
 		sleep_mode();
 	}
+	PORTB = 0;
 	asm volatile("ret");
 }
