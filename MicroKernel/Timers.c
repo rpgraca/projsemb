@@ -140,6 +140,7 @@ int8_t Timers_apagaTimer(Timer_t *timer)
 
 void Timers_actualizaTimers()
 {
+	PORTB = 0xFF;
 	int8_t i,j;
 
 
@@ -162,6 +163,7 @@ void Timers_actualizaTimers()
 		}
 	}
 
+	PORTB = 0;
 	asm volatile("ret");
 }
 
