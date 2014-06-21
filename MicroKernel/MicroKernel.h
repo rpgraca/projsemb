@@ -39,6 +39,9 @@
 /*							DEFINICOES                        */
 /**************************************************************/
 
+#define UK_inicializa() char * tmpheap = (char *) malloc(HEAPSIZE); ATmega_iniciaTick();	Sched_inicia()
+#define UK_inicia()	free(tmpheap); Sched_dispatch()
+
 /**************************************************************/
 /*                      VARIAVEIS GLOBAIS                     */
 /**************************************************************/
@@ -58,8 +61,8 @@
  * 
  * @return: 0 em caso de sucesso ou um valor negativo em caso de erro.
  */
-int8_t UK_inicializa();
-
+//int8_t UK_inicializa();
+	
 
 /*
  * Termina o micro-kernel.
@@ -69,7 +72,7 @@ int8_t UK_inicializa();
 int8_t UK_termina();
 
 
-void UK_inicia();
+//void UK_inicia();
 
 
 #endif

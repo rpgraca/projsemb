@@ -299,6 +299,7 @@ int8_t TarefasPrioridade_removeTarefa(TarefasPrioridade_t* tarefasPrioridade, Ta
 
 
 			tarefasPrioridade->nTarefas--;
+			tarefasPrioridade->ultimaTarefa = (tarefasPrioridade->ultimaTarefa - 1) % 255;
 
 			return 0;
 		}
@@ -468,6 +469,7 @@ void ListaTarefas_terminaTarefaAtual()
 {
 	cli();
 	ListaTarefas_removeTarefa(listatarefas,tarefaAtual);
+	tarefaAtual = NULL;
 	sei();
 	Sched_dispatch();
 }

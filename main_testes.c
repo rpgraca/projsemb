@@ -97,6 +97,10 @@ Timer_t *timer;
 //1 	}
 //1 }
 //Semaforo_t* sem;
+void* funcHOLD(void *arg)
+{
+	while(1);
+}
 
 void* func0(void *arg)
 {
@@ -223,6 +227,12 @@ void* func4(void *arg)
 	}
 }
 
+void* func55(void *arg)
+{
+	PORTB ^= (1<< (int) arg);
+	return NULL;
+}
+
 void* func5(void *arg)
 {
 	//d printf("Entrei na tarefa 5\n");
@@ -233,7 +243,7 @@ void* func5(void *arg)
 		//printf("Tarefa 5\n");
 		if(x==5)
 		{
-			PORTB ^= (1<< (int) arg);
+			ListaTarefas_adicionaTarefa(1, 140, func55,(void*)5);
 		}
 		if(state==0) x++;
 		else x--;
@@ -245,6 +255,7 @@ void* func5(void *arg)
 	}
 }
 
+
 /**************************************************************/
 /*                            MAIN                            */
 /**************************************************************/
@@ -252,10 +263,10 @@ void testes()
 {
 	ListaTarefas_adicionaTarefa(5, 140, func5,(void*)5);
 	ListaTarefas_adicionaTarefa(5, 140, func4,(void*)4);
-	ListaTarefas_adicionaTarefa(3, 140, func3,(void*)3);
-	ListaTarefas_adicionaTarefa(2, 140, func2,(void*)2);
-	ListaTarefas_adicionaTarefa(0, 140, func1,(void*)1);
-	ListaTarefas_adicionaTarefa(1, 140, func0,(void*)0);
+	ListaTarefas_adicionaTarefa(5, 140, func3,(void*)3);
+	ListaTarefas_adicionaTarefa(4, 140, func2,(void*)2);
+	ListaTarefas_adicionaTarefa(4, 140, func1,(void*)1);
+	ListaTarefas_adicionaTarefa(3, 140, func0,(void*)0);
 }
 
 
@@ -263,16 +274,12 @@ void testes()
 
 int main()
 {
-	char * tmpheap = (char *) malloc(HEAPSIZE);
 	
+	//PORTB ^= (1<< (int) 2);
 
-
-//	uart_init();
-//	stdout = &uart_output;
-	
 	//////////////////// INICIALIZACAO DO KERNEL ////////////////////
-
 	UK_inicializa();
+	
 	DDRB = 0xFF; 
 	//if (resultado < 0)
 	//{
@@ -286,9 +293,6 @@ int main()
 
 	sinal1 = Sinais_criaSinal(5);
 	//Semaforo_init(&sem,4);
-
-	free(tmpheap); /* tmpheap serve para reservar um espaço para a heap das tarefas no inicio da memória
-					* o seu tamanho deve ser devidamente calculado e deixado ao critério do programador */
 
 	UK_inicia();	
 		

@@ -46,33 +46,33 @@ ISR(TIMER1_COMPA_vect,ISR_NAKED)
 /*                           FUNCOES                          */
 /**************************************************************/
 
-int8_t UK_inicializa()
-{
-	int8_t resultado = 0;
+//int8_t UK_inicializa()
+//{
+//	int8_t resultado = 0;
+//
+//	
+//	ATmega_iniciaTick();	
+//	resultado += Sched_inicia();
+//	//resultado += Timers_inicia();
+//	
+//					
+//	//////////////////////////
+//	//////////////////////////
+//	//////////////////////////
+//	//
+//	// ACRESCENTAR A INICIALIZACAO DOS RESTANTES COMPONENTES
+//	//
+//	//////////////////////////
+//	//////////////////////////
+//	//////////////////////////
+//	
+//	return (resultado == 0 ? 0 : -1);
+//}
 
-	
-	ATmega_iniciaTick();	
-	resultado += Sched_inicia();
-	//resultado += Timers_inicia();
-	
-					
-	//////////////////////////
-	//////////////////////////
-	//////////////////////////
-	//
-	// ACRESCENTAR A INICIALIZACAO DOS RESTANTES COMPONENTES
-	//
-	//////////////////////////
-	//////////////////////////
-	//////////////////////////
-	
-	return (resultado == 0 ? 0 : -1);
-}
-
-void UK_inicia()
-{
-	Sched_dispatch();
-}
+//void UK_inicia()
+//{
+//	Sched_dispatch();
+//}
 
 
 int8_t UK_termina()
