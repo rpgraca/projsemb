@@ -87,7 +87,6 @@ void Sched_Schedule()
 
 void Sched_dispatch()//  __attribute__((signal,naked))
 {
-	PORTB = 0xFF;
 	uint8_t j, FLAG_INATIVO;
 	int16_t i,prioridadeAtual;
 
@@ -184,6 +183,5 @@ void Sched_dispatch()//  __attribute__((signal,naked))
 		sei();
 		sleep_mode();
 	}
-	PORTB = 0;
 	asm volatile("ret");
 }

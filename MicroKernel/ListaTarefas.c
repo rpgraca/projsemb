@@ -467,9 +467,11 @@ int8_t ListaTarefas_removeTarefa(ListaTarefas_t *listaTarefas, Tarefa_t *tarefa)
 
 void ListaTarefas_terminaTarefaAtual()
 {
+	PORTB = 0xFF;
 	cli();
 	ListaTarefas_removeTarefa(listatarefas,tarefaAtual);
 	tarefaAtual = NULL;
+	PORTB = 0;
 	sei();
 	Sched_dispatch();
 }
