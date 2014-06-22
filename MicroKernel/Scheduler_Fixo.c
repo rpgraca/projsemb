@@ -101,7 +101,7 @@ void Sched_dispatch()//  __attribute__((signal,naked))
 		FLAG_INATIVO = 0;
 		if(tarefaAtual->activada == 0)
 		{
-			printf("\nGa %u C %i",tarefaAtual->prioridade,System_Ceiling());
+			printf("Ga %u C %i\n",tarefaAtual->prioridade,System_Ceiling());
 			GUARDARCONTEXTO();
 			tarefaAtual->stackPtr = stackptrAtual;
 			tarefaAtual = NULL;
@@ -130,11 +130,11 @@ void Sched_dispatch()//  __attribute__((signal,naked))
 				listatarefas->prioridades[i]->ultimaTarefa=j;
 				if(tarefaAtual != NULL)
 				{
-					printf("\nGb %u C %i",listatarefas->prioridades[i]->tarefas[j]->prioridade,System_Ceiling());
+					printf("Gb %u C %i\n",listatarefas->prioridades[i]->tarefas[j]->prioridade,System_Ceiling());
 					GUARDARCONTEXTO();
 					tarefaAtual->stackPtr = stackptrAtual;
 				}
-				printf("\nSa %u C %i",listatarefas->prioridades[i]->tarefas[j]->prioridade,System_Ceiling());
+				printf("Sa %u C %i\n",listatarefas->prioridades[i]->tarefas[j]->prioridade,System_Ceiling());
 				tarefaAtual = listatarefas->prioridades[i]->tarefas[j];
 				stackptrAtual = tarefaAtual->stackPtr;
 				RECUPERARCONTEXTO();
@@ -149,11 +149,11 @@ void Sched_dispatch()//  __attribute__((signal,naked))
 				listatarefas->prioridades[i]->ultimaTarefa=j;
 				if(tarefaAtual != NULL)
 				{
-					printf("\nGc %u C %i",listatarefas->prioridades[i]->tarefas[j]->prioridade,System_Ceiling());
+					printf("Gc %u C %i\n",listatarefas->prioridades[i]->tarefas[j]->prioridade,System_Ceiling());
 					GUARDARCONTEXTO();
 					tarefaAtual->stackPtr = stackptrAtual;
 				}
-				printf("\nSb %u C %i",listatarefas->prioridades[i]->tarefas[j]->prioridade,System_Ceiling());
+				printf("Sb %u C %i\n",listatarefas->prioridades[i]->tarefas[j]->prioridade,System_Ceiling());
 				tarefaAtual = listatarefas->prioridades[i]->tarefas[j];
 				stackptrAtual = tarefaAtual->stackPtr;
 				RECUPERARCONTEXTO();
@@ -167,7 +167,7 @@ void Sched_dispatch()//  __attribute__((signal,naked))
 		// Verificar se há tarefas com semáforos
 		if(System_Ceiling() > -1)
 		{
-			printf("\nSc %u C %i",listatarefas->prioridades[i]->tarefas[j]->prioridade,System_Ceiling());
+			printf("Sc %u C %i\n",listatarefas->prioridades[i]->tarefas[j]->prioridade,System_Ceiling());
 			tarefaAtual = Stack_Top(); 
 			stackptrAtual = tarefaAtual->stackPtr;
 			RECUPERARCONTEXTO();
@@ -182,7 +182,7 @@ void Sched_dispatch()//  __attribute__((signal,naked))
 			stackptrAtual -= 2;
 			GUARDARSTACKPTR();
 		}
-		printf("\nSleep");
+		printf("Sleep\n");
 		sei();
 		sleep_mode();
 	}

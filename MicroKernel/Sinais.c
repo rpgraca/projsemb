@@ -191,7 +191,7 @@ int8_t Sinais_sinaliza(Sinal_t *sinal)
 	for(j=0; j < sinal->stackSize; j++)
 	{
 		sinal->tarefas[j]->activada = 1;
-		printf("\nAS %u",sinal->tarefas[j]->prioridade);
+		printf("AS %u\n",sinal->tarefas[j]->prioridade);
 	}
 	sinal->stackSize = 0;
 	

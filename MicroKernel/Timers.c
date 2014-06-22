@@ -157,7 +157,7 @@ void Timers_actualizaTimers()
 			for(j=0; j < vecTimers.timers[i]->stackSize; j++)
 			{
 				vecTimers.timers[i]->tarefas[j]->activada = 1;
-				printf("\nAT %u",vecTimers.timers[i]->tarefas[j]->prioridade);
+				printf("AT %u\n",vecTimers.timers[i]->tarefas[j]->prioridade);
 			}
 			vecTimers.timers[i]->stackSize = 0;
 		}
