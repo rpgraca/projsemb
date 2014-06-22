@@ -101,6 +101,7 @@ void Sched_dispatch()//  __attribute__((signal,naked))
 		FLAG_INATIVO = 0;
 		if(tarefaAtual->activada == 0)
 		{
+			printf("\nGa %u C %i",tarefaAtual->prioridade,System_Ceiling());
 			GUARDARCONTEXTO();
 			tarefaAtual->stackPtr = stackptrAtual;
 			tarefaAtual = NULL;
@@ -129,6 +130,7 @@ void Sched_dispatch()//  __attribute__((signal,naked))
 				listatarefas->prioridades[i]->ultimaTarefa=j;
 				if(tarefaAtual != NULL)
 				{
+					printf("\nGb %u C %i",listatarefas->prioridades[i]->tarefas[j]->prioridade,System_Ceiling());
 					GUARDARCONTEXTO();
 					tarefaAtual->stackPtr = stackptrAtual;
 				}
@@ -147,6 +149,7 @@ void Sched_dispatch()//  __attribute__((signal,naked))
 				listatarefas->prioridades[i]->ultimaTarefa=j;
 				if(tarefaAtual != NULL)
 				{
+					printf("\nGc %u C %i",listatarefas->prioridades[i]->tarefas[j]->prioridade,System_Ceiling());
 					GUARDARCONTEXTO();
 					tarefaAtual->stackPtr = stackptrAtual;
 				}
