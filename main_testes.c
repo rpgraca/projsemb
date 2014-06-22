@@ -18,6 +18,7 @@
 #include <stdio.h>
 #include "uart.h"
 #include <avr/sleep.h>
+#include "ext_libs.h"
 
 #define HEAPSIZE	600
 
@@ -122,6 +123,7 @@ void* func0(void *arg)
 		{
 			state=1-state;
 		}
+		delay_ms(1000);
 		Timers_esperaActivacao(timer);
 		Sinais_sinaliza(sinal1);
 	}
@@ -149,6 +151,7 @@ void* func1(void *arg)
 		{
 			state=1-state;
 		}
+		delay_ms(1000);
 		Sinais_esperaSinal(sinal1);
 	}
 }
@@ -176,6 +179,7 @@ void* func2(void *arg)
 		{
 			state=1-state;
 		}
+		delay_ms(1000);
 		////Semaforo_unlock(sem);
 		Sinais_esperaSinal(sinal1);
 	}
@@ -200,6 +204,7 @@ void* func3(void *arg)
 		{
 			state=1-state;
 		}
+		delay_ms(1000);
 		Sinais_esperaSinal(sinal1);
 	}
 }
@@ -223,6 +228,7 @@ void* func4(void *arg)
 		{
 			state=1-state;
 		}
+		delay_ms(1000);
 		Sinais_esperaSinal(sinal1);
 	}
 }
@@ -251,6 +257,7 @@ void* func5(void *arg)
 		{
 			state=1-state;
 		}
+		delay_ms(1000);
 		Sinais_esperaSinal(sinal1);
 	}
 }
@@ -262,11 +269,11 @@ void* func5(void *arg)
 void testes()
 {
 	ListaTarefas_adicionaTarefa(5, 140, func5,(void*)5);
-	ListaTarefas_adicionaTarefa(5, 140, func4,(void*)4);
-	ListaTarefas_adicionaTarefa(5, 140, func3,(void*)3);
-	ListaTarefas_adicionaTarefa(4, 140, func2,(void*)2);
-	ListaTarefas_adicionaTarefa(4, 140, func1,(void*)1);
-	ListaTarefas_adicionaTarefa(3, 140, func0,(void*)0);
+	ListaTarefas_adicionaTarefa(4, 140, func4,(void*)4);
+	ListaTarefas_adicionaTarefa(3, 140, func3,(void*)3);
+	ListaTarefas_adicionaTarefa(2, 140, func2,(void*)2);
+	ListaTarefas_adicionaTarefa(1, 140, func1,(void*)1);
+	ListaTarefas_adicionaTarefa(0, 140, func0,(void*)0);
 }
 
 

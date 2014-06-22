@@ -55,4 +55,10 @@ uint16_t ReadADC(uint8_t ADCchannel);
  */
 double temperatura(uint16_t ADC_RAW_value, int16_t VREF);
 
+/*
+ * Introduz um delay especificado em ms
+ * 
+ */
+void delay_ms(uint16_t ms);
+
 #endif

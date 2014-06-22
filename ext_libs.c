@@ -64,3 +64,17 @@ double temperatura(uint16_t ADC_RAW_value, int16_t VREF) {
   
   return 100*(double)VREF/1024*(double)ADC_RAW_value;
 }
+
+/*
+ * Introduz um delay especificado em ms
+ * 
+ */
+void delay_ms(uint16_t ms){
+ 
+  uint8_t i=0;
+  uint16_t j=0;
+ 
+  for(i=0;i<ms*0.1;i++) 
+   for(j=0;j<8335;j++); 
+  
+}
