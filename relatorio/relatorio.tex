@@ -87,12 +87,87 @@ Este mecanismo não evita inversão de prioridade e está sujeito a race conditi
 que está à espera do sinal, ficando a dormir infinitamente.
 Este problema pode levar a deadlocks, devendo, por isso, ser usado com cuidado, tendo sido implementado apenas para sincronização de tarefas event-triggered.
 
+% Falar de como foram feitos os testes
+% Estrutura do relatório
+
 O trabalho tem como objetivo a aplicação de conceitos abordados em diversas unidades curriculares do MIEEC, onde foram introduzidos sem uma componente prática que
 possibilite compreender de que forma é que eles são aplicados num contexto de implementação real.
 
+O código do trabalho, assim como o seu fluxo de desenvolvimento, está disponível em \url{https://github.com/rpgraca/projsemb}.
 
+\section{Estrutura do kernel}
 
+\subsection{Lista de Tarefas}
+O kernel opera sobre uma lista de tarefas, onde são guardadas as tarefas existentes.
+Esta lista é uma estrutura (ListaTarefas\_t) que tem como elementos um inteiro positivo de 8 bits (uint8\_t) que indica o número de prioridades existentes, parâmetro que pode ser deixado ao
+critério do utilizador do sistema, e o apontador para um vetor em que cada elemento é um apontador para uma lista de tarefas de um dado nível de prioridade (estrutura
+TarefasPrioridade\_t).
+Esta estrutura tem como campos o número de tarefas nesse nível de prioridade (uint8\_t), um vetor de apontadores para tarefas (estrutura Tarefa\_t) e o índice nesse vetor
+(uint8\_t) da última
+tarefa que executou (este índice é utilizado pelo dispatcher, como explicado mais adiante).
 
+A estrutura Tarefa\_t tem como elementos a prioridade da tarefa (uint8\_t), uma flag (uint8\_t) que indica se a tarefa está pronta a executar ou não e o apontador para a
+stack da tarefa (char *).
+
+A lista de tarefas é criada na inicialização do sistema, invocando a função Sched\_inicia(), que cria uma lista de tarefas com um número de prioridades definido.
+Para adicionar uma tarefa à lista pode, em qualquer ponto de execução após a inicialização do sistema, ser invocada a função ListaTarefas\_adicionaTarefa() (notar que inicialização é a
+alocação das estruturas de dados, e é uma fase distinta e anterior ao início do sistema, que ocorre com a primeira chamada do dispatcher).
+
+Existe também uma função de terminação de tarefa, que é invocada sempre que uma tarefa faz return.
+Esta função reorganiza as estruturas de dados, eliminando a tarefa que terminou.
+
+Tanto o escalonamento de tarefas como o dispatcher trabalham diretamente sobre uma única lista de tarefas global, alocada dinamicamente na inicialização do sistema.
+
+\subsection{Temporizadores e Sinais}
+O funcionamento dos temporizadores e o dos sinais são muito semelhantes entre si.
+Um temporizador é uma estrutura (Timer\_t) que tem como campos o seu período em ticks (uint16\_t), o seu tempo atual (uint16\_t), o número de tarefas que tem em espera (uint8\_t),
+o máximo de tarefas que podem esperar por ele (uint8\_t) (parâmetro definido na criação de cada temporizador) e um vetor de apontadores para Tarefa\_t, que contem uma
+lista das tarefas em espera.
+A estrutura do sinal (Sinal\_t) tem os mesmos campos, à exceção do período e do tempo atual.
+
+Ambas as estruturas são criadas por funções semelhantes (\mbox{Timers\_criaTimer()} e \mbox{Sinais\_criaSinal()}), que alocam dinamicamente um Timer\_t ou um Sinal\_t.
+
+Para permitir o controlo dos temporizadores por parte do kernel, existe um vetor de temporizadores, ao qual é adicionado um temporizador sempre que é criado.
+Este vetor é uma estrutura VectorTimers\_t, que tem como elementos um apontador para apontador de Timer\_t, onde é alocado o vetor de Timer\_t, e o número de elementos do
+vetor.
+Este vetor é alocado dinamicamente, alterando o seu tamanho consoante são adicionados ou removidos temporizadores.
+
+Para ficar inativa até uma ativação por um temporizador \emph{timer} ou por um sinal \emph{sinal}, uma tarefa invoca Timers\_esperaActivacao(\&\emph{timer}) ou
+Sinais\_esperaSinal(\&\emph{sinal}), respetivamente.
+Para ficar inativa durante um determinado número de ticks \emph{n\_ticks}, uma tarefa pode invocar Timers\_sleep(\emph{n\_ticks}).
+Para sinalizar o sinal \emph{sinal}, uma tarefa pode invocar Sinal\_sinaliza(\&\emph{sinal}).
+
+Além destas, estão disponibilizadas ao programador funções para remover sinais e temporizadores, libertando a memória utilizada, e, no caso dos temporizadores, eliminando
+o apontador do temporizador do vetor de temporizadores.
+
+\subsection{Semáforos}
+Os semáforos implementados baseiam-se, como foi dito anteriormente, em SRP.
+No entanto, são uma versão simples deste protocolo, dado não possibilitam o controlo do acesso a recursos com mais que um elemento, funcionando, desta forma, como
+semáforos binários.
+Como consequência de se utilizar SRP, é necessário que o programador que utiliza o sistema operativo indique como parâmetro o teto do semáforo, que, em geral, é a
+prioridade da tarefa de mais alta prioridade que utiliza o semáforo.
+
+Um semáforo é uma estrutura Semaforo\_t que tem como elementos o teto do semáforo (uint8\_t) e o estado do semáforo (uint8\_t), que, neste caso, é uma flag binária.
+Um semáforo é criado com a função Semaforo\_init(), que aloca dinamicamente um semáforo.
+Existe também uma função que permite apagar um semáforo (Semaforo\_apaga()), libertando a memória alocada.
+
+Para controlo da execução das tarefas, existe uma stack com a tarefa que trancou pela ultima vez um semáforo e com o teto do sistema.
+Sempre que é criado um semáforo, o espaço atribuído a esta stack é realocado para que ela suporte o caso limite, em que todos os semáforos estão trancados, sempre que é
+apagado um semáforo, o espaço em memória é reduzido.
+
+Para adquirir um semáforo \emph{sem}, uma tarefa invoca Semaforo\_lock(\&\emph{sem}), para o libertar invoca Semaforo\_unlock(\&\emph{sem}).
+Dado que, em SRP, sempre que um tarefa faz lock ao semáforo obtém garantidamente o lock, a função de lock limita-se a mudar o estado do semáforo e acrescentar a tarefa e
+o novo teto do sistema à stack.
+O novo teto do sistema é o máximo entre o teto do sistema anterior ao lock e o teto do semáforo que vai ser trancado.
+Quando se invoca unlock, a posição do topo da stack é removida.
+Como consequência deste modelo de funcionamento, se uma tarefa tem dois semáforos em lock, deve fazer unlock pela ordem inversa a que fez lock, caso contrário poderá
+comprometer o acesso exclusivo às regiões críticas.
+
+\subsection{Dispatcher}
+
+\section{Aspetos de implementação}
+\subsection{Criação de uma tarefa}
+\subsection{Mudança de contexto}
 
 %\bibliographystyle{IEEEtran}
 %\bibliography{./relatorio}

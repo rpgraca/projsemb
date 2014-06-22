@@ -70,8 +70,6 @@ Tarefa_t* Tarefa_cria(uint8_t prioridade, uint16_t stackSize, void* (*funcao)(vo
 
 
 	tarefa->prioridade = prioridade;
-	tarefa->stackSize = stackSize;
-	tarefa->funcao = funcao;
 	tarefa->activada = 1;
 	tarefa->stackPtr = ((char*) tarefa) + sizeof(Tarefa_t) + stackSize-2;
 	
@@ -81,7 +79,7 @@ Tarefa_t* Tarefa_cria(uint8_t prioridade, uint16_t stackSize, void* (*funcao)(vo
 	GUARDARSTACKPTR();
 	stackptrBak = stackptrAtual;
 	stackptrAtual = tarefa->stackPtr;
-	funcAtual = tarefa->funcao;	
+	funcAtual = funcao;	
 	tarefaAtual = (Tarefa_t *) ListaTarefas_terminaTarefaAtual; //tarefaAtual é usado para enviar endereço de retorno
 	CRIARCONTEXTO();
 	GUARDARSTACKPTR();

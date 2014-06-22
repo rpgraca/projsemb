@@ -35,10 +35,6 @@ typedef struct
 {
 	uint8_t prioridade;
 	uint8_t activada;			// Flag que indica que a tarefa esta activa
-	
-	uint16_t stackSize;
-	
-	void* (*funcao)(void *);
 	char *stackPtr;				// Apontador para a sua stack
 } Tarefa_t;
 

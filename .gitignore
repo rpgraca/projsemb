@@ -26,4 +26,6 @@
 .*
 
 
-ukteste
+# Latex
+*.aux
+*.log
