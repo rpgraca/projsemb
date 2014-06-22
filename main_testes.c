@@ -268,12 +268,12 @@ void* func5(void *arg)
 /**************************************************************/
 void testes()
 {
-	ListaTarefas_adicionaTarefa(5, 140, func5,(void*)5);
-	ListaTarefas_adicionaTarefa(4, 140, func4,(void*)4);
-	ListaTarefas_adicionaTarefa(3, 140, func3,(void*)3);
-	ListaTarefas_adicionaTarefa(2, 140, func2,(void*)2);
-	ListaTarefas_adicionaTarefa(1, 140, func1,(void*)1);
 	ListaTarefas_adicionaTarefa(0, 140, func0,(void*)0);
+	ListaTarefas_adicionaTarefa(1, 140, func1,(void*)1);
+	ListaTarefas_adicionaTarefa(2, 140, func2,(void*)2);
+	ListaTarefas_adicionaTarefa(3, 140, func3,(void*)3);
+	ListaTarefas_adicionaTarefa(4, 140, func4,(void*)4);
+	ListaTarefas_adicionaTarefa(5, 140, func5,(void*)5);
 }
 
 
