@@ -21,8 +21,8 @@ all: $(PROG).hex
 $(PROG).hex: $(PROG).elf
 	$(OBJCOPY) -O $(BIN_FORMAT) -R .eeprom $< $@
 
-$(PROG).elf: $(PROG).o MicroKernel/ATmega.o MicroKernel/ListaTarefas.o MicroKernel/MicroKernel.o MicroKernel/Scheduler_Fixo.o MicroKernel/Semaforo.o MicroKernel/Sinais.o MicroKernel/Timers.o uart.o ext_libs.o
-	$(CC) $(CFLAGS) -o $@ $(PROG).o MicroKernel/ATmega.o MicroKernel/ListaTarefas.o MicroKernel/MicroKernel.o MicroKernel/Scheduler_Fixo.o MicroKernel/Semaforo.o MicroKernel/Sinais.o MicroKernel/Timers.o uart.o ext_libs.o
+$(PROG).elf: $(PROG).o MicroKernel/ATmega.o MicroKernel/ListaTarefas.o MicroKernel/MicroKernel.o MicroKernel/Scheduler_Fixo.o MicroKernel/Semaforo.o MicroKernel/Sinais.o MicroKernel/Timers.o uart.o ext_libs.o uart2.o
+	$(CC) $(CFLAGS) -o $@ $(PROG).o MicroKernel/ATmega.o MicroKernel/ListaTarefas.o MicroKernel/MicroKernel.o MicroKernel/Scheduler_Fixo.o MicroKernel/Semaforo.o MicroKernel/Sinais.o MicroKernel/Timers.o uart.o ext_libs.o uart2.o
 
 $(PROG).O: $(PROG).c
 	$(CC) $(CFLAGS) -o $@ $< -c
@@ -43,6 +43,8 @@ MicroKernel/Timers.o: MicroKernel/Timers.c
 uart.o: uart.c
 	$(CC) $(CFLAGS) -o $@ $< -c
 ext_libs.o: ext_libs.c
+	$(CC) $(CFLAGS) -o $@ $< -c
+uart2.o: uart2.c
 	$(CC) $(CFLAGS) -o $@ $< -c
 
 clean:

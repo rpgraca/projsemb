@@ -132,6 +132,7 @@ void Sched_dispatch()//  __attribute__((signal,naked))
 					GUARDARCONTEXTO();
 					tarefaAtual->stackPtr = stackptrAtual;
 				}
+				printf("\nSa %u C %i",listatarefas->prioridades[i]->tarefas[j]->prioridade,System_Ceiling());
 				tarefaAtual = listatarefas->prioridades[i]->tarefas[j];
 				stackptrAtual = tarefaAtual->stackPtr;
 				RECUPERARCONTEXTO();
@@ -149,6 +150,7 @@ void Sched_dispatch()//  __attribute__((signal,naked))
 					GUARDARCONTEXTO();
 					tarefaAtual->stackPtr = stackptrAtual;
 				}
+				printf("\nSb %u C %i",listatarefas->prioridades[i]->tarefas[j]->prioridade,System_Ceiling());
 				tarefaAtual = listatarefas->prioridades[i]->tarefas[j];
 				stackptrAtual = tarefaAtual->stackPtr;
 				RECUPERARCONTEXTO();
@@ -162,6 +164,7 @@ void Sched_dispatch()//  __attribute__((signal,naked))
 		// Verificar se há tarefas com semáforos
 		if(System_Ceiling() > -1)
 		{
+			printf("\nSc %u C %i",listatarefas->prioridades[i]->tarefas[j]->prioridade,System_Ceiling());
 			tarefaAtual = Stack_Top(); 
 			stackptrAtual = tarefaAtual->stackPtr;
 			RECUPERARCONTEXTO();
@@ -176,6 +179,7 @@ void Sched_dispatch()//  __attribute__((signal,naked))
 			stackptrAtual -= 2;
 			GUARDARSTACKPTR();
 		}
+		printf("\nSleep");
 		sei();
 		sleep_mode();
 	}

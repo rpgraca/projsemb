@@ -274,7 +274,16 @@ void testes()
 
 int main()
 {
+  
+	uart_init();
+  	stdout = &uart_output;
+	stdin  = &uart_input;
 	
+	//USART0Init();
+	//stdout = &usart0_str;
+	//stdin = &usart0_str;
+	
+	 
 	//PORTB ^= (1<< (int) 2);
 
 	//////////////////// INICIALIZACAO DO KERNEL ////////////////////

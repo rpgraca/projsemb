@@ -14,6 +14,7 @@
 #include "Sinais.h"
 
 #include <avr/io.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 
@@ -190,6 +191,7 @@ int8_t Sinais_sinaliza(Sinal_t *sinal)
 	for(j=0; j < sinal->stackSize; j++)
 	{
 		sinal->tarefas[j]->activada = 1;
+		printf("\nAS %u",sinal->tarefas[j]->prioridade);
 	}
 	sinal->stackSize = 0;
 	
