@@ -135,7 +135,6 @@ void Sched_dispatch()//  __attribute__((signal,naked))
 				tarefaAtual = listatarefas->prioridades[i]->tarefas[j];
 				stackptrAtual = tarefaAtual->stackPtr;
 				RECUPERARCONTEXTO();
-				printf("\nExecutar: %u |",listatarefas->prioridades[i]->tarefas[j]->prioridade);
 				asm volatile("ret");
 			}
 		}
@@ -153,7 +152,6 @@ void Sched_dispatch()//  __attribute__((signal,naked))
 				tarefaAtual = listatarefas->prioridades[i]->tarefas[j];
 				stackptrAtual = tarefaAtual->stackPtr;
 				RECUPERARCONTEXTO();
-				printf("\nExecutar: %u |",listatarefas->prioridades[i]->tarefas[j]->prioridade);
 				asm volatile("ret");
 			}
 		}
@@ -177,7 +175,6 @@ void Sched_dispatch()//  __attribute__((signal,naked))
 			RECUPERARSTACKPTR();
 			stackptrAtual -= 2;
 			GUARDARSTACKPTR();
-			printf("\nSleep");
 		}
 		sei();
 		sleep_mode();

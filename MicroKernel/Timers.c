@@ -147,7 +147,8 @@ void Timers_actualizaTimers()
 	{
 		// Incrementa o timer
 		vecTimers.timers[i]->tActual++;
-  
+
+
 		// Verifica se o timer terminou.
 		// Caso tenha, activa a respectiva tarefa e reinicia o timer.
 		if (vecTimers.timers[i]->tActual >= vecTimers.timers[i]->periodo)
@@ -156,7 +157,6 @@ void Timers_actualizaTimers()
 			for(j=0; j < vecTimers.timers[i]->stackSize; j++)
 			{
 				vecTimers.timers[i]->tarefas[j]->activada = 1;
-				printf("\nAtivada: %u |",vecTimers.timers[i]->tarefas[j]->prioridade);
 			}
 			vecTimers.timers[i]->stackSize = 0;
 		}

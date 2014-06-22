@@ -66,5 +66,22 @@ double temperatura(uint16_t ADC_RAW_value, int16_t VREF) {
   
 }
 
+/*
+ * Inicializa LCD 5110
+ * Source: http://agock.com/software/glcd-graphic-lcd-library/
+ *
+ */
+static void lcd_setup(void)
+{
+	
+}
+
+/*
+ * Testa LCD 5110
+ * Source: http://agock.com/software/glcd-graphic-lcd-library/
+ *
+ */
+static void lcd_demo(void){
+
 		
 }

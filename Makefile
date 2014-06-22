@@ -8,11 +8,11 @@ RM=rm -f
 MCU=atmega328
 F_CPU=16000000UL
 BIN_FORMAT=ihex
-PORT=/dev/ttyUSB0
-BAUD=57600
+PORT=/dev/ttyACM0
+BAUD=115200
 PROTOCOL=arduino
 PART=ATMEGA328P
-CFLAGS=-Wall -O0 -DF_CPU=$(F_CPU) -mmcu=$(MCU) -Wl,-u,vfprintf -lprintf_flt -lm
+CFLAGS=-Wall -O0 -DF_CPU=$(F_CPU) -mmcu=$(MCU)
 PROG=main_testes
  
 
@@ -21,8 +21,8 @@ all: $(PROG).hex
 $(PROG).hex: $(PROG).elf
 	$(OBJCOPY) -O $(BIN_FORMAT) -R .eeprom $< $@
 
-$(PROG).elf: $(PROG).o MicroKernel/ATmega.o MicroKernel/ListaTarefas.o MicroKernel/MicroKernel.o MicroKernel/Scheduler_Fixo.o MicroKernel/Semaforo.o MicroKernel/Sinais.o MicroKernel/Timers.o uart.o ext_libs.o 
-	$(CC) $(CFLAGS) -o $@ $(PROG).o MicroKernel/ATmega.o MicroKernel/ListaTarefas.o MicroKernel/MicroKernel.o MicroKernel/Scheduler_Fixo.o MicroKernel/Semaforo.o MicroKernel/Sinais.o MicroKernel/Timers.o uart.o ext_libs.o
+$(PROG).elf: $(PROG).o MicroKernel/ATmega.o MicroKernel/ListaTarefas.o MicroKernel/MicroKernel.o MicroKernel/Scheduler_Fixo.o MicroKernel/Semaforo.o MicroKernel/Sinais.o MicroKernel/Timers.o uart.o
+	$(CC) $(CFLAGS) -o $@ $(PROG).o MicroKernel/ATmega.o MicroKernel/ListaTarefas.o MicroKernel/MicroKernel.o MicroKernel/Scheduler_Fixo.o MicroKernel/Semaforo.o MicroKernel/Sinais.o MicroKernel/Timers.o uart.o
 
 $(PROG).O: $(PROG).c
 	$(CC) $(CFLAGS) -o $@ $< -c
@@ -42,12 +42,9 @@ MicroKernel/Timers.o: MicroKernel/Timers.c
 	$(CC) $(CFLAGS) -o $@ $< -c
 uart.o: uart.c
 	$(CC) $(CFLAGS) -o $@ $< -c
-ext_libs.o: ext_libs.c
-	$(CC) $(CFLAGS) -o $@ $< -c
-
 
 clean:
-	$(RM) ${PROG}.o MicroKernel/*.o glcd/*.o glcd/controllers/*.o glcd/devices/*.o ${PROG}.elf ${PROG}.hex
+	$(RM) ${PROG}.o MicroKernel/*.o ${PROG}.elf ${PROG}.hex
  
 upload: ${PROG}.hex
 	$(AVRDUDE) -c $(PROTOCOL) -p $(PART) -P $(PORT) \
