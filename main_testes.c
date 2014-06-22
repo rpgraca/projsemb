@@ -22,7 +22,7 @@
 #include <avr/sleep.h>
 
 #define HEAPSIZE	800
-#define NTAREFAS	0
+#define NTAREFAS	10
 
 extern ListaTarefas_t* listatarefas;
 Sinal_t *sinal;
@@ -31,9 +31,6 @@ Timer_t *timer;
 
 void* func2(void *arg)
 {
-
-	Sinais_esperaSinal(sinal1);
-	PORTD=0xFF;
 	return NULL;
 }
 
@@ -41,7 +38,8 @@ void* func0(void *arg)
 {
 	while(1)
 	{
-		Sinais_sinaliza(sinal1);
+		if(ListaTarefas_adicionaTarefa(1, 60, func2,(void*)0)== -1) PORTD=0xFF;
+		Timers_sleep(3);
 	}
 }
 
@@ -57,10 +55,9 @@ void *func1(void *arg)
 void testes()
 {
 	int i;
-	for(i=0;i<NTAREFAS;i++)
+	for(i=1;i<NTAREFAS;i++)
 		ListaTarefas_adicionaTarefa(1, 50, func1,(void*)0);
 	ListaTarefas_adicionaTarefa(0, 60, func0,(void*)0);
-	ListaTarefas_adicionaTarefa(1, 60, func2,(void*)0);
 }
 
 
@@ -76,8 +73,6 @@ int main()
 	//////////////////// TESTES ////////////////////
 	testes();
 	sinal=Sinais_criaSinal(NTAREFAS);
-	sinal1=Sinais_criaSinal(1);
-	timer=Timers_criaTimer(20,1);
 	UK_inicia();	
 		
 	return 0;

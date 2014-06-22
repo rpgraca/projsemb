@@ -25,5 +25,5 @@ Tempo5 =			[24.4	34.4	47		60		71		130	];
 
 % Terminação de tarefa
 % Terminar uma tarefa de um nivel de prioridade com NumTarefas1 tarefas nesse nivel de prioridade
-NumPrioridades3 =	[1		2		3		4		5		10	];
-Tempo5 =			[24.4	34.4	47		60		71		130	];
+NumTarefas1 =		[1		2		3		4		5		10	];
+Tempo5 =			[53.8	56.3	60.1	63.7	67.2	90	];
