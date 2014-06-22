@@ -191,7 +191,10 @@ int8_t Sinais_sinaliza(Sinal_t *sinal)
 	for(j=0; j < sinal->stackSize; j++)
 	{
 		sinal->tarefas[j]->activada = 1;
-		printf("AS %u\n",sinal->tarefas[j]->prioridade);
+		if(sinal->stackSize>1)
+		printf("AS %u s\n",sinal->tarefas[j]->prioridade); //indica ativação simultânea
+		else
+		printf("AS %u i\n",sinal->tarefas[j]->prioridade); //indica ativação isolada
 	}
 	sinal->stackSize = 0;
 	
