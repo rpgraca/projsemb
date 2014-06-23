@@ -1,14 +1,16 @@
 % Medições de tempos de execução
-
 % Atualização dos temporizadores
 
 % Uma tarefa por temporizador
 NumTemps1 =	 [0		1		2		3		4		5		10	];
 Tempo1 =	 [1.24	16.2	30.8	46.2	61.2	76		151	]; % Tempo em us
 
+
 % Tarefas partilham temporizador global 
 NumTemps2 =	 [0		1		2		3		4		5		10	];
 Tempo2 =	 [1.24	16.2	20.8	25.2	29.6	34		56.8]; % Tempo em us
+
+
 
 % Sched_dispatch()
 % Uma tarefa de prioridade 0 com NumPrioridades1 niveis de prioridade sem tarefas
@@ -41,4 +43,19 @@ Tempo6 =			[5.9	9.2		12.6	15.9	19.2	35.8];
 % Espera Sinal - 5.2
 % Semaforo lock - 7.1
 % Semaforo unlock - 2.5 
+
+% Calculos
+x = 0:0.01:10;
+Temp_1pT = polyfit(NumTemps1, Tempo1, 1);
+Temp_TG = polyfit(NumTemps2(2:length(Tempo2)), Tempo2(2:length(Tempo2)),1);
+figure(1);
+hold on
+scatter(NumTemps2,Tempo2,'r');
+scatter(NumTemps1,Tempo1);
+plot(x,Temp_1pT(1)*x + Temp_1pT(2));
+plot(x,Temp_TG(1)*x + Temp_TG(2),'r');
+grid
+ylabel('Tempo (us)');
+xlabel('Numero de tarefas');
+
 

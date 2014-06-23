@@ -14,188 +14,13 @@
 
 #include "MicroKernel/MicroKernel.h"
 
-#include <stdlib.h>
-#include <stdio.h>
-#include "uart.h"
-#include <avr/sleep.h>
+#define HEAPSIZE 100
 
-#define HEAPSIZE	600
-
-
-
-void *func0(void *arg);
-void *func1(void *arg);
-void *func2(void *arg);
-void *func3(void *arg);
-void *func4(void *arg);
-void *func5(void *arg);
-void *func6(void *arg);
-void *func7(void *arg);
-void *func8(void *arg);
-void *func9(void *arg);
-void *func10(void *arg);
-void *func11(void *arg);
-void *func12(void *arg);
-void *func13(void *arg);
-
-
-void* func0(void *arg)
-{
- 	Timer_t *timer = Timers_criaTimer(1050,1);
-	while(1)
-	{
-		PORTB ^= (1<< 5);
-		Timers_esperaActivacao(timer);
-	}
-}
-
-
-void* func1(void *arg)
-{
- 	Timer_t *timer = Timers_criaTimer(1000,1);
-	while(1)
-	{
-		PORTB ^= (1<< 4);
-		Timers_esperaActivacao(timer);
-	}
-}
-
-
-void* func2(void *arg)
-{
- 	Timer_t *timer = Timers_criaTimer(950,1);
-	while(1)
-	{
-		PORTB ^= (1<< 3);
-		Timers_esperaActivacao(timer);
-	}
-}
-
-void* func3(void *arg)
-{
- 	Timer_t *timer = Timers_criaTimer(900,1);
-	while(1)
-	{
-		PORTB ^= (1<< 2);
-		Timers_esperaActivacao(timer);
-	}
-}
-
-void* func4(void *arg)
-{
- 	Timer_t *timer = Timers_criaTimer(850,1);
-	while(1)
-	{
-		PORTB ^= (1<< 1);
-		Timers_esperaActivacao(timer);
-	}
-}
-
-
-void* func5(void *arg)
-{
- 	Timer_t *timer = Timers_criaTimer(800,1);
-	while(1)
-	{
-		PORTB ^= (1<< 0);
-		Timers_esperaActivacao(timer);
-	}
-}
-
-void* func6(void *arg)
-{
- 	Timer_t *timer = Timers_criaTimer(750,1);
-	while(1)
-	{
-		PORTD ^= (1<< 7);
-		Timers_esperaActivacao(timer);
-	}
-}
-void* func7(void *arg)
-{
- 	Timer_t *timer = Timers_criaTimer(700,1);
-	while(1)
-	{
-		PORTD ^= (1<< 6);
-		Timers_esperaActivacao(timer);
-	}
-}
-void* func8(void *arg)
-{
- 	Timer_t *timer = Timers_criaTimer(650,1);
-	while(1)
-	{
-		PORTD ^= (1<< 5);
-		Timers_esperaActivacao(timer);
-	}
-}
-void* func9(void *arg)
-{
- 	Timer_t *timer = Timers_criaTimer(600,1);
-	while(1)
-	{
-		PORTD ^= (1<< 4);
-		Timers_esperaActivacao(timer);
-	}
-}
-void* func10(void *arg)
-{
- 	Timer_t *timer = Timers_criaTimer(550,1);
-	while(1)
-	{
-		PORTD ^= (1<< 3);
-		Timers_esperaActivacao(timer);
-	}
-}
-void* func11(void *arg)
-{
- 	Timer_t *timer = Timers_criaTimer(500,1);
-	while(1)
-	{
-		PORTD ^= (1<< 2);
-		Timers_esperaActivacao(timer);
-	}
-}
-void* func12(void *arg)
-{
- 	Timer_t *timer = Timers_criaTimer(450,1);
-	while(1)
-	{
-		PORTD ^= (1<< 1);
-		Timers_esperaActivacao(timer);
-	}
-}
-void* func13(void *arg)
-{
- 	Timer_t *timer = Timers_criaTimer(400,1);
-	while(1)
-	{
-		PORTD ^= (1<< 0);
-		Timers_esperaActivacao(timer);
-	}
-}
 
 
 /**************************************************************/
 /*                            MAIN                            */
 /**************************************************************/
-void testes()
-{
-	ListaTarefas_adicionaTarefa(5, 70, func0,(void*)5);
-	ListaTarefas_adicionaTarefa(3, 70, func1,(void*)4);
-	ListaTarefas_adicionaTarefa(4, 70, func2,(void*)3);
-	ListaTarefas_adicionaTarefa(5, 70, func3,(void*)2);
-	ListaTarefas_adicionaTarefa(5, 70, func4,(void*)1);
-	ListaTarefas_adicionaTarefa(5, 70, func5,(void*)0);
-	ListaTarefas_adicionaTarefa(3, 70, func6,(void*)7);
-	ListaTarefas_adicionaTarefa(4, 70, func7,(void*)6);
-	ListaTarefas_adicionaTarefa(4, 70, func8,(void*)5);
-	ListaTarefas_adicionaTarefa(5, 70, func9,(void*)4);
-	ListaTarefas_adicionaTarefa(5, 70, func10,(void*)3);
-	ListaTarefas_adicionaTarefa(5, 70, func11,(void*)2);
-	ListaTarefas_adicionaTarefa(3, 70, func12,(void*)1);
-	ListaTarefas_adicionaTarefa(4, 70, func13,(void*)0);
-}
 
 
 
@@ -203,25 +28,10 @@ void testes()
 int main()
 {
 	
-	//PORTB ^= (1<< (int) 2);
 
-	//////////////////// INICIALIZACAO DO KERNEL ////////////////////
 	UK_inicializa();
 	
-	DDRB = 0xFF; 
-	DDRD = 0xFF; 
-	//if (resultado < 0)
-	//{
-	//	////d printf("ERRO: a incializar o kernel\n");
-	//	exit(-1);
-	//}
-	
-	
-	//////////////////// TESTES ////////////////////
-	testes();
-
 
 	UK_inicia();	
 		
-	return 0;
 }

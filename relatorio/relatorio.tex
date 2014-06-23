@@ -164,12 +164,165 @@ Como consequência deste modelo de funcionamento, se uma tarefa tem dois semáfo
 comprometer o acesso exclusivo às regiões críticas.
 
 \subsection{Dispatcher}
+O dispatcher é responsável pela decisão de que tarefa vai executar em cada momento.
+Na sua invocação, verifica-se se a tarefa atualmente em execução (se alguma) ainda está ativa.
+Caso isso não aconteça, o contexto da tarefa é guardado, pois a tarefa não irá continuar a executar.
+De seguida é feita uma pesquisa ordenada na lista de tarefas, partindo do nível mais prioritário e parando no nível cujo índice é o máximo entre o teto do sistema e o nível
+de prioridade da tarefa atualmente em execução (o nível de prioridade é definido como -1 caso não haja nenhuma tarefa em execução).
+A primeira tarefa pronta a executar encontrada fica com o CPU, sendo, para isso, necessário mudar o contexto de execução.
+Desta forma garante-se que uma tarefa adquire o CPU num dado momento se e só se é a tarefa de mais alta prioridade pronta a executar e se a sua prioridade é superior ao
+teto do sistema.
+
+No caso de a pesquisa acima referida não encontrar nenhuma tarefa de prioridade superior à atual ou ao teto do sistema em condições de executar, verifica-se se a tarefa
+que tem o CPU nesse momento (se alguma) ainda está ativada.
+Em caso afirmativo, o CPU é-lhe atribuído, não havendo mudança de contexto, caso contrário verifica-se se a stack de tarefas com semáforos bloqueados tem alguma tarefa.
+Dando-se esse caso, o contexto é mudado para o da tarefa no topo da stack.
+No caso de não haver nenhuma tarefa nesta stack, então não existe nenhuma tarefa em condições de executar e o CPU é enviado para modo idle, modo este em que o clock é
+desativado, ficando o sistema à espera interrupção do tick seguinte.
+
+No caso de haver várias tarefas num mesmo nível de prioridade, o desempate é feito de forma cíclica, fazendo com que o vetor de um nível de prioridade seja percorrido a
+partir da posição seguinte à última tarefa desse nível que executou.
 
 \section{Aspetos de implementação}
-\subsection{Criação de uma tarefa}
 \subsection{Mudança de contexto}
+A mudança de contexto de execução é um processo indispensável em sistemas multitasking.
+Este processo ocorre sempre que existe preempção de uma tarefa por existência de outra de maior prioridade pronta a executar e é totalmente transparente para ambas as
+tarefas - a tarefa que deixa de executar não sabe que vai deixar de executar, e a tarefa que vai continuar a sua execução não se apercebe que alguma vez esteve
+interrompida, dado que o seu contexto de execução é exatamente o mesmo que existia quando o CPU lhe foi retirado.
+Para que isto aconteça, é necessário que o contexto da tarefa em execução seja guardado na sua stack.
+Este contexto são os 32 registos do ATmega e o registo de estado (SREG), assim como o stack pointer.
+Enquanto que os registos são colocados na stack, o stack pointer é guardado no elemento a ele destinado na estrutura Tarefa\_t da tarefa correspondente, de forma a ser
+possível recuperar o contexto da tarefa.
+O stack pointer só é guardado depois de todos os registos serem guardados na stack, para que este aponte para o endereço da stack que deve ser retomando na recuperação do
+contexto.
 
-%\bibliographystyle{IEEEtran}
-%\bibliography{./relatorio}
+A recuperação de contexto é o processo inverso, em que é atribuído ao stack pointer do CPU o valor guardado no stack pointer da tarefa que irá executar e os registos são
+recuperados da stack, partindo do novo stack pointer.
+A ordem de recuperação dos registos é, logicamente, a inversa àquela porque eles foram guardados na stack.
+Após recuperação de contexto, a chamada à instrução assembly \emph{reti} faz com que a execução da tarefa volte exatamente ao ponto em que foi interrompido, dado que esta
+instrução provoca um salto para a instrução indicada por um valor existente na posição apontada pelo stack pointer, que foi lá colocado de forma automática pela
+interrupção que ocorreu quando a tarefa deixou de executar pela última vez.
+
+\subsection{Criação e terminação de uma tarefa}
+A criação de uma tarefa, além de implicar a criação das estruturas de dados necessárias e do seu posicionamento na lista de tarefas, implica a criação do contexto inicial
+da tarefa, ou seja, a construção da sua stack de forma a que, quando o dispatcher lançar a tarefa pela primeira vez, a recuperação de contexto coloque a tarefa a executar
+no início da função que lhe é atribuída, de forma a que os argumentos passados à função sejam devidamente reconhecidos e que o return da função tenha um comportamento bem
+determinado.
+Este é um dos pontos mais interessantes e desafiantes do trabalho, dado que é necessário simular uma chamada da função de uma tarefa, embora esta nunca seja
+explicitamente invocada em nenhum ponto da execução do sistema operativo.
+
+O endereço de retorno da função atribuída à tarefa (aquele para onde o program counter salta quando a função faz return) é colocado na sua stack antes de guardar o
+contexto inicial.
+Desta forma, o salto para a posição desejada é totalmente transparente.
+Este endereço de retorno é, em todos os casos, o apontador para uma função que termina a tarefa, libertando a memória por ela reservada e retirando-a da lista de tarefas.
+
+Os parâmetros enviados à função são guardados na posição da stack que, após recuperação do contexto, ficarão nos registos R24 e R25, que são os registos designados para
+envio de argumentos de 16 bits, como é o caso (a função recebe um void*).
+Além disto, a flag de ativação de interrupções é assinalada no SREG, para que se garanta que as interrupções fiquem ativas quando a nova tarefa é lançada pela primeira
+vez.
+O stack pointer inicial da tarefa será o stack pointer que ficar definido após esta criação de contexto.
+
+Desta forma garante-se que, após recuperação do contexto da primeira vez que a tarefa é designada para executar, a instrução return a fará começar a executar no início da
+função desejada, tendo como argumento o valor indicado na criação da tarefa (que fica ao critério do programador que utiliza o sistema), e que uma instrução return fará a
+tarefa saltar para uma função que termina e que a retira do sistema.
+
+A criação de tarefas pode ser feita em qualquer ponto de execução do sistema operativo, sendo que, para que o sistema inicie o seu funcionamento, tem de existir pelo
+menos uma tarefa na lista de tarefas, pois, caso contrário, o sistema entre infinitamente em idle mode.
+A criação de uma tarefa tem como parâmetros a sua prioridade, a necessidade de stack da tarefa, que é deixada ao critério do programador e é alocada de forma dinâmica, 
+um apontador para a função que a tarefa vai executar, e o argumento enviado a essa função.
+A stack da tarefa é reservada com um malloc na sua criação.
+
+\subsection{Tick}
+O tick é uma interrupção periódica, onde é feita a atualização de todos os temporizadores e onde o dispatcher escolhe a tarefa que irá executar até ao tick seguinte.
+Dado que esta interrupção executa bastante frequentemente, introduz um overhead ao sistema, sendo que, por isso, deve ser o mais rápida possível.
+Além disto, esta função não pode criar o seu contexto de execução e não usa stack.
+Para isto, todas as funções invocadas no tick têm o atributo naked, que faz com que as funções não tenham prologo nem epilogo definidos pelo compilador.
+
+Na função tick, são invocadas apenas duas funções: uma que atualiza todos os timers e o dispatcher.
+Ambas as funções têm complexidade linear, a primeira no número de timers e no número de tarefas por timer, a segunda no número de prioridades e no número de tarefas.
+
+\subsection{Acesso a regiões críticas}
+Dado que várias funções da API que executam dentro de tarefas acedem a variáveis e estruturas globais partilhadas e utilizadas no escalonamento e no controlo de semáforos,
+é necessário proteger estas estruturas de race conditions proporcionadas por um contexto de execução multi-tarefa.
+Para que isso aconteça, as interrupções são temporariamente desativadas enquanto se acede a estas estruturas.
+As regiões protegidas por desativação de interrupções são mantidas o mais curto possível, para que não prejudique o funcionamento do sistema.
+
+\section{Utilização do sistema}
+Para utilização do sistema, um programador deve definir o número de prioridades que deseja e o período da interrupção do tick.
+Para inicialização das estruturas de dados, deve invocar a macro UK\_inicializa().
+A partir desse ponto, as estruturas de dados foram criadas e o temporizador do tick foi definido, mas as interrupções ainda não foram ativadas e nenhuma tarefa foi
+chamada, permitindo ao programador criar tarefas e estruturas de dados globais, como semáforos, temporizadores e sinais.
+O sistema começa a executar com a chamada à macro UK\_inicia(), que chama pela primeira vez o dispatcher.
+
+Dado que o stack pointer é alterado quando se invoca o dispatcher, e que as stacks das tarefas ficam dentro da região atribuída à heap, a alocação dinâmica de memória
+dentro das tarefas iria falhar se nada fosse feito, dado que nunca iria existir nenhuma posição em memória entre o fim da heap e o inicio da stack.
+A solução encontrada foi a alocação dinâmica temporária de espaço em heap.
+Esta alocação é feita no inicio da macro UK\_inicializa().
+A memória alocada é libertada na macro UK\_inicia(), e por isso ficará livre para ser usada pelas tarefas, assim que começarem a executar.
+Um calculo cuidado da memória necessária para as estruturas de dados do kernel e para as stacks das tarefas deve ser feito para verificar que espaço fica disponível para
+heap.
+Alocar temporariamente todo este espaço maximiza a heap que fica disponível para a execução do sistema.
+Uma forma mais transparente e robusta passaria por uma alocação mais cuidada das stacks ou por uma implementação adaptada das funções de alocação de memória.
+
+As funções oferecidas pela API são:
+\begin{itemize}
+	\item 	int8\_t ListaTarefas\_adicionaTarefa(uint8\_t prioridade, uint16\_t stackSize, void* (*funcao)(void *), void *arg) - cria e adiciona uma nova tarefa ao sistema, com prioridade
+	e tamanho da stack definidos como argumentos, que irá executar a função definida como argumento, com o argumento definido em void* arg. Retorna 0 em caso de sucesso e
+	um valor negativo com indicação do erro que ocorreu em caso de erro. A sua invocação usa 53 bytes em stack;
+
+	\item 	Timer\_t* Timers\_criaTimer(uint16\_t periodo, uint8\_t numTarefas) - cria dinamicamente um Timer\_t, retornando o seu endereço. O temporizador criado tem um
+		periodo, em ticks, definido como argumento, e a sua lista de tarefas em espera suporta um máximo de numTarefas. Retorna NULL em caso de erro. A sua invocação usa 27
+		bytes em stack;
+	\item	int8\_t Timers\_esperaActivacao(Timer\_t *timer) - espera pela ativação pelo timer indicado como argumento. Retorna 0 em caso de sucesso e um número negativo
+		indicativo do erro em caso de erro. A sua invocação usa 7 bytes em stack;
+	\item	int8\_t Timers\_sleep(uint16\_t periodo) - adormece durante um número de ticks indicado como argumento. Retorna 0 em caso de sucesso e um número negativo 
+		indicativo do erro em caso de erro. A sua invocação usa 29 bytes em stack;
+	\item	int8\_t Timers\_apagaTimer(Timer\_t *timer) - apaga um Timer\_t, libertando a memória por ele utilizada e removendo-o do vetor de temporizadores. Retorna 0 em caso de 
+		sucesso e um número negativo indicativo do erro em caso de erro. A sua invocação usa 15 bytes em stack;
+
+	\item	Sinal\_t* Sinais\_criaSinal(uint16\_t numTarefas) - cria dinamicamente um Sinal\_t, retornando o seu endereço. O sinal criado tem uma lista de tarefas em
+		espera com suporta a um máximo de numTarefas. Retorna NULL em caso de erro. A sua invocação usa 9 bytes em stack;
+	\item	int8\_t Sinais\_esperaSinal(Sinal\_t *sinal) - espera por ativação por sinalização do sinal indicado como argumento. Retorna 0 em caso de sucesso e um número
+		negativo indicativo do erro em caso de erro. A sua invocação usa 7 bytes em stack;
+	\item	int8\_t Sinais\_sinaliza(Sinal\_t *sinal) - acorda todas as tarefas em espera no sinal indicado como argumento. Retorna 0 em caso de sucesso e um número negativo
+		indicativo do erro em caso de erro. A sua invocação usa 8 bytes em stack;
+	\item	int8\_t Sinais\_apagaSinal(Sinal\_t *sinal) - apaga um sinal, libertando a memória por ele utilizada. Retorna 0 em caso de sucesso e um número negativo indicativo
+		do erro em caso de erro. A sua invocação usa 15 bytes em stack;
+
+
+	\item	int8\_t Semaforo\_init(Semaforo\_t** semaforo, uint8\_t ceiling) - cria dinamicamente um semáforo e guarda o seu endereço na variável indicada como argumento.
+		O semáforo criado tem um teto definido como argumento. Retorna 0 em caso de sucesso e um número negativo indicativo do erro em caso de erro. A sua invocação usa
+		27 bytes em stack;
+	\item	void Semaforo\_lock(Semaforo\_t* semaforo) - faz lock a um semáforo. A sua invocação usa 12 bytes em stack;
+	\item	void Semaforo\_unlock(Semaforo\_t* semaforo) - liberta semáforo. A sua invocação usa 8 bytes em stack;
+	\item	int8\_t Semaforo\_apaga(Semaforo\_t* semaforo) - apaga um semáforo, libertando a memória por ele alocada. A sua invocação usa 10 bytes em stack;
+
+\end{itemize}
+
+Além dos requisitos de stack necessários para invocação de tarefas, deve ser tido em conta que a stack deve ter sempre capacidade de memória para alocar uma mudança de
+contexto (33 bytes) e o valor do program counter no momento em que ocorre uma interrupção (2 bytes).
+A stack da função deve ainda ter reservados 2 bytes que correspondem ao endereço de retorno da função.
+
+Apesar de a função de lançamento de tarefas não permitir definir uma fase inicial para a tarefa (atraso desde que a tarefa é lançada até que é ativada), a API permite de
+forma fácil criar esta fase inicial, criando um temporizador no momento de criação da tarefa, e fazendo que a primeira instrução da tarefa seja a espera por ativação
+desse temporizador.
+
+\section{Requisitos de memória}
+As variáveis globais utilizadas pelo kernel ocupam 20 bytes na memória de dados.
+A alocação dinâmica na heap tem um um valor dado pela expressão $M_{heap} = 5 + 4 \cdot numPrioridades + 4 \cdot numTarefas + 8 \cdot numTimers + 2 \sum_{timers} numTarefas_{timer} + 4 \cdot numSinais + 2 \sum_{sinais}
+numTarefas_{sinal} + 5 \cdot numSemaforos $, acrescido do espaço reservado às stacks das tarefas.
+
+Um programa simples que invoca apenas a inicialização e inicio do sistema operativo utiliza 8576 bytes em memória de texto.
+
+\section{Tempos de execução}
+
+\begin{figure}
+	\centering
+	\resizebox{0.5\textwidth}{!}{\large \input{temps.tex}}
+	\caption{Tempo de execução da função de atualização dos temporizadores em função do número de tarefas para 1 temporizador por tarefa e e para 1 temporizador global partilhado por todas as tarefas}
+	\label{fig:timers}
+\end{figure}
+
+\section{Conclusão}
 
 \end{document}
