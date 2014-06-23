@@ -87,8 +87,9 @@ Este mecanismo não evita inversão de prioridade e está sujeito a race conditi
 que está à espera do sinal, ficando a dormir infinitamente.
 Este problema pode levar a deadlocks, devendo, por isso, ser usado com cuidado, tendo sido implementado apenas para sincronização de tarefas event-triggered.
 
-% Falar de como foram feitos os testes
-% Estrutura do relatório
+O trabalho foi, numa primeira fase, totalmente realizado por simulação no Atmel Studio (utilizando gcc como compilador), para que fosse possível observar o conteúdo da
+memória de forma simples.
+Numa fase posterior, os testes foram feitos num ATmega328P.
 
 O trabalho tem como objetivo a aplicação de conceitos abordados em diversas unidades curriculares do MIEEC, onde foram introduzidos sem uma componente prática que
 possibilite compreender de que forma é que eles são aplicados num contexto de implementação real.
@@ -198,7 +199,7 @@ contexto.
 
 A recuperação de contexto é o processo inverso, em que é atribuído ao stack pointer do CPU o valor guardado no stack pointer da tarefa que irá executar e os registos são
 recuperados da stack, partindo do novo stack pointer.
-A ordem de recuperação dos registos é, logicamente, a inversa àquela por que eles foram guardados na stack.
+A ordem de recuperação dos registos é, logicamente, a inversa àquela porque eles foram guardados na stack.
 Após recuperação de contexto, a chamada à instrução assembly \emph{reti} faz com que a execução da tarefa volte exatamente ao ponto em que foi interrompido, dado que esta
 instrução provoca um salto para a instrução indicada por um valor existente na posição apontada pelo stack pointer, que foi lá colocado de forma automática pela
 interrupção que ocorreu quando a tarefa deixou de executar pela última vez.
@@ -316,13 +317,58 @@ Um programa simples que invoca apenas a inicialização e inicio do sistema oper
 
 \section{Tempos de execução}
 
+As figuras \ref{fig:timers}, \ref{fig:disp}, \ref{fig:term} e \ref{fig:sin} mostram os tempos de execução de atividades criticas do sistema que crescem linearmente.
+As primeiras duas figuras correspondem a tempos bastante críticos no desempenho, dado que a soma do tempo de execução das duas funções exibidas correspondem à duração da
+interrupção do tick, que deve ser o mais rápida possível, dado que a fração entre este tempo de execução e o período do tick corresponde à fração de tempo não utilizável
+pelas tarefas.
+O período de tick deve ser escolhido com base num trade-off entre o a necessidade de um tempo de reação rápido (período de tick baixo) e de uma fração de tempo útil de
+CPU elevado, que, para um tempo de tick constante, implica que o período de tick seja elevado.
+
+Os restantes dois gráficos correspondem a tempos que são críticos porque uma parte significativa deste tempo executa com interrupções desativadas.
+
+Outros tempos relevantes, que são constantes para qualquer invocação das funções são
+\begin{itemize}
+	\item ListaTarefas\_adicionaTarefa() - 57.5 $\mu$s
+	\item Timers\_esperaActivacao() - 5.2 $\mu$s
+	\item Timers\_sleep() (antes de adormecer) - 40 $\mu$s
+	\item Timers\_sleep() (depois de acordar) - 38 $\mu$s
+	\item Sinais\_esperaSinal() - 5.2 $\mu$s
+	\item Semaforo\_lock() - 7.1 $\mu$s
+	\item Semaforo\_unlock() - 2.5 $\mu$s 
+\end{itemize}
+
+Todas as medições foram feitas alterando o valor lógico de pinos do ATmega no início e no fim das funções e medindo a diferença temporal no osciloscópio.
+
 \begin{figure}
 	\centering
 	\resizebox{0.5\textwidth}{!}{\large \input{temps.tex}}
-	\caption{Tempo de execução da função de atualização dos temporizadores em função do número de tarefas para 1 temporizador por tarefa e para 1 temporizador global partilhado por todas as tarefas}
+	\caption{Tempo de execução (em $\mu$s) da função de atualização dos temporizadores em função do número de tarefas para 1 temporizador por tarefa e e para 1 temporizador global
+	partilhado por todas as tarefas. Os tempos correspondem ao pior caso, em que todas as tarefas são ativadas. Os pontos assinalados correspondem aos valores medidos.}
 	\label{fig:timers}
 \end{figure}
 
-\section{Conclusão}
+\begin{figure}
+	\centering
+	\resizebox{0.5\textwidth}{!}{\large \input{disp.tex}}
+	\caption{Tempo de execução (em $\mu$s) do dispatcher em função do número de níveis de prioridade para a apenas uma tarefa de prioridade 0 existente na lista de tarefas, a azul,
+	para uma tarefa de prioridade 0 a ser selecionada para executar, sem mudança de contexto, com 1 tarefa por nível de prioridade, a vermelho, e para o mesmo caso, mas
+	com mudança de contexto, a verde. Os pontos assinalados correspondem aos valores medidos.}
+	\label{fig:disp}
+\end{figure}
+
+\begin{figure}
+	\centering
+	\resizebox{0.5\textwidth}{!}{\large \input{term.tex}}
+	\caption{Tempo de execução (em $\mu$s) da função de terminação de uma tarefa em função do número de tarefas com a mesma prioridade. Os pontos assinalados correspondem aos valores
+	medidos.}
+	\label{fig:term}
+\end{figure}
+
+\begin{figure}
+	\centering
+	\resizebox{0.5\textwidth}{!}{\large \input{sin.tex}}
+	\caption{Tempo de execução (em $\mu$s) da função de sinalização de um sinal em função do número de tarefas que esperam por esse sinal}
+	\label{fig:sin}
+\end{figure}
 
 \end{document}
