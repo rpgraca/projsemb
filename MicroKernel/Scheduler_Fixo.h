@@ -24,7 +24,7 @@
 /**************************************************************/
 
 // Numero maximo de prioridades
-#define MAX_N_PRIORIDADES 8
+#define MAX_N_PRIORIDADES 6
 
 
 

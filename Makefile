@@ -12,7 +12,7 @@ PORT=/dev/ttyUSB0
 BAUD=57600
 PROTOCOL=arduino
 PART=ATMEGA328P
-CFLAGS=-Wall -O0 -DF_CPU=$(F_CPU) -mmcu=$(MCU)
+CFLAGS=-Wall -O0 -DF_CPU=$(F_CPU) -mmcu=$(MCU) -Wl,-u,vfprintf -lprintf_flt -lm
 PROG=main_testes
  
 

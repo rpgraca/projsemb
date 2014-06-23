@@ -40,12 +40,6 @@ typedef struct
 } Sinal_t;
 
 
-// Vector de sinais
-typedef struct
-{
-	Sinal_t **sinais;
-	uint8_t nSinais;
-} VectorSinais_t;
 
 /**************************************************************/
 /*                           FUNCOES                          */

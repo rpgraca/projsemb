@@ -23,7 +23,6 @@
 /*                      VARIAVEIS GLOBAIS                     */
 /**************************************************************/
 // Vector dos sinais criados
-VectorSinais_t vecSinais;
 extern Tarefa_t * tarefaAtual;
 
 
@@ -59,17 +58,6 @@ Sinal_t* Sinais_criaSinal(uint16_t numTarefas)
 	sinal->tarefas = (Tarefa_t**) malloc(sizeof(Tarefa_t*)*numTarefas);
 
 	cli(); // Desativar interrupçoes
-	// Realocacao de memoria do vector
-	vecSinais.sinais = (Sinal_t**)realloc(vecSinais.sinais, (vecSinais.nSinais + 1) * sizeof(Sinal_t*));
-	if (vecSinais.sinais == NULL)
-	{
-		SREG = tmpstatus;
-		return NULL;
-	}
-
-
-	vecSinais.sinais[vecSinais.nSinais] = sinal;
-	vecSinais.nSinais++;
 
 	SREG = tmpstatus;
 
@@ -93,47 +81,14 @@ int8_t Sinais_apagaSinal(Sinal_t *sinal)
 	}
 
 
-	// Procura o sinal
-	for (i = 0; i < vecSinais.nSinais; i++)
-	{
-		if (vecSinais.sinais[i] == sinal)
-		{
-			// Sinaliza o sinal
-			Sinais_sinaliza(sinal);
+	Sinais_sinaliza(sinal);
 
-			// Elimina o sinal
-			free(sinal->tarefas);
-			free(sinal);
+	// Elimina o sinal
+	free(sinal->tarefas);
+	free(sinal);
 
 
-			// Copia as tarefas para o inicio do vector para deixar o espaco vazio no fim do vector
-			for (j = i; j < vecSinais.nSinais - 1; j++)
-				vecSinais.sinais[j] = vecSinais.sinais[j + 1];
-
-
-			// Realocacao de memoria do vector
-			vecSinais.sinais = (Sinal_t**)realloc(vecSinais.sinais, (vecSinais.nSinais - 1) * sizeof(Sinal_t*));
-			if ((vecSinais.sinais == NULL) && (vecSinais.nSinais != 1))	// Se nSinais = 1, entao o vector vai ficar NULL
-			{
-				SREG = tmpstatus;
-				return -2;
-			}
-
-
-			vecSinais.nSinais--;
-
-
-			SREG = tmpstatus;
-			return 0;
-		}
-
-	}
-
-
-
-	// O sinal nao existe
-	SREG = tmpstatus;
-	return -3;
+	return 0;
 }
 
 

@@ -109,7 +109,7 @@ void* func0(void *arg)
 {
 	
 	//d printf("Entrei na tarefa 0\n");
- 	Timer_t *timer = Timers_criaTimer(1000,1); //75
+ 	Timer_t *timer = Timers_criaTimer(20000,1); //75
 	//int x=0;
 	//int state=0;
 	//PORTB ^= (1<< (int) arg);
@@ -138,9 +138,11 @@ void* func0(void *arg)
 void* func1(void *arg)
 {
 	//d printf("Entrei na tarefa 1\n");
-	Timer_t *timer = Timers_criaTimer(1000,1); //75
+	Timer_t *timer = Timers_criaTimer(20000,1); //75
 	//int x=0;
 	//int state=0;
+	InitADC();
+	
 	while(1)
 	{
 
@@ -158,7 +160,8 @@ void* func1(void *arg)
 		{
 			state=1-state;
 		}*/
-		delay_ms(1000);
+		printf("CE %.1f\n",temperatura(ReadADC(0),5));
+		delay_ms(500);
 		Timers_esperaActivacao(timer);
 		//Sinais_esperaSinal(sinal1);
 	}
@@ -168,7 +171,7 @@ void* func1(void *arg)
 void* func2(void *arg)
 {
 	//d printf("Entrei na tarefa 2\n");
-	Timer_t *timer = Timers_criaTimer(1000,1); //75
+	Timer_t *timer = Timers_criaTimer(18000,1); //75
 	//int x=0;
 	//int state=0;
 	while(1)
@@ -191,7 +194,7 @@ void* func2(void *arg)
 		*/
 		
 		////Semaforo_unlock(sem);
-		delay_ms(1000);
+		delay_ms(2000);
 		Timers_esperaActivacao(timer);
 		//Sinais_esperaSinal(sinal1);
 	}
@@ -199,7 +202,7 @@ void* func2(void *arg)
 
 void* func3(void *arg)
 {
-	Timer_t *timer = Timers_criaTimer(800,1); //75
+	Timer_t *timer = Timers_criaTimer(16000,1); //75
 	//int x=0;
 	//int state=0;
 	while(1)
@@ -219,7 +222,7 @@ void* func3(void *arg)
 			state=1-state;
 		}
 		*/
-		delay_ms(1000);
+		delay_ms(2000);
 		Timers_esperaActivacao(timer);
 		//Sinais_esperaSinal(sinal1);
 	}
@@ -227,7 +230,7 @@ void* func3(void *arg)
 
 void* func4(void *arg)
 {
-	Timer_t *timer = Timers_criaTimer(800,1); //75
+	Timer_t *timer = Timers_criaTimer(16000,1); //75
 	//int x=0;
 	//int state=0;
 	while(1)
@@ -247,7 +250,7 @@ void* func4(void *arg)
 			state=1-state;
 		}
 		*/
-		delay_ms(1000);
+		delay_ms(2000);
 		Timers_esperaActivacao(timer);
 		//Sinais_esperaSinal(sinal1);
 	}
@@ -262,7 +265,7 @@ void* func4(void *arg)
 void* func5(void *arg)
 {
 	//d printf("Entrei na tarefa 5\n");
-	Timer_t *timer = Timers_criaTimer(800,1); //75
+	Timer_t *timer = Timers_criaTimer(11000,1); //75
 	//int x=0;
 	//int state=0;
 	while(1)
@@ -280,7 +283,7 @@ void* func5(void *arg)
 			state=1-state;
 		}
 		*/
-		delay_ms(1000);
+		delay_ms(2000);
 		Timers_esperaActivacao(timer);
 		//Sinais_sinaliza(sinal1);
 	}
@@ -292,9 +295,9 @@ void* func5(void *arg)
 /**************************************************************/
 void testes()
 {
-	ListaTarefas_adicionaTarefa(0, 140, func0,(void*)0);
+	//ListaTarefas_adicionaTarefa(0, 140, func0,(void*)0);
 	ListaTarefas_adicionaTarefa(1, 140, func1,(void*)1);
-	ListaTarefas_adicionaTarefa(2, 140, func2,(void*)2);
+	ListaTarefas_adicionaTarefa(2, 140, func3,(void*)2);
 	ListaTarefas_adicionaTarefa(3, 140, func3,(void*)3);
 	ListaTarefas_adicionaTarefa(4, 140, func4,(void*)4);
 	ListaTarefas_adicionaTarefa(5, 140, func5,(void*)5);

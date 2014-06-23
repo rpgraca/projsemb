@@ -157,7 +157,6 @@ void Timers_actualizaTimers()
 			for(j=0; j < vecTimers.timers[i]->stackSize; j++)
 			{
 				vecTimers.timers[i]->tarefas[j]->activada = 1;
-								
 				if(vecTimers.timers[i]->stackSize>1)
 				printf("AT %u s\n",vecTimers.timers[i]->tarefas[j]->prioridade); //indica ativação simultânea
 				else
