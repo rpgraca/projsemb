@@ -106,23 +106,24 @@ void* funcHOLD(void *arg)
 void* func0(void *arg)
 {
 	//d printf("Entrei na tarefa 0\n");
- 	Timer_t *timer = Timers_criaTimer(800,1); //75
+ 	Timer_t *timer = Timers_criaTimer(1000,1); //75
 	int x=0;
 	int state=0;
-	PORTB ^= (1<< (int) arg);
+	//PORTB ^= (1<< (int) arg);
 	while(1)
 	{
 
 		//Semaforo_lock(sem);
 		//printf("Tarefa 0\n");
 		//Semaforo_unlock(sem);
-		
+		/*
 		if(state==0) x++;
 		else x--;
 		if(x==6 || x == 0)
 		{
 			state=1-state;
 		}
+		*/
 		delay_ms(1000);
 		Timers_esperaActivacao(timer);
 		Sinais_sinaliza(sinal1);
@@ -133,7 +134,7 @@ void* func0(void *arg)
 void* func1(void *arg)
 {
 	//d printf("Entrei na tarefa 1\n");
-	//Timer_t *timer = Timers_criaTimer(1800,1); //75
+	//Timer_t *timer = Timers_criaTimer(700,1); //75
 	int x=0;
 	int state=0;
 	while(1)
@@ -142,7 +143,8 @@ void* func1(void *arg)
 		//Semaforo_lock(sem);
 		//printf("Tarefa 0\n");
 		//Semaforo_unlock(sem);
-		if(x==1)
+		/*
+		 * if(x==1)
 		{
 			PORTB ^= (1<< (int) arg);
 		}
@@ -151,7 +153,7 @@ void* func1(void *arg)
 		if(x==6 || x == 0)
 		{
 			state=1-state;
-		}
+		}*/
 		delay_ms(1000);
 		//Timers_esperaActivacao(timer);
 		Sinais_esperaSinal(sinal1);
@@ -162,7 +164,7 @@ void* func1(void *arg)
 void* func2(void *arg)
 {
 	//d printf("Entrei na tarefa 2\n");
-	//Timer_t *timer = Timers_criaTimer(1800,1); //75
+	//Timer_t *timer = Timers_criaTimer(700,1); //75
 	int x=0;
 	int state=0;
 	while(1)
@@ -172,7 +174,7 @@ void* func2(void *arg)
 		//printf("Tarefa 2\n");
 		//Semaforo_unlock(sem);
 		////Semaforo_lock(sem);
-		if(x==2)
+		/*if(x==2)
 		{
 			PORTB ^= (1<< (int) arg);
 		}
@@ -182,6 +184,7 @@ void* func2(void *arg)
 		{
 			state=1-state;
 		}
+		*/
 		
 		////Semaforo_unlock(sem);
 		delay_ms(1000);
@@ -192,7 +195,7 @@ void* func2(void *arg)
 
 void* func3(void *arg)
 {
-	//Timer_t *timer = Timers_criaTimer(1500,1); //75
+	//Timer_t *timer = Timers_criaTimer(700,1); //75
 	int x=0;
 	int state=0;
 	while(1)
@@ -200,6 +203,7 @@ void* func3(void *arg)
 		//Semaforo_lock(sem);
 		//printf("Tarefa 3\n");
 		//Semaforo_unlock(sem);
+		/*
 		if(x==3)
 		{
 			PORTB ^= (1<< (int) arg);
@@ -210,6 +214,7 @@ void* func3(void *arg)
 		{
 			state=1-state;
 		}
+		*/
 		delay_ms(1000);
 		//Timers_esperaActivacao(timer);
 		Sinais_esperaSinal(sinal1);
@@ -218,7 +223,7 @@ void* func3(void *arg)
 
 void* func4(void *arg)
 {
-	//Timer_t *timer = Timers_criaTimer(800,1); //75
+	Timer_t *timer = Timers_criaTimer(800,1); //75
 	int x=0;
 	int state=0;
 	while(1)
@@ -226,9 +231,10 @@ void* func4(void *arg)
 		//Semaforo_lock(sem);
 		//printf("Tarefa 4\n");
 		//Semaforo_unlock(sem);
-		if(x==4)
+		/*
+		 * if(x==4)
 		{
-			PORTB ^= (1<< (uint8_t) arg);
+			PORTB ^= (1<< (int) arg);
 		}
 		if(state==0) x++;
 		else x--;
@@ -236,9 +242,10 @@ void* func4(void *arg)
 		{
 			state=1-state;
 		}
+		*/
 		delay_ms(1000);
-		//Timers_esperaActivacao(timer);
-		Sinais_esperaSinal(sinal1);
+		Timers_esperaActivacao(timer);
+		//Sinais_esperaSinal(sinal1);
 	}
 }
 
@@ -251,13 +258,14 @@ void* func55(void *arg)
 void* func5(void *arg)
 {
 	//d printf("Entrei na tarefa 5\n");
-	Timer_t *timer = Timers_criaTimer(1200,1); //75
+	Timer_t *timer = Timers_criaTimer(800,1); //75
 	int x=0;
 	int state=0;
 	while(1)
 	{
 		//printf("Tarefa 5\n");
-		if(x==5)
+		/*
+		 * if(x==5)
 		{
 			//ListaTarefas_adicionaTarefa(1, 140, func55,(void*)5);
 		}
@@ -267,6 +275,7 @@ void* func5(void *arg)
 		{
 			state=1-state;
 		}
+		*/
 		delay_ms(1000);
 		Timers_esperaActivacao(timer);
 		//Sinais_sinaliza(sinal1);

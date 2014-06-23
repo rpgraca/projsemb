@@ -181,8 +181,9 @@ void Sched_dispatch()//  __attribute__((signal,naked))
 			RECUPERARSTACKPTR();
 			stackptrAtual -= 2;
 			GUARDARSTACKPTR();
+		}else{
+		printf("Sleep\n"); //só enviar Sleep quando entra em sleep mode
 		}
-		printf("Sleep\n");
 		sei();
 		sleep_mode();
 	}
