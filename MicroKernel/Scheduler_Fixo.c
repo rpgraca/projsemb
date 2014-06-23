@@ -166,6 +166,7 @@ void Sched_dispatch()//  __attribute__((signal,naked))
 		{
 			tarefaAtual = Stack_Top(); 
 			stackptrAtual = tarefaAtual->stackPtr;
+			PORTD = 1<<tarefaAtual->prioridade;
 			RECUPERARCONTEXTO();
 			asm volatile("ret");
 		}

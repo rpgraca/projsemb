@@ -27,10 +27,10 @@ void delay_ticks(uint16_t ticks)
 
 void *func0(void *arg)
 {
-       	Timer_t * timer = Timers_criaTimer(2000,1);
+       	Timer_t * timer = Timers_criaTimer(200,1);
        	while(1)
        	{
-	       	delay_ticks(500);
+	       	delay_ticks(50);
 	       	Timers_esperaActivacao(timer);
        	}
 }
@@ -38,20 +38,20 @@ void *func0(void *arg)
 
 void *func1(void *arg)
 {
-       	Timer_t * timer = Timers_criaTimer(3000,1);
+       	Timer_t * timer = Timers_criaTimer(300,1);
        	while(1)
        	{
-	       	delay_ticks(500);
+	       	delay_ticks(50);
 	       	Timers_esperaActivacao(timer);
        	}
 }
 
 void *func2(void *arg)
 {
-       	Timer_t * timer = Timers_criaTimer(6000,1);
+       	Timer_t * timer = Timers_criaTimer(600,1);
        	while(1)
        	{
-	       	delay_ticks(3000);
+	       	delay_ticks(300);
 	       	Timers_esperaActivacao(timer);
        	}
 }
