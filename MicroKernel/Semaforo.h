@@ -69,7 +69,7 @@ void Semaforo_lock(Semaforo_t* semaforo);
  */
 void Semaforo_unlock(Semaforo_t* semaforo);
 
-int8_t Semaforo_apaga(Semaforo_t* semaforo)
+int8_t Semaforo_apaga(Semaforo_t* semaforo);
 
 
 
