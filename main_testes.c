@@ -25,6 +25,22 @@
 Sinal_t *sinal1;
 Timer_t *timer;
 
+void *func0(void *arg);
+void *func1(void *arg);
+void *func2(void *arg);
+void *func3(void *arg);
+void *func4(void *arg);
+void *func5(void *arg);
+void *func6(void *arg);
+void *func7(void *arg);
+void *func8(void *arg);
+void *func9(void *arg);
+void *func10(void *arg);
+void *func11(void *arg);
+void *func12(void *arg);
+void *func13(void *arg);
+void *func132(void *arg);
+
 
 void* func0(void *arg)
 {
@@ -32,7 +48,10 @@ void* func0(void *arg)
  	Timer_t *timer = Timers_criaTimer(20,1);
 	int x=0;
 	int state=0;
-	PORTB ^= (1<< 5);
+	PORTB ^= (1<< (int) arg);
+	ListaTarefas_adicionaTarefa(5, 70, func11,(void*)2);
+	ListaTarefas_adicionaTarefa(3, 70, func12,(void*)1);
+	ListaTarefas_adicionaTarefa(4, 70, func13,(void*)0);
 	while(1)
 	{
 
@@ -59,7 +78,7 @@ void* func1(void *arg)
 		//Semaforo_unlock(sem);
 		if(x==1)
 		{
-			PORTB ^= (1<< 4);
+			PORTB ^= (1<< (int)arg);
 		}
 		if(state==0) x++;
 		else x--;
@@ -329,7 +348,7 @@ void* func13(void *arg)
 		//Semaforo_unlock(sem);
 		if(x==13)
 		{
-			PORTD ^= (1<< 0);
+			ListaTarefas_adicionaTarefa(4,50,func132,NULL);
 		}
 		if(state==0) x++;
 		else x--;
@@ -341,14 +360,19 @@ void* func13(void *arg)
 	}
 }
 
+void * func132(void *arg)
+{
+			PORTD ^= (1<< 0);
+}
+
 
 /**************************************************************/
 /*                            MAIN                            */
 /**************************************************************/
 void testes()
 {
-	ListaTarefas_adicionaTarefa(3, 70, func0,(void*)5);
-	ListaTarefas_adicionaTarefa(4, 70, func1,(void*)4);
+	ListaTarefas_adicionaTarefa(5, 70, func0,(void*)5);
+	ListaTarefas_adicionaTarefa(3, 70, func1,(void*)4);
 	ListaTarefas_adicionaTarefa(4, 70, func2,(void*)3);
 	ListaTarefas_adicionaTarefa(5, 70, func3,(void*)2);
 	ListaTarefas_adicionaTarefa(5, 70, func4,(void*)1);
@@ -358,9 +382,6 @@ void testes()
 	ListaTarefas_adicionaTarefa(4, 70, func8,(void*)5);
 	ListaTarefas_adicionaTarefa(5, 70, func9,(void*)4);
 	ListaTarefas_adicionaTarefa(5, 70, func10,(void*)3);
-	ListaTarefas_adicionaTarefa(5, 70, func11,(void*)2);
-	ListaTarefas_adicionaTarefa(3, 70, func12,(void*)1);
-	ListaTarefas_adicionaTarefa(4, 70, func13,(void*)0);
 }
 
 
