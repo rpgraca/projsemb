@@ -133,6 +133,7 @@ void Sched_dispatch()//  __attribute__((signal,naked))
 					tarefaAtual->stackPtr = stackptrAtual;
 				}
 				tarefaAtual = listatarefas->prioridades[i]->tarefas[j];
+				PORTD = 1<<i;
 				stackptrAtual = tarefaAtual->stackPtr;
 				RECUPERARCONTEXTO();
 				asm volatile("ret");
@@ -150,6 +151,7 @@ void Sched_dispatch()//  __attribute__((signal,naked))
 					tarefaAtual->stackPtr = stackptrAtual;
 				}
 				tarefaAtual = listatarefas->prioridades[i]->tarefas[j];
+				PORTD = 1<<i;
 				stackptrAtual = tarefaAtual->stackPtr;
 				RECUPERARCONTEXTO();
 				asm volatile("ret");
@@ -176,6 +178,7 @@ void Sched_dispatch()//  __attribute__((signal,naked))
 			stackptrAtual -= 2;
 			GUARDARSTACKPTR();
 		}
+		PORTD = 0;
 		sei();
 		sleep_mode();
 	}
